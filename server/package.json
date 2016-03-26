@@ -1,0 +1,22 @@
+{
+  "name": "cabee-server",
+  "description": "Cabee's web-server",
+  "version": "0.0.1",
+  "author": "Mrsuyi (mrsuyi@163.com)",
+  "main": "index",
+  "keywords": [
+    "Cabee",
+    "web-server"
+  ],
+  "dependencies": {
+    "body-parser": "1.15.0",
+    "express": "^4.13.4",
+    "ip": "^1.1.2",
+    "multer": "^1.1.0",
+    "nunjucks": "^2.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC"
+}

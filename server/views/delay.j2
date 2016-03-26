@@ -1,0 +1,94 @@
+{% extends "frame.j2" %}
+
+{% block title %}delay{% endblock %}
+
+{% import "partial.j2" as partial %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("delay") }}</div>
+<!-- ip-time table -->
+<br/>
+<div class="row">
+    <form action="delay" method="post">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Mask</th>
+                    <th>Delay Time (ms)</th>
+                    <th><button type="button" class="btn btn-success" data-add>Add</button></th>
+                </tr>
+            </thead>
+            <tbody data-items>
+                {% for item in list %}
+                <tr>
+                    <td><input class="form-control" type="text" name="addr" value="{{ item.addr }}" pattern="^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$" required/></td>
+                    <td><input class="form-control" type="text" name="mask" value="{{ item.mask }}" pattern="^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$" required/></td>
+                    <td><input class="form-control" type="text" name="time" value="{{ item.time }}" pattern="^\d{1,5}$" required/></td>
+                    <td><button class="btn btn-danger" type="button" data-del>Del</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="col-md-2 col-md-offset-5">
+            <button class="btn btn-primary btn-block" type="submit">Submit</button>
+        </div>
+    </form>
+</div>
+<!-- item[add/del] & form submit -->
+<script>
+
+$(document).ready(function()
+{
+    $(document).on('click', 'button[data-del]', function()
+    {
+        $(this).parent().parent().remove();
+    });
+
+    $(document).on('click', 'button[data-add]', function()
+    {
+        var tr = $('<tr>');
+
+        var pattern = String.raw`^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$`;
+
+        var inputs =
+        {
+            'addr' : pattern,
+            'mask' : pattern,
+            'time' : String.raw`^\d{1,5}$`
+        };
+
+        for (key in inputs)
+        {
+            var input = $('<input>',
+            {
+                'class'   : 'form-control',
+                'type'    : 'text',
+                'name'    : key,
+                'pattern' : inputs[key]
+            });
+
+            var td = $('<td>');
+            td.html($(input));
+            tr.append($(td));
+        }
+
+        var btn = $('<button>',
+        {
+            'class'    : 'btn btn-danger',
+            'type'     : 'button',
+            'data-del' : ''
+        });
+        btn.text('Del');
+
+        var td = $('<td>');
+        td.html($(btn));
+        tr.append($(td));
+
+        $('tbody[data-items]').append($(tr));
+    });
+});
+
+</script>
+{% endblock %}

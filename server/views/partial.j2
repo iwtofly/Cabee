@@ -1,0 +1,7 @@
+{% macro nav(val) %}
+<ul class="nav nav-tabs">
+    <li {% if val == "track" %}class="active"{% endif %}><a href="track">Track</a></li>
+    <li {% if val == "media" %}class="active"{% endif %}><a href="media">Media</a></li>
+    <li {% if val == "delay" %}class="active"{% endif %}><a href="delay">Delay</a></li>
+</ul>
+{% endmacro %}

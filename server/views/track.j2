@@ -1,0 +1,28 @@
+{% extends "frame.j2" %}
+
+{% block title %}track{% endblock %}
+
+{% import "partial.j2" as partial %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("track") }}</div>
+<!-- track_ip -->
+<br/>
+<div class="row">
+    <form action="track" method="post">
+        <div class="form group">
+            <label for="ip">Track IP Address</label>
+            <input id="ip" class="form-control" type="text" name="ip" value="{{ ip }}" pattern="((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))"/>
+        </div>
+        <br/>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
+<!-- connection -->
+<br/>
+<div class="row">
+    <span>Track-Host Connection Status : </span>
+    <span>No Connection</span>
+</div>
+{% endblock %}
