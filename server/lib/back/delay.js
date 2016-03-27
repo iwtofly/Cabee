@@ -8,13 +8,13 @@ module.exports = router;
 router.get('/delay', function(req, res)
 {
     res.render('delay.j2', {'list' : share.delay_list});
-})
+});
 
 router.post('/delay/edit', function(req, res)
 {
-    var addr = req.body['addr'];
-    var mask = req.body['mask'];
-    var time = req.body['time'];
+    var addr = req.body.addr;
+    var mask = req.body.mask;
+    var time = req.body.time;
 
     var list = [];
 

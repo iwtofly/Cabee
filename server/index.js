@@ -28,7 +28,7 @@ front.use(require('./lib/front/router'));
 
 front.get('*', function(req, res)
 {
-    res.render('404');
+    res.render('404.j2');
 });
 
 front.listen(HTTP_FRONT_PORT);
@@ -63,7 +63,7 @@ back.use(require('./lib/back/delay'));
 
 back.get('*', function(req, res)
 {
-    res.render('404');
+    res.render('404.j2');
 });
 
 back.listen(HTTP_BACK_PORT);

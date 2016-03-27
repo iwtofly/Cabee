@@ -13,18 +13,16 @@ router.get('/media', function(req, res)
 
 router.get('/media/delete/:file', function(req, res)
 {
-    var file = path.join(share.upload_path, req.params['file']);
+    share.upload_delete(path.join(share.upload_path, req.params.file));
+    res.redirect('/media');
+});
 
-    try
+router.get('/media/clear', function(req, res)
+{
+    for (file of share.upload_list())
     {
-        fs.unlinkSync(file);
-        share.log('file deleted : ' + file);
+        share.upload_delete(path.join(share.upload_path, file));
     }
-    catch (err)
-    {
-        share.log(err);
-    }
-
     res.redirect('/media');
 });
 

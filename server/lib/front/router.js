@@ -9,16 +9,12 @@ module.exports = router;
 
 router.get('/', function(req, res)
 {
-    res.render('front.j2',
-    {
-        'files' : share.upload_list(),
-        'path'  : 'upload/'
-    });
+    res.render('front.j2', {'files' : share.upload_list()});
 });
 
-router.get(/^\/upload\/.+\.(jpg|mp4)$/, function(req, res)
+router.get(/.+\.(jpg|mp4)$/, function(req, res)
 {
-    var file = path.resolve(__dirname + '/../..' + req.url);
+    var file = path.resolve(share.upload_path + req.url);
 
     if (fs.existsSync(file))
     {
@@ -38,7 +34,7 @@ router.get(/^\/upload\/.+\.(jpg|mp4)$/, function(req, res)
     }
 });
 
-router.get('/delay/:addr', function(req, res)
+router.get('/ping', function(req, res)
 {
     res.json(share.delay_time(req.params.addr));
 });

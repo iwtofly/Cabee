@@ -2,7 +2,9 @@ var fs     = require('fs');
 var path   = require('path');
 var ipaddr = require('ipaddr.js');
 
-module.exports.track_ip = '192.168.1.1';
+module.exports.track_addr     = '192.168.1.1';
+module.exports.track_interval = 1000;
+module.exports.track_active   = false;
 
 module.exports.delay_list =
 [
@@ -54,6 +56,19 @@ module.exports.upload_list = function()
         this.log(err);
     }
 };
+
+module.exports.upload_delete = function(file)
+{
+    try
+    {
+        fs.unlinkSync(file);
+        this.log('file deleted : ' + file);
+    }
+    catch (err)
+    {
+        this.log(err);
+    }
+}
 
 module.exports.log = function(str)
 {
