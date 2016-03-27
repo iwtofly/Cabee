@@ -1,5 +1,5 @@
 const HTTP_FRONT_PORT = 80;
-const HTTP_BACK_PORT = 12345;
+const HTTP_BACK_PORT  = 12345;
 
 var express    = require('express');
 var nunjucks   = require('nunjucks');
@@ -25,6 +25,11 @@ front.use(bodyParser.json());
 front.use(express.static('public'));
 
 front.use(require('./lib/front/router'));
+
+front.get('*', function(req, res)
+{
+    res.render('404');
+});
 
 front.listen(HTTP_FRONT_PORT);
 
@@ -55,5 +60,10 @@ back.get('/', function(req, res)
 back.use(require('./lib/back/track'));
 back.use(require('./lib/back/media'));
 back.use(require('./lib/back/delay'));
+
+back.get('*', function(req, res)
+{
+    res.render('404');
+});
 
 back.listen(HTTP_BACK_PORT);

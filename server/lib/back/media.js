@@ -2,8 +2,8 @@ var express = require('express');
 var fs      = require('fs');
 var path    = require('path');
 var share   = require('./share.js');
-var router  = express.Router();
 
+var router = express.Router();
 module.exports = router;
 
 router.get('/media', function(req, res)
@@ -52,4 +52,9 @@ router.post('/media/upload', upload.array('file'), function(req, res)
         }
     }
     res.redirect('/media');
+});
+
+router.get('/media/list', function(req, res)
+{
+    res.json(share.upload_list());
 });

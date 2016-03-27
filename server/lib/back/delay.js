@@ -1,16 +1,16 @@
 var express = require('express');
+var ipaddr  = require('ipaddr.js');
 var share   = require('./share.js');
-var router  = express.Router();
-var ip      = require('ip');
 
+var router = express.Router();
 module.exports = router;
 
-router.route('/delay')
-.get(function(req, res)
+router.get('/delay', function(req, res)
 {
     res.render('delay.j2', {'list' : share.delay_list});
 })
-.post(function(req, res)
+
+router.post('/delay/edit', function(req, res)
 {
     var addr = req.body['addr'];
     var mask = req.body['mask'];
@@ -29,7 +29,7 @@ router.route('/delay')
     {
         time[i] = parseInt(time[i]);
 
-        if (ip.isV4Format(addr[i]) && ip.isV4Format(mask[i]) && time[i] >= 0 && time[i] <= 99999)
+        if (ipaddr.IPv4.isValid(addr[i]) && ipaddr.IPv4.isValid(mask[i]) && time[i] >= 0 && time[i] <= 99999)
         {
             list.push(
             {
@@ -38,10 +38,19 @@ router.route('/delay')
                 'time' : time[i]
             });
         }
+        else
+        {
+            share.log('invalid ip-delay info');
+        }
     }
 
     share.delay_list = list;
     share.log('ip-delay edited : ' + JSON.stringify(list));
 
-    res.render('delay.j2', {'list' : list});
+    res.redirect('/delay');
+});
+
+router.get('/delay/list', function(req, res)
+{
+    res.json(share.delay_list);
 });
