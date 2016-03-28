@@ -1,6 +1,8 @@
-var express = require('express');
-var ipaddr  = require('ipaddr.js');
-var share   = require('./share.js');
+var express  = require('express');
+var ipaddr   = require('ipaddr.js');
+var request  = require('request');
+var validUrl = require('valid-url');
+var share    = require('./share.js');
 
 var router = express.Router();
 module.exports = router;
@@ -9,7 +11,7 @@ router.get('/track', function(req, res)
 {
     res.render('track.j2',
     {
-        'addr'     : share.track_ip,
+        'url'      : share.track_url,
         'interval' : share.track_interval,
         'active'   : share.track_active
     });
@@ -17,24 +19,51 @@ router.get('/track', function(req, res)
 
 router.post('/track/edit', function(req, res)
 {
-    var addr     = req.body.addr;
+    var url      = req.body.url;
     var interval = parseInt(req.body.interval);
 
-    if (ipaddr.IPv4.isValid(addr) && interval >= 1 && interval <= 99999)
+    if (validUrl.isHttpUri(url) && interval >= 1 && interval <= 99999)
     {
-        share.track_ip       = addr;
+        share.track_url      = url;
         share.track_interval = interval;
 
-        share.log('track IP-address edited : ' + addr);
+        share.log('track IP-urless edited : ' + url);
         share.log('track visit interval edited : ' + interval);
     }
 
     res.redirect('/track');
 });
 
+router.get('/track/active', function(req, res)
+{
+    res.json(share.track_active);
+});
+
+
+/*========== communication with track ==========*/
+
+var requesting = false;
 function track()
 {
-    console.log('shit');
+    if (!requesting)
+    {
+        requesting = true;
+
+        request(
+        {
+            'url'    : share.track_url,
+            'method' : 'POST',
+            'body'   : share.upload_list(),
+            'json'   : true
+        },
+        function (error, response, body)
+        {
+            share.track_active = !error && response.statusCode == 200 && body == 'ok';
+            share.log('track connection status : ' + share.track_active.toString());
+            requesting = false;
+        });
+    }
+
     setTimeout(track, share.track_interval);
 };
 

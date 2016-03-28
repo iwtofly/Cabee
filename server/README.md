@@ -23,9 +23,9 @@ provide a direct view over the server in following aspects
 | /                       | redirect to /track                                 |
 | /track                  | show track-ip                                      |
 | /track/edit             | edit track-ip and redirect to /track               |
+| /track/active           | track connection status(true/false) in JSON        |
 | /media                  | show a list of all uploaded media files            |
-| /media/delete/:filename | delete an uploaded files and redirect to /media    |
-| /media/clear            | clear all uploaded files and redirect to /media    |
+| /media/delete/:filename | delete an uploaded file and redirect to /media     |
 | /media/upload           | upload files to server and redirect to /media      |
 | /media/list             | list of all uploaded media files in JSON           |
 | /delay                  | show a list of delay rules(ip-address, mask, time) |

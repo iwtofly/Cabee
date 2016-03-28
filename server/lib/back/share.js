@@ -2,7 +2,7 @@ var fs     = require('fs');
 var path   = require('path');
 var ipaddr = require('ipaddr.js');
 
-module.exports.track_addr     = '192.168.1.1';
+module.exports.track_url      = 'http://127.0.0.1:12346/server/report';
 module.exports.track_interval = 1000;
 module.exports.track_active   = false;
 

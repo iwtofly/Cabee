@@ -55,3 +55,8 @@ module.exports.server_list =
         '/upload/4.jpg'
     ]
 };
+
+module.exports.log = function(str)
+{
+    console.log('[' + (new Date()).toLocaleString() + '] ' + str);
+};

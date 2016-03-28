@@ -1,4 +1,4 @@
-const HTTP_PORT = 12345;
+const HTTP_PORT = 12346;
 
 var express    = require('express');
 var nunjucks   = require('nunjucks');

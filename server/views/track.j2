@@ -12,8 +12,8 @@
 <div class="row">
     <form action="track/edit" method="post">
         <div class="form group">
-            <label for="addr">Track IP Address</label>
-            <input id="addr" class="form-control" type="text" name="addr" value="{{ addr }}" pattern="^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$" required/>
+            <label for="url">Track Interface URL</label>
+            <input id="url" class="form-control" type="text" name="url" value="{{ url }}" pattern="^http://((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?).*$" required/>
         </div>
         <div>
             <label for="interval">Track Auto Report Interval</label>
@@ -27,6 +27,30 @@
 <br/>
 <div class="row">
     <span>Track-Host Connection Status : </span>
-    <span>No Connection</span>
+    <span id="status"></span>
 </div>
+<!-- AJAX get connection status -->
+<script>
+$(document).ready(function()
+{
+    function check()
+    {
+        $.get("track/active", function(data,status)
+        {
+            if (JSON.parse(data) == true)
+            {
+                $('#status').attr('class', 'label label-success').text('Connected');
+            }
+            else
+            {
+                $('#status').attr('class', 'label label-danger').text('Unconnected');
+            }
+        });
+
+        setTimeout(check, {{ interval }});
+    }
+
+    check();
+});
+</script>
 {% endblock %}

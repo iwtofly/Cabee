@@ -16,6 +16,8 @@
     "express": "^4.13.4",
     "ipaddr.js": "^1.1.0",
     "multer": "^1.1.0",
-    "nunjucks": "^2.4.1"
+    "nunjucks": "^2.4.1",
+    "request": "^2.69.0",
+    "valid-url": "^1.0.9"
   }
 }

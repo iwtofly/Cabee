@@ -1,4 +1,5 @@
 var express = require('express');
+var ipaddr  = require('ipaddr.js');
 var share   = require('./share.js');
 
 var router = express.Router();
@@ -16,8 +17,12 @@ router.get('/server/list', function(req, res)
 
 router.post('/server/report', function(req, res)
 {
-    share.server_list[req.ip] = JSON.parse(req.body);
-    res.send('ok');
+    var addr = ipaddr.process(req.ip);
+
+    share.server_list[addr] = req.body;
+    share.log('server report received from : ' + addr);
+    
+    res.json('ok');
 });
 
 router.get('/server/clear', function(req, res)
