@@ -1,0 +1,62 @@
+{% extends "frame.j2" %}
+
+{% block title %}server{% endblock %}
+
+{% import "partial.j2" as partial %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("server") }}</div>
+<!-- server-info -->
+<br/>
+<div class="row">
+    <!-- tab-nav -->
+    <div class="col-md-2">
+        <ul id="tabs" class="nav nav-pills nav-stacked" role="tablist">
+            {% set i = 1 %}
+            {% for ip, server in list %}
+            <li role="presentation"><a href="#server{{ i }}" aria-controls="server{{ i }}" role="tab" data-toggle="pill">{{ ip }}</a></li>
+            {% set i = i + 1 %}
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- tab-panel -->
+    <div class="col-md-10">
+        <div class="tab-content">
+            {% set i = 1 %}
+            {% for ip, files in list %}
+            <div id="server{{ i }}" class="tab-pane" role="tabpanel">
+                <!-- files -->
+                <h4>Files</h4>
+                <table class="table table-bordered">
+                    {% for file in files %}
+                    <tr><td>{{ file }}</td></tr>
+                    {% endfor %}
+                </table>
+            </div>
+            {% set i = i + 1 %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- clear -->
+<br/>
+<div class="row">
+    <div class="col-md-2 col-md-offset-5">
+        <a class="btn btn-danger btn-block" href="server/clear">Clear</a>
+    </div>
+</div>
+<!-- init tab -->
+<script>
+$(document).ready(function()
+{
+    $('#tabs a').click(function (e)
+    {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    $('#tabs a:first').tab('show');
+});
+</script>
+{% endblock %}

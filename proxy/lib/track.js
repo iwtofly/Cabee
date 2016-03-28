@@ -1,5 +1,4 @@
 var express  = require('express');
-var ipaddr   = require('ipaddr.js');
 var request  = require('request');
 var validUrl = require('valid-url');
 var share    = require('./share.js');
@@ -50,16 +49,30 @@ function track()
     {
         flag = true;
 
+        for (server in share.servers)
+        {
+
+        }
+
         request(
         {
             'url'    : share.track_url,
             'method' : 'POST',
-            'body'   : share.uploads(),
+            'body'   : share.cache_list(),
             'json'   : true
         },
         function (error, response, body)
         {
-            share.track_active = !error && response.statusCode == 200 && body == 'ok';
+            if (!error && response.statusCode == 200)
+            {
+                share.track_active = true;
+                share.proxies      = body.proxies;
+                share.servers      = body.servers;
+            }
+            else
+            {
+                share.track_active = false;
+            }
             //share.log('track connection status : ' + share.track_active.toString());
             flag = false;
         });

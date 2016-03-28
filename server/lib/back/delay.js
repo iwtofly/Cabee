@@ -7,7 +7,7 @@ module.exports = router;
 
 router.get('/delay', function(req, res)
 {
-    res.render('delay.j2', {'list' : share.delay_list});
+    res.render('delay.j2', {'list' : share.delays});
 });
 
 router.post('/delay/edit', function(req, res)
@@ -44,7 +44,7 @@ router.post('/delay/edit', function(req, res)
         }
     }
 
-    share.delay_list = list;
+    share.delays = list;
     share.log('ip-delay edited : ' + JSON.stringify(list));
 
     res.redirect('/delay');
@@ -52,5 +52,5 @@ router.post('/delay/edit', function(req, res)
 
 router.get('/delay/list', function(req, res)
 {
-    res.json(share.delay_list);
+    res.json(share.delays);
 });

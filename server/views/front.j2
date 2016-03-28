@@ -36,7 +36,6 @@
     </table>
 </div>
 <script>
-
 $(document).ready(function()
 {
     $(document).on('click', 'button[data-file]', function()
@@ -48,6 +47,7 @@ $(document).ready(function()
         
         var url  = $(this).attr('data-file');
         var time = (new Date()).getTime();
+        td.text('loading');
 
         switch (url.substr(url.lastIndexOf('.') + 1))
         {
@@ -57,7 +57,7 @@ $(document).ready(function()
                 {
                     if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0)
                     {
-                        alert('load img failed');
+                        td.text('load img failed');
                     }
                     else
                     {
@@ -76,10 +76,9 @@ $(document).ready(function()
                 break;
 
             default:
-                alert('unsupported file-type');
+                td.text('unsupported file-type');
         }
     });
 })
-
 </script>
 {% endblock %}

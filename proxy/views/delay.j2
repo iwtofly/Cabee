@@ -1,0 +1,42 @@
+{% extends "frame.j2" %}
+
+{% block title %}delay{% endblock %}
+
+{% import "partial.j2" as partial %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("delay") }}</div>
+<!-- delays -->
+<br/>
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Server Address</th>
+                <th>Delay(ms)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for addr, time in list %}
+            <tr>
+                <td>{{ addr }}</td>
+                <td>{{ time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- ping interval -->
+<br/>
+<div class="row">
+    <form action="delay/edit" method="post">
+        <div>
+            <label for="interval">Server Auto Ping Interval</label>
+            <input id="interval" class="form-control" type="text" name="interval" value="{{ interval }}" pattern="^\d{1,5}$" required/>
+        </div>
+        <br/>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}

@@ -7,26 +7,31 @@ module.exports = router;
 
 router.get('/server', function(req, res)
 {
-    res.render('server.j2', {'list' : share.server_list});
+    res.render('server.j2', {'list' : share.servers});
 });
 
-router.get('/server/list', function(req, res)
+router.get('/server/file/all', function(req, res)
 {
-    res.json(share.server_list);
+    res.json(share.servers);
 });
 
-router.post('/server/report', function(req, res)
+router.get('/server/file/:server', function(req, res)
 {
-    var addr = ipaddr.process(req.ip);
-
-    share.server_list[addr] = req.body;
-    share.log('server report received from : ' + addr);
-    
-    res.json('ok');
+    res.json(share.servers[req.params.server]);
 });
 
 router.get('/server/clear', function(req, res)
 {
-    share.server_list = {};
+    share.servers = {};
     res.redirect('/server');
+});
+
+router.post('/server/check', function(req, res)
+{
+    var addr = ipaddr.process(req.ip);
+
+    share.servers[addr] = req.body;
+    //share.log('server check received from : ' + addr);
+    
+    res.json('ok');
 });

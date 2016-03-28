@@ -8,20 +8,20 @@ module.exports = router;
 
 router.get('/media', function(req, res)
 {
-    res.render('media.j2', {'files' : share.upload_list()});
+    res.render('media.j2', {'files' : share.uploads()});
 });
 
 router.get('/media/delete/:file', function(req, res)
 {
-    share.upload_delete(path.join(share.upload_path, req.params.file));
+    share.upload_delete(req.params.file);
     res.redirect('/media');
 });
 
 router.get('/media/clear', function(req, res)
 {
-    for (file of share.upload_list())
+    for (file of share.uploads())
     {
-        share.upload_delete(path.join(share.upload_path, file));
+        share.upload_delete(file);
     }
     res.redirect('/media');
 });
@@ -54,5 +54,5 @@ router.post('/media/upload', upload.array('file'), function(req, res)
 
 router.get('/media/list', function(req, res)
 {
-    res.json(share.upload_list());
+    res.json(share.uploads());
 });

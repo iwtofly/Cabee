@@ -9,7 +9,7 @@ module.exports = router;
 
 router.get('/', function(req, res)
 {
-    res.render('front.j2', {'files' : share.upload_list()});
+    res.render('front.j2', {'files' : share.uploads()});
 });
 
 router.get(/.+\.(jpg|mp4)$/, function(req, res)
@@ -36,5 +36,5 @@ router.get(/.+\.(jpg|mp4)$/, function(req, res)
 
 router.get('/ping', function(req, res)
 {
-    res.json(share.delay_time(req.params.addr));
+    res.json(share.delay_time(ipaddr.process(req.ip)));
 });
