@@ -21,6 +21,8 @@
         <thead>
             <tr>
                 <th>File</th>
+                <th>Direct Fetch Times</th>
+                <th>Cache Hit Times</th>
                 <th>Time(ms)</th>
             </tr>
         </thead>
@@ -29,6 +31,8 @@
             <tr>
                 <!-- modal -->
                 <td><button class="btn btn-default" type="button" data-file="{{ file.name }}">{{ file.name }}</button></td>
+                <td>{{ file.cnts() }}</td>
+                <td>{{ file.hits }}</td>
                 <td>Not loaded</td>
             </tr>
             {% endfor %}

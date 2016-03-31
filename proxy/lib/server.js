@@ -1,16 +1,9 @@
-var express = require('express');
-var share   = require('./share.js');
+var request = require('request');
 
-var router = express.Router();
-module.exports = router;
+module.exports = server;
 
-router.get('/server', function(req, res)
+function server(ip, interval)
 {
-    res.render('server.j2', {'list' : share.servers});
-});
-
-router.get('/server/clear', function(req, res)
-{
-    share.servers = {};
-    res.redirect('/server');
-});
+    this.ip    = ip;
+    this.delay = 'unreachable';
+};

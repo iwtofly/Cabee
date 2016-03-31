@@ -1,40 +1,97 @@
-var express = require('express');
-var fs      = require('fs');
-var path    = require('path');
-var share   = require('./share.js');
+var fs   = require('fs');
+var path = require('path');
 
-var router = express.Router();
-module.exports = router;
+module.exports = cache;
 
-router.get('/cache', function(req, res)
+var hits = {};
+
+function cache(name, dir)
 {
-    var caches = share.caches();
-    var list   = {};
+    // http://10.1.1.1/kantai-1.jpg
+    this.name     = name;
+    this.url      = name;
+    // E:\Cabee\proxy\cache
+    this.dir      = dir;
+    // http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
+    this.filename = encodeURIComponent(name);
+    // E:\Cabee\proxy\cache\http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
+    this.path     = path.join(dir, this.filename);
+    // .jpg
+    this.extname  = path.extname(name);
+};
 
-    for (file of caches)
+cache.prototype.exist = function()
+{
+    try
     {
-        list[decodeURIComponent(file)] = encodeURIComponent(file);
-    };
-
-    res.render('cache.j2', {'list' : list});
-});
-
-router.get('/cache/delete/:file', function(req, res)
-{
-    share.cache_delete(req.params.file);
-    res.redirect('/cache');
-});
-
-router.get('/cache/clear', function(req, res)
-{
-    for (file of share.caches())
-    {
-        share.cache_delete(file);
+        return fs.statSync(this.path).iscache();
     }
-    res.redirect('/cache');
-});
+    catch (err)
+    {
+        console.log(err);
+    }
+};
 
-router.get('/cache/json', function(req, res)
+cache.prototype.delete = function()
 {
-    res.json(share.cache_list());
-});
+    try
+    {
+        fs.unlinkSync(this.path);
+        console.log('cache deleted : ' + this.path);
+    }
+    catch (err)
+    {
+        console.log(err);
+    }
+};
+
+cache.prototype.save = function(buffer)
+{
+    try
+    {
+        fs.writeFileSync(this.path, buffer);
+        hits[this.name] = 0;
+    }
+    catch (err)
+    {
+        console.log(err);
+    }
+};
+
+cache.prototype.hits = function()
+{
+    return hits[this.name] ? hits[this.name] : 0;
+};
+
+cache.prototype.hit = function()
+{
+    hits[this.name] = this.hits() + 1;
+};
+
+cache.list = function(dir)
+{
+    var ret = [];
+
+    try
+    {
+        for (name of fs.readdirSync(dir))
+        {
+            ret.push(new cache(decodeURIComponent(name), dir));
+        }
+    }
+    catch (err)
+    {
+        console.log(err);
+    }
+
+    return ret;
+};
+
+cache.clear = function(dir)
+{
+    for (c of cache.list(dir))
+    {
+        c.delete();
+    }
+    hits = {};
+};

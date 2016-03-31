@@ -1,8 +1,7 @@
 {% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
 
 {% block title %}proxy{% endblock %}
-
-{% import "partial.j2" as partial %}
 
 {% block content %}
 <!-- nav -->
@@ -27,35 +26,17 @@
             {% set i = 1 %}
             {% for ip, proxy in proxies %}
             <div id="proxy{{ i }}" class="tab-pane" role="tabpanel">
-                <!-- delay -->
-                <h4>Delay</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Server Address</th>
-                            <th>Time(ms)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for addr, time in proxy.delay %}
-                        <tr>
-                            <td>{{ addr }}</td>
-                            <td>{{ time }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
                 <!-- cache -->
                 <h4>Cache</h4>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>File Name</th>
-                            <th>Requested Times</th>
+                            <th>Hit Times</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for file, times in proxy.cache %}
+                        {% for file, times in proxy %}
                         <tr>
                             <td>{{ file }}</td>
                             <td>{{ times }}</td>

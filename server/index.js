@@ -47,18 +47,13 @@ back.use(bodyParser.json());
 back.use(express.static('public'));
 back.use(express.static('media'));
 
-back.get('/', function(req, res)
-{
-    res.redirect('/track');
-});
-
 back.use('/track', require('./lib/_track'));
 back.use('/media', require('./lib/_media'));
 back.use('/delay', require('./lib/_delay'));
 
 back.get('*', function(req, res)
 {
-    res.status(404).end();
+    res.redirect('/track');
 });
 
 back.listen(HTTP_BACK_PORT);

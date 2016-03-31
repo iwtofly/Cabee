@@ -10,9 +10,16 @@ var router = module.exports = express.Router();
 
 router.get('/', function(req, res)
 {
+    var files = file.list(_.mediaPath);
+
+    for (f of files)
+    {
+        f.hits = _.hits[f.href];
+    }
+
     res.render('front.j2',
     {
-        'files' : file.list(_.mediaPath)
+        'files' : files
     });
 });
 
@@ -27,6 +34,7 @@ router.get(/.+\.(jpg|mp4)$/, function(req, res)
         setTimeout(function()
         {
             console.log('client [' + req.ip + '] get [' + f.name + '] in ' + time + ' ms');
+            f.cnt();
             res.sendFile(f.path);
         },
         time);

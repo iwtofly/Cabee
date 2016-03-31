@@ -1,16 +1,43 @@
-var express = require('express');
-var share   = require('./share.js');
+var request = require('request');
 
-var router = express.Router();
-module.exports = router;
+module.exports = proxy;
 
-router.get('/proxy', function(req, res)
+function proxy(ip, delays, caches)
 {
-    res.render('proxy.j2', {'list' : share.proxies});
-});
+    this.ip     = ip;
+    this.delays = delays;
+    this.caches = caches;
+};
 
-router.get('/proxy/clear', function(req, res)
+proxy.prototype.hasCache = function(name)
 {
-    share.proxies = {};
-    res.redirect('/proxy');
-});
+    return this.caches[name];
+};
+
+proxy.prototype.fetch = function(name, timeout, callback)
+{
+    request(
+    {
+        'url'      : 'http://' + this.ip + ':12347/fetch/' + encodeURIComponent(name),
+        'encoding' : null,
+        'timeout'  : timeout
+    },
+    (error, response, body) =>
+    {
+        callback(error, response, body);
+    });
+};
+
+proxy.prototype.toJSON = function()
+{
+    return JSON.stringify(
+    {
+        'ip' : this.ip,
+        'delays'
+    });
+};
+
+proxy.fromJSON = function(json)
+{
+
+};

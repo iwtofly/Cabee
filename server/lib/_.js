@@ -14,7 +14,28 @@ _.delays =
 
 _.mediaPath = path.join(__dirname, '/../media/');
 
-_.track = new track('http://127.0.0.1:12346/server/check', 1000, () =>
-{
-    return file.list(_.mediaPath);
-});
+_.track = new track
+(
+    'http://127.0.0.1:12346/server/check',
+    1000,
+    1000,
+    function()
+    {
+        return file.list(_.mediaPath);
+    },
+    function(error, response, body)
+    {
+        if (!error && response.statusCode == 200 && body !== undefined)
+        {
+            this.active = true;
+            _.hits = body;
+        }
+        else
+        {
+            this.active = false;
+            _.hits = {};
+        }
+    }
+);
+
+_.hits = {};

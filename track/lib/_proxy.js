@@ -6,7 +6,10 @@ var router = module.exports = express.Router();
 
 router.get('/', function(req, res)
 {
-    res.render('proxy.j2', {'proxies' : _.proxies});
+    res.render('proxy.j2',
+    {
+        'proxies' : _.proxies
+    });
 });
 
 router.get('/clear', function(req, res)

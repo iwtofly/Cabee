@@ -13,6 +13,8 @@
         <thead>
             <tr>
                 <th>File</th>
+                <th>Direct Fetch Times</th>
+                <th>Cache Hit Times</th>
                 <th>Del</th>
             </tr>
         </thead>
@@ -30,7 +32,7 @@
                             </div>
                             <div class="modal-body">
                                 {% if file.extname == '.jpg' %}
-                                <img class="img-responsive" src="{{ file.name }}"/>
+                                <img class="img-responsive" src="{{ file.href }}"/>
                                 {% elif file.extname == '.mp4' %}
                                 <video width="600" height="400">
                                     <source src="{{ file.name }}" type="video/mp4">
@@ -41,6 +43,8 @@
                     </div>
                 </div>
                 <td><button class="btn btn-default" type="button" data-toggle="modal" data-target="#modal{{ i }}">{{ file.name }}</button></td>
+                <td>{{ file.cnts() }}</td>
+                <td>{{ file.hits }}</td>
                 <td><a class="btn btn-danger" href="media/delete/{{ file.name }}">Del</a></td>
             </tr>
             {% set i = i + 1 %}

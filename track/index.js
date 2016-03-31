@@ -19,17 +19,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('/', function(req, res)
-{
-    res.redirect('/server');
-});
-
-app.use('/server', require('./lib/_server'));
 app.use('/proxy', require('./lib/_proxy'));
+app.use('/server', require('./lib/_server'));
 
 app.get('*', function(req, res)
 {
-    res.status(404).end();
+    res.redirect('/proxy');
 });
 
 app.listen(HTTP_PORT);

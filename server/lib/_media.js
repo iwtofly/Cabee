@@ -8,9 +8,16 @@ var router = module.exports = express.Router();
 
 router.get('/', function(req, res)
 {
+    var files = file.list(_.mediaPath);
+
+    for (f of files)
+    {
+        f.hits = _.hits[f.href];
+    }
+
     res.render('media.j2',
     {
-        'files' : file.list(_.mediaPath)
+        'files' : files
     });
 });
 
@@ -22,10 +29,7 @@ router.get('/delete/:file', function(req, res)
 
 router.get('/clear', function(req, res)
 {
-    for (f of file.list(_.mediaPath))
-    {
-        f.delete();
-    }
+    file.clear(_.mediaPath);
     res.redirect('/media');
 });
 

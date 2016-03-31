@@ -20,21 +20,14 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(express.static('cache'));
 
-app.get('/', function(req, res)
-{
-    res.redirect('/track');
-});
-
-app.use(require('./lib/fetch'));
-app.use(require('./lib/track'));
-app.use(require('./lib/cache'));
-app.use(require('./lib/delay'));
-app.use(require('./lib/proxy'));
-app.use(require('./lib/server'));
+app.use('/track', require('./lib/_track'));
+app.use('/cache', require('./lib/_cache'));
+app.use('/proxy', require('./lib/_proxy'));
+app.use('/fetch', require('./lib/_fetch'));
 
 app.get('*', function(req, res)
 {
-    res.render('404.j2');
+    res.redirect('/track');
 });
 
 app.listen(HTTP_PORT);

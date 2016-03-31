@@ -3,11 +3,19 @@ var path = require('path');
 
 module.exports = file;
 
+var cnts = {};
+
 function file(name, dir)
 {
+    // kantai-1.jpg
     this.name    = name;
+    // /kantai-1.jpg
+    this.href    = '/' + name;
+    // E:\Cabee\server\media
     this.dir     = dir;
+    // E:\Cabee\server\media\kantai-1.jpg
     this.path    = path.join(dir, name);
+    // .jpg
     this.extname = path.extname(name);
 };
 
@@ -26,6 +34,16 @@ file.prototype.exist = function()
     {
         console.log(err);
     }
+};
+
+file.prototype.cnts = function()
+{
+    return cnts[this.name] ? cnts[this.name] : 0;
+};
+
+file.prototype.cnt = function()
+{
+    cnts[this.name] = this.cnts() + 1;
 };
 
 file.prototype.delete = function()
@@ -58,4 +76,13 @@ file.list = function(dir)
     }
 
     return ret;
+};
+
+file.clear = function(dir)
+{
+    for (f of file.list(dir))
+    {
+        f.delete();
+    }
+    cnts = {};
 };
