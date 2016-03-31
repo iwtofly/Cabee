@@ -5,23 +5,26 @@ var share    = require('./share.js');
 var router = express.Router();
 module.exports = router;
 
+var interval = 1000;
+
+
+/*========== route ==========*/
+
 router.get('/delay', function(req, res)
 {
     res.render('delay.j2',
     {
         'list'     : share.delays,
-        'interval' : share.delay_interval
+        'interval' : interval
     });
 });
 
 router.post('/delay/edit', function(req, res)
 {
-    var interval = parseInt(req.body.interval);
-
-    if (interval >= 1 && interval <= 99999)
+    if (req.body.interval >= 1000 && req.body.interval <= 99999)
     {
-        share.delay_interval = interval;
-        share.log('server ping interval edited : ' + interval);
+        interval = req.body.interval;
+        share.log('track visit interval edited : ' + interval);
     }
 
     res.redirect('/delay');
@@ -36,29 +39,45 @@ function ping()
 {
     if (!flag)
     {
-        flag = true;
-
         var servers = Object.keys(share.servers);
 
-        for (var i = 0; i < servers.length; i++)
-        {        
-            var j = i;
+        if (servers.length != 0)
+        {
+            flag = true;
 
-            request('http://' + servers[i] + '/ping', function (error, response, body)
+            var delays = {};
+            var cnt    = servers.length;
+
+            for (var i = 0; i < servers.length; i++)
             {
-                if (!error && response.statusCode == 200)
+                var j = i;
+
+                request(
                 {
-                    share.delays[servers[i]] = JSON.parse(body);
-                }
-                if (j == servers.length - 1)
+                    'url'     : 'http://' + servers[j] + '/ping',                    
+                    'timeout' : interval - 100
+                },
+                function (error, response, body)
                 {
-                    flag = false;
-                }
-            });
+                    if (!error && response.statusCode == 200)
+                    {
+                        delays[servers[j]] = JSON.parse(body);
+                    }
+                    else
+                    {
+                        delays[servers[j]] = 'unreachable';
+                    }
+                    if (--cnt == 0)
+                    {
+                        flag = false;
+                        share.delays = delays;
+                    }
+                });
+            }
         }
     }
 
-    setTimeout(ping, share.delay_interval);
+    setTimeout(ping, interval);
 };
 
 ping();

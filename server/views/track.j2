@@ -1,8 +1,7 @@
 {% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
 
 {% block title %}track{% endblock %}
-
-{% import "partial.j2" as partial %}
 
 {% block content %}
 <!-- nav -->
@@ -13,11 +12,11 @@
     <form action="track/edit" method="post">
         <div class="form group">
             <label for="url">Track Interface URL</label>
-            <input id="url" class="form-control" type="text" name="url" value="{{ url }}" pattern="^http://((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?).*$" required/>
+            <input id="url" class="form-control" type="text" name="url" value="{{ track.url }}"/>
         </div>
         <div class="form group">
             <label for="interval">Track Auto Check Interval</label>
-            <input id="interval" class="form-control" type="text" name="interval" value="{{ interval }}" pattern="^\d{1,5}$" required/>
+            <input id="interval" class="form-control" type="text" name="interval" value="{{ track.interval }}"/>
         </div>
         <br/>
         <button class="btn btn-primary" type="submit">Submit</button>
@@ -47,7 +46,7 @@ $(document).ready(function()
             }
         });
 
-        setTimeout(check, {{ interval }});
+        setTimeout(check, {{ track.interval }});
     }
 
     check();

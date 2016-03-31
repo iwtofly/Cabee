@@ -55,16 +55,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for addr, files in proxy.cache %}
-                        <tr>
-                            <th colspan="2">{{ addr }}</th>
-                        </tr>
-                        {% for file, time in files %}
+                        {% for file, times in proxy.cache %}
                         <tr>
                             <td>{{ file }}</td>
-                            <td>{{ time }}</td>
+                            <td>{{ times }}</td>
                         </tr>
-                        {% endfor %}
                         {% endfor %}
                     </tbody>
                 </table>

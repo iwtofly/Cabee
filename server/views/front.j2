@@ -28,7 +28,7 @@
             {% for file in files %}
             <tr>
                 <!-- modal -->
-                <td><button class="btn btn-default" type="button" data-file="{{ file }}">{{ file }}</button></td>
+                <td><button class="btn btn-default" type="button" data-file="{{ file.name }}">{{ file.name }}</button></td>
                 <td>Not loaded</td>
             </tr>
             {% endfor %}

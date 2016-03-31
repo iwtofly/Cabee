@@ -6,27 +6,33 @@ var share    = require('./share.js');
 var router = express.Router();
 module.exports = router;
 
+var url      = 'http://127.0.0.1:12346/proxy/check';
+var interval = 1000;
+var active   = false;
+
+
+/*========== route ==========*/
+
 router.get('/track', function(req, res)
 {
     res.render('track.j2',
     {
-        'url'      : share.track_url,
-        'interval' : share.track_interval,
-        'active'   : share.track_active
+        'url'      : url,
+        'interval' : interval,
+        'active'   : active
     });
 });
 
 router.post('/track/edit', function(req, res)
 {
-    var url      = req.body.url;
-    var interval = parseInt(req.body.interval);
-
-    if (validUrl.isHttpUri(url) && interval >= 1 && interval <= 99999)
+    if (validUrl.isHttpUri(req.body.url))
     {
-        share.track_url      = url;
-        share.track_interval = interval;
-
+        url = req.body.url;
         share.log('track IP-urless edited : ' + url);
+    }
+    if (req.body.interval >= 1 && req.body.interval <= 99999)
+    {
+        interval = req.body.interval;
         share.log('track visit interval edited : ' + interval);
     }
 
@@ -35,11 +41,11 @@ router.post('/track/edit', function(req, res)
 
 router.get('/track/active', function(req, res)
 {
-    res.json(share.track_active);
+    res.json(active);
 });
 
 
-/*========== communication with track ==========*/
+/*========== communicate with track ==========*/
 
 var flag = false;
 
@@ -49,36 +55,44 @@ function track()
     {
         flag = true;
 
-        for (server in share.servers)
-        {
+        var caches  = share.caches();
+        var fetches = share.fetches;
+        var cache   = {};
 
+        for (file of caches)
+        {
+            cache[decodeURIComponent(file)] = fetches[file];
         }
 
         request(
         {
-            'url'    : share.track_url,
+            'url'    : url,
             'method' : 'POST',
-            'body'   : share.cache_list(),
+            'body'   :
+            {
+                'delay' : share.delays,
+                'cache' : cache
+            },
             'json'   : true
         },
         function (error, response, body)
         {
             if (!error && response.statusCode == 200)
             {
-                share.track_active = true;
-                share.proxies      = body.proxies;
-                share.servers      = body.servers;
+                active        = true;
+                share.proxies = body.proxies;
+                share.servers = body.servers;
             }
             else
             {
-                share.track_active = false;
+                active = false;
             }
-            //share.log('track connection status : ' + share.track_active.toString());
+            //share.log('track connection status : ' + active.toString());
             flag = false;
         });
     }
 
-    setTimeout(track, share.track_interval);
+    setTimeout(track, interval);
 };
 
 track();

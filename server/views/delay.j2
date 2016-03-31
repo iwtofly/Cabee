@@ -1,8 +1,7 @@
 {% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
 
 {% block title %}delay{% endblock %}
-
-{% import "partial.j2" as partial %}
 
 {% block content %}
 <!-- nav -->
@@ -14,18 +13,16 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>IP</th>
-                    <th>Mask</th>
+                    <th>CIDR</th>
                     <th>Delay Time (ms)</th>
                     <th><button type="button" class="btn btn-success" data-add>Add</button></th>
                 </tr>
             </thead>
             <tbody data-items>
-                {% for item in list %}
+                {% for delay in delays %}
                 <tr>
-                    <td><input class="form-control" type="text" name="addr" value="{{ item.addr }}" pattern="^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$" required/></td>
-                    <td><input class="form-control" type="text" name="mask" value="{{ item.mask }}" pattern="^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$" required/></td>
-                    <td><input class="form-control" type="text" name="time" value="{{ item.time }}" pattern="^\d{1,5}$" required/></td>
+                    <td><input class="form-control" type="text" name="cidr" value="{{ delay.cidr }}"/></td>
+                    <td><input class="form-control" type="text" name="time" value="{{ delay.time }}"/></td>
                     <td><button class="btn btn-danger" type="button" data-del>Del</button></td>
                 </tr>
                 {% endfor %}
@@ -49,23 +46,13 @@ $(document).ready(function()
     {
         var tr = $('<tr>');
 
-        var pattern = String.raw`^((2[0-4]\d|25[0-5]|[1-9]?\d|1\d{2})\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$`;
-
-        var inputs =
-        {
-            'addr' : pattern,
-            'mask' : pattern,
-            'time' : String.raw`^\d{1,5}$`
-        };
-
-        for (key in inputs)
+        for (name of ['cidr', 'time'])
         {
             var input = $('<input>',
             {
                 'class'   : 'form-control',
                 'type'    : 'text',
-                'name'    : key,
-                'pattern' : inputs[key]
+                'name'    : name,
             });
 
             var td = $('<td>');

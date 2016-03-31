@@ -8,7 +8,15 @@ module.exports = router;
 
 router.get('/cache', function(req, res)
 {
-    res.render('cache.j2', {'files' : share.cache_list()});
+    var caches = share.caches();
+    var list   = {};
+
+    for (file of caches)
+    {
+        list[decodeURIComponent(file)] = encodeURIComponent(file);
+    };
+
+    res.render('cache.j2', {'list' : list});
 });
 
 router.get('/cache/delete/:file', function(req, res)
@@ -19,14 +27,14 @@ router.get('/cache/delete/:file', function(req, res)
 
 router.get('/cache/clear', function(req, res)
 {
-    for (file in share.cache_list())
+    for (file of share.caches())
     {
         share.cache_delete(file);
     }
     res.redirect('/cache');
 });
 
-router.get('/cache/list', function(req, res)
+router.get('/cache/json', function(req, res)
 {
     res.json(share.cache_list());
 });

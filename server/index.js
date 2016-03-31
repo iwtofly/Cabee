@@ -24,12 +24,7 @@ front.use(bodyParser.urlencoded({extended: true}));
 front.use(bodyParser.json());
 front.use(express.static('public'));
 
-front.use(require('./lib/front/router'));
-
-front.get('*', function(req, res)
-{
-    res.render('404.j2');
-});
+front.use(require('./lib/_front'));
 
 front.listen(HTTP_FRONT_PORT);
 
@@ -50,20 +45,20 @@ nunjucks.configure('views',
 back.use(bodyParser.urlencoded({extended: true}));
 back.use(bodyParser.json());
 back.use(express.static('public'));
-back.use(express.static('upload'));
+back.use(express.static('media'));
 
 back.get('/', function(req, res)
 {
     res.redirect('/track');
 });
 
-back.use(require('./lib/back/track'));
-back.use(require('./lib/back/media'));
-back.use(require('./lib/back/delay'));
+back.use('/track', require('./lib/_track'));
+back.use('/media', require('./lib/_media'));
+back.use('/delay', require('./lib/_delay'));
 
 back.get('*', function(req, res)
 {
-    res.render('404.j2');
+    res.status(404).end();
 });
 
 back.listen(HTTP_BACK_PORT);

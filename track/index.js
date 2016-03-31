@@ -24,12 +24,12 @@ app.get('/', function(req, res)
     res.redirect('/server');
 });
 
-app.use(require('./lib/server'));
-app.use(require('./lib/proxy'));
+app.use('/server', require('./lib/_server'));
+app.use('/proxy', require('./lib/_proxy'));
 
 app.get('*', function(req, res)
 {
-    res.render('404.j2');
+    res.status(404).end();
 });
 
 app.listen(HTTP_PORT);

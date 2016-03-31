@@ -1,29 +1,71 @@
-var fs   = require('fs');
-var path = require('path');
+var fs      = require('fs');
+var path    = require('path');
+var url     = require('url');
+var request = require('request');
+var rimraf  = require('rimraf');
 
-/*========== track ==========*/
-module.exports.track_url      = 'http://127.0.0.1:12346/proxy/check';
-module.exports.track_interval = 1000;
-module.exports.track_active   = false;
+/*========== cache ==========*/
+module.exports.cache = cache;
+
+function cache(cache_url)
+{
+    this.url = url.parse(cache_url);
+
+    this.localpath
+}
+
+cache.dir = path.resolve(__dirname + '/../cache/');
+
+cache.get() = function()
+{
+
+}
+
+cache.prototype.exist = function()
+{
+    
+};
+
+cache.prototype.delete = function()
+{
+
+};
+
+
+/*========== fetches ==========*/
+module.exports.fetches = {};
+
+module.exports.fetch_times = function(filename, val)
+{
+    if (this.fetches[filename] === undefined)
+    {
+        this.fetches[filename] = 0;
+    }
+
+    if (val === undefined)
+    {
+        return this.fetches[filename];
+    }
+    else
+    {
+        this.fetches[filename] = val;
+    }
+}
+
+module.exports.fetch_times_inc = function(filename)
+{
+    this.fetch_times(filename, this.fetch_times(filename) + 1);
+}
+
 
 /*========== cache ==========*/
 module.exports.cache_path = path.resolve(__dirname + '/../cache/');
 
-var cache_time = {};
-
-module.exports.cache_list = function()
+module.exports.caches = function()
 {
     try
     {
-        var files = fs.readdirSync(this.cache_path);
-        var ret = {};
-
-        for (file of files)
-        {
-            ret[file] = cache_time[file];
-        }
-
-        return ret;
+        return fs.readdirSync(this.cache_path);
     }
     catch(err)
     {
@@ -31,12 +73,20 @@ module.exports.cache_list = function()
     }
 };
 
+module.exports.cache_save = function(filename, buffer, callback)
+{            
+    fs.writeFile(path.join(this.cache_path, filename), buffer, function (err)
+    {
+        callback(err);
+    });
+}
+
 module.exports.cache_delete = function(file)
 {
+    file = path.join(this.cache_path, file);
+
     try
     {
-        delete this.cache_time[file];
-        file = path.join(this.cache_path, file);
         fs.unlinkSync(file);
         this.log('file deleted : ' + file);
     }
@@ -47,15 +97,13 @@ module.exports.cache_delete = function(file)
 }
 
 /*========== delay ==========*/
-module.exports.delays         = {};
-module.exports.delay_interval = 1000;
+module.exports.delays = {};
 
 /*========== proxy ==========*/
-module.exports.proxies  = {};
+module.exports.proxies = {};
 
 /*========== server ==========*/
-module.exports.servers  = {'127.0.0.1' : 100};
-
+module.exports.servers = {};
 
 /*========== log ==========*/
 module.exports.log = function(str)

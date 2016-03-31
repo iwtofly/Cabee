@@ -1,8 +1,7 @@
 {% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
 
 {% block title %}media{% endblock %}
-
-{% import "partial.j2" as partial %}
 
 {% block content %}
 <!-- nav -->
@@ -27,22 +26,22 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">{{ file }}</h4>
+                                <h4 class="modal-title" id="myModalLabel">{{ file.name }}</h4>
                             </div>
                             <div class="modal-body">
-                                {% if file.search('.jpg') != -1 %}
-                                <img class="img-responsive" src="{{ file }}"/>
-                                {% elif file.search('.mp4') != -1 %}
+                                {% if file.extname == '.jpg' %}
+                                <img class="img-responsive" src="{{ file.name }}"/>
+                                {% elif file.extname == '.mp4' %}
                                 <video width="600" height="400">
-                                    <source src="{{ file }}" type="video/mp4">
+                                    <source src="{{ file.name }}" type="video/mp4">
                                 </video>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
-                <td><button class="btn btn-default" type="button" data-toggle="modal" data-target="#modal{{ i }}">{{ file }}</button></td>
-                <td><a class="btn btn-danger" href="media/delete/{{ file }}">Del</a></td>
+                <td><button class="btn btn-default" type="button" data-toggle="modal" data-target="#modal{{ i }}">{{ file.name }}</button></td>
+                <td><a class="btn btn-danger" href="media/delete/{{ file.name }}">Del</a></td>
             </tr>
             {% set i = i + 1 %}
             {% endfor %}

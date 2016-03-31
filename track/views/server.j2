@@ -1,8 +1,7 @@
 {% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
 
 {% block title %}server{% endblock %}
-
-{% import "partial.j2" as partial %}
 
 {% block content %}
 <!-- nav -->
@@ -14,7 +13,7 @@
     <div class="col-md-2">
         <ul id="tabs" class="nav nav-pills nav-stacked" role="tablist">
             {% set i = 1 %}
-            {% for ip, server in list %}
+            {% for ip, files in servers %}
             <li role="presentation"><a href="#server{{ i }}" aria-controls="server{{ i }}" role="tab" data-toggle="pill">{{ ip }}</a></li>
             {% set i = i + 1 %}
             {% endfor %}
@@ -24,7 +23,7 @@
     <div class="col-md-10">
         <div class="tab-content">
             {% set i = 1 %}
-            {% for ip, files in list %}
+            {% for ip, files in servers %}
             <div id="server{{ i }}" class="tab-pane" role="tabpanel">
                 <!-- files -->
                 <h4>Files</h4>
