@@ -44,7 +44,7 @@ $(document).ready(function()
 {
     $(document).on('click', 'button[data-file]', function()
     {
-        var td          = $(this).parent().next();
+        var td          = $(this).parent().next().next().next();
         var modal       = $('#modal');
         var modal_label = $('#modal-label');
         var modal_body  = $('#modal-body');

@@ -53,7 +53,7 @@ router.post('/upload', upload.array('file'), function(req, res)
     {
         for (f of req.files)
         {
-            console.log('file uploaded : ' + f.path);
+            console.log('file uploaded [' + f.path + ']');
         }
     }
     res.redirect('/media');

@@ -8,7 +8,7 @@ router.get('/', function(req, res)
 {
     res.render('server.j2',
     {
-        'hits' : _.hits()
+        'servers' : _.servers
     });
 });
 

@@ -35,7 +35,7 @@
                                 <img class="img-responsive" src="{{ file.href }}"/>
                                 {% elif file.extname == '.mp4' %}
                                 <video width="600" height="400">
-                                    <source src="{{ file.name }}" type="video/mp4">
+                                    <source src="{{ file.href }}" type="video/mp4">
                                 </video>
                                 {% endif %}
                             </div>

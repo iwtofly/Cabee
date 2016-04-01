@@ -25,9 +25,21 @@ track.prototype.check = function()
     },
     (error, response, body) =>
     {
-        if (this.callback)
+        if (error)
         {
-            this.callback(error, response, body);
+            this.callback(error);
+        }
+        else if (response.statusCode != 200)
+        {
+            this.callback(new Error(response.statusMessage));
+        }
+        else if (body === undefined)
+        {
+            this.callback(new Error('no valid data returned from [' + this.url + ']'));
+        }
+        else
+        {
+            this.callback(null, body);
         }
 
         if (this.auto)

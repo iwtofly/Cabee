@@ -23,17 +23,17 @@ _.track = new track
     {
         return file.list(_.mediaPath);
     },
-    function(error, response, body)
+    function(error, data)
     {
-        if (!error && response.statusCode == 200 && body !== undefined)
-        {
-            this.active = true;
-            _.hits = body;
-        }
-        else
+        if (error)
         {
             this.active = false;
             _.hits = {};
+        }
+        else
+        {
+            this.active = true;
+            _.hits = data;
         }
     }
 );

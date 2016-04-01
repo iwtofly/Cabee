@@ -41,7 +41,7 @@ router.post('/edit', function(req, res)
 
     _.delays = delays;
 
-    console.log('ip-delay edited');
+    console.log('ip-delay edited by ' + req.ip);
 
     res.redirect('/delay');
 });

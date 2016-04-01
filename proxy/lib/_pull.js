@@ -5,14 +5,8 @@ var router = module.exports = express.Router();
 
 router.get('/', function(req, res)
 {
-    res.render('proxy.j2',
+    res.render('pull.j2',
     {
-        'proxies' : _.proxies
+        'servers' : _.servers
     });
-});
-
-router.get('/clear', function(req, res)
-{
-    _.proxies = {};
-    res.redirect('/proxy');
 });

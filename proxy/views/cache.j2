@@ -12,13 +12,14 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>File</th>
+                <th>File Name</th>
+                <th>Hit Times</th>
                 <th>Del</th>
             </tr>
         </thead>
         <tbody>
             {% set i = 1 %}
-            {% for name, url in list %}
+            {% for cache in caches %}
             <tr>
                 <!-- modal -->
                 <div class="modal fade" id="modal{{ i }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -26,22 +27,23 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">{{ name }}</h4>
+                                <h4 class="modal-title" id="myModalLabel">{{ cache.url }}</h4>
                             </div>
                             <div class="modal-body">
-                                {% if name.search('.jpg') != -1 %}
-                                <img class="img-responsive" src="{{ url }}"/>
-                                {% elif name.search('.mp4') != -1 %}
+                                {% if cache.extname == '.jpg' %}
+                                <img class="img-responsive" src="{{ cache.href }}"/>
+                                {% elif cache.extname == '.mp4' %}
                                 <video width="600" height="400">
-                                    <source src="{{ url }}" type="video/mp4">
+                                    <source src="{{ cache.href }}" type="video/mp4">
                                 </video>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
-                <td><button class="btn btn-default" type="button" data-toggle="modal" data-target="#modal{{ i }}">{{ name }}</button></td>
-                <td><a class="btn btn-danger" href="cache/delete/{{ url }}">Del</a></td>
+                <td><button class="btn btn-default" type="button" data-toggle="modal" data-target="#modal{{ i }}">{{ cache.url }}</button></td>
+                <td>{{ cache.hits() }}</td>
+                <td><a class="btn btn-danger" href="cache/delete/{{ cache.filename }}">Del</a></td>
             </tr>
             {% set i = i + 1 %}
             {% endfor %}

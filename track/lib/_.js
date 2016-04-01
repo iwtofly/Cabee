@@ -44,7 +44,7 @@ _.hits = function(server)
         }
     }
 
-    return server ? ret[server] : ret;
+    return !server ? ret : ret[server] ? ret[server] : {};
 };
 
 // {

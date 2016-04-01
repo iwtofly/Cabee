@@ -1,40 +1,27 @@
 var express = require('express');
 var fs      = require('fs');
 var path    = require('path');
-var share   = require('./share.js');
+var cache   = require('./cache.js');
+var _       = require('./_.js');
 
-var router = express.Router();
-module.exports = router;
+var router = module.exports = express.Router();
 
-router.get('/cache', function(req, res)
+router.get('/', function(req, res)
 {
-    var caches = share.caches();
-    var list   = {};
-
-    for (file of caches)
+    res.render('cache.j2',
     {
-        list[decodeURIComponent(file)] = encodeURIComponent(file);
-    };
-
-    res.render('cache.j2', {'list' : list});
+        'caches' : cache.list(_.cachePath)
+    });
 });
 
-router.get('/cache/delete/:file', function(req, res)
+router.get('/delete/:file', function(req, res)
 {
-    share.cache_delete(req.params.file);
+    (new cache(req.params.file, _.cachePath).delete());
     res.redirect('/cache');
 });
 
-router.get('/cache/clear', function(req, res)
+router.get('/clear', function(req, res)
 {
-    for (file of share.caches())
-    {
-        share.cache_delete(file);
-    }
+    cache.clear(_.cachePath);
     res.redirect('/cache');
-});
-
-router.get('/cache/json', function(req, res)
-{
-    res.json(share.cache_list());
 });

@@ -11,41 +11,50 @@ router.get('/:file', function(req, res)
 {
     var c = new cache(req.params.file, _.cachePath);
 
-    // search local cache  :D
+    // local cache  :D
     if (c.exist())
     {
-        console.log('client [' + req.ip + '] get [' + file.href + '] from cache');
+        console.log('client [' + req.ip + '] get [' + c.url + '] from cache');
         c.hit();
         res.sendFile(c.path);
         return;
     }
 
-    // search other proxies' cache  :|
-    for (p of _.proxies)
+    // other proxies' cache  :|
+    for (proxy in _.proxies)
     {
-        if (p.hasCache(c.name))
+        for (f in _.proxies[proxy])
         {
-            p.fetch(c.name, _.fetchTimeout, (error, response, body) =>
+            if (f == c.href)
             {
-                if (!error && response.statusCode == 200)
+                request(
                 {
-                    c.save(body);
-                    console.log('client [' + req.ip + '] get [' + file.href + '] from proxy [' + p.ip + ']');
-                    res.sendFile(c.path);
-                }
-                else
+                    'url'      : 'http://' + proxy + '/fetch/' + encodeURIComponent(c.href),
+                    'encoding' : null,
+                    'timeout'  : _.fetchTimeout
+                },
+                (error, response, body) =>
                 {
-                    res.status(404).end();
-                }
-            });
-            return;
+                    if (!error && response.statusCode == 200)
+                    {
+                        c.save(body);
+                        console.log('client [' + req.ip + '] get [' + c.url + '] from proxy [' + p.ip + ']');
+                        res.sendFile(c.path);
+                    }
+                    else
+                    {
+                        res.status(404).end();
+                    }
+                });
+                return;
+            }
         }
     }
 
     // get by myself  :(
     request(
     {
-        'url'      : c.url
+        'url'      : c.url,
         'encoding' : null,
         'timeout'  : _.fetchTimeout
     },
@@ -54,7 +63,7 @@ router.get('/:file', function(req, res)
         if (!error && response.statusCode == 200)
         {
             c.save(body);
-            console.log('client [' + req.ip + '] get [' + file.href + '] from server');
+            console.log('client [' + req.ip + '] get [' + c.url + '] from server');
             res.sendFile(c.path);
         }
         else

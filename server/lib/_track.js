@@ -1,5 +1,4 @@
 var express  = require('express');
-var ipaddr   = require('ipaddr.js');
 var request  = require('request');
 var _        = require('./_.js');
 

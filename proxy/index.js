@@ -23,6 +23,7 @@ app.use(express.static('cache'));
 app.use('/track', require('./lib/_track'));
 app.use('/cache', require('./lib/_cache'));
 app.use('/proxy', require('./lib/_proxy'));
+app.use('/pull', require('./lib/_pull'));
 app.use('/fetch', require('./lib/_fetch'));
 
 app.get('*', function(req, res)

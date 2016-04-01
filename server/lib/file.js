@@ -21,7 +21,7 @@ function file(name, dir)
 
 file.prototype.toJSON = function()
 {
-    return this.name;
+    return this.href;
 };
 
 file.prototype.exist = function()
@@ -51,7 +51,7 @@ file.prototype.delete = function()
     try
     {
         fs.unlinkSync(this.path);
-        console.log('file deleted : ' + this.path);
+        console.log('file deleted [' + this.path + ']');
     }
     catch (err)
     {

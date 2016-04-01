@@ -1,34 +1,40 @@
 var fs   = require('fs');
+var url  = require('url');
 var path = require('path');
 
 module.exports = cache;
 
 var hits = {};
 
-function cache(name, dir)
+function cache(fileURL, dir)
 {
+    var info = url.parse(fileURL);
+
     // http://10.1.1.1/kantai-1.jpg
-    this.name     = name;
-    this.url      = name;
+    this.url      = fileURL;
+    // /kantai-1.jpg
+    this.name     = info.pathname;
     // E:\Cabee\proxy\cache
     this.dir      = dir;
     // http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
-    this.filename = encodeURIComponent(name);
+    this.filename = encodeURIComponent(this.url);
+    // /http%253A%252F%252F10.1.1.1%252Fkantai-1.jpg
+    this.href     = '/' + encodeURIComponent(this.filename);
     // E:\Cabee\proxy\cache\http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
     this.path     = path.join(dir, this.filename);
     // .jpg
-    this.extname  = path.extname(name);
+    this.extname  = path.extname(this.name);
 };
 
 cache.prototype.exist = function()
 {
     try
     {
-        return fs.statSync(this.path).iscache();
+        fs.accessSync(this.path, fs.R_OK | fs.W_OK);
+        return true;
     }
     catch (err)
     {
-        console.log(err);
     }
 };
 
@@ -37,7 +43,7 @@ cache.prototype.delete = function()
     try
     {
         fs.unlinkSync(this.path);
-        console.log('cache deleted : ' + this.path);
+        console.log('cache deleted [' + this.path + ']');
     }
     catch (err)
     {

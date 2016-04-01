@@ -1,13 +1,12 @@
 var request = require('request');
 
-const TIME_OUT = 1000;
-
 module.exports = track;
 
-function track(url, interval, post, callback)
+function track(url, interval, timeout, post, callback)
 {
     this.url      = url;
     this.interval = interval;
+    this.timeout  = timeout;
     this.post     = post;
     this.callback = callback;
     this.active   = false;
@@ -21,14 +20,26 @@ track.prototype.check = function()
         'url'     : this.url,
         'method'  : 'POST',
         'body'    : this.post instanceof Function ? this.post() : this.post,
-        'timeout' : TIME_OUT,
+        'timeout' : this.timeout,
         'json'    : true
     },
     (error, response, body) =>
     {
-        if (this.callback)
+        if (error)
         {
-            this.callback(error, response, body);
+            this.callback(error);
+        }
+        else if (response.statusCode != 200)
+        {
+            this.callback(new Error(response.statusMessage));
+        }
+        else if (body === undefined)
+        {
+            this.callback(new Error('no data returned'));
+        }
+        else
+        {
+            this.callback(null, body);
         }
 
         if (this.auto)

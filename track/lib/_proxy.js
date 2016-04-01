@@ -6,16 +6,29 @@ var router = module.exports = express.Router();
 
 router.get('/', function(req, res)
 {
-    res.render('proxy.j2',
+    res.redirect('/proxy/p');
+});
+
+router.get('/p', function(req, res)
+{
+    res.render('proxyP.j2',
     {
         'proxies' : _.proxies
+    });
+});
+
+router.get('/s', function(req, res)
+{
+    res.render('proxyS.j2',
+    {
+        'hits' : _.hits()
     });
 });
 
 router.get('/clear', function(req, res)
 {
     _.proxies = {};
-    res.redirect('/proxy');
+    res.redirect('/proxy/p');
 });
 
 router.post('/check', function(req, res)
