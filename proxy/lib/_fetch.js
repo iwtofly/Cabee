@@ -7,12 +7,12 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/:file', function(req, res)
+router.get('/:file', (req, res) =>
 {
     var c = new cache(req.params.file, _.cachePath);
 
     // local cache  :D
-    if (c.exist())
+    if (c.existSync())
     {
         console.log('client [' + req.ip + '] get [' + c.url + '] from cache');
         c.hit();
@@ -37,7 +37,7 @@ router.get('/:file', function(req, res)
                 {
                     if (!error && response.statusCode == 200)
                     {
-                        c.save(body);
+                        c.saveSync(body);
                         console.log('client [' + req.ip + '] get [' + c.url + '] from proxy [' + p.ip + ']');
                         res.sendFile(c.path);
                     }
@@ -52,23 +52,17 @@ router.get('/:file', function(req, res)
     }
 
     // get by myself  :(
-    request(
+    c.pull(_.fetchTimeout, (err) =>
     {
-        'url'      : c.url,
-        'encoding' : null,
-        'timeout'  : _.fetchTimeout
-    },
-    (error, response, body) =>
-    {
-        if (!error && response.statusCode == 200)
+        if (err)
         {
-            c.save(body);
-            console.log('client [' + req.ip + '] get [' + c.url + '] from server');
-            res.sendFile(c.path);
+            console.log('client [' + req.ip + '] get [' + c.url + '] fail');
+            res.status(404).end();
         }
         else
         {
-            res.status(404).end();
+            console.log('client [' + req.ip + '] get [' + c.url + '] from server');
+            res.sendFile(c.path);
         }
     });
 });

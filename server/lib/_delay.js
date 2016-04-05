@@ -5,7 +5,7 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
     res.render('delay.j2',
     {
@@ -13,7 +13,7 @@ router.get('/', function(req, res)
     });
 });
 
-router.post('/edit', function(req, res)
+router.post('/edit', (req, res) =>
 {
     var cidr = req.body.cidr;
     var time = req.body.time;

@@ -1,5 +1,6 @@
-var fs   = require('fs');
-var path = require('path');
+var fs     = require('fs');
+var path   = require('path');
+var mkdirp = require('mkdirp');
 
 module.exports = file;
 
@@ -24,16 +25,14 @@ file.prototype.toJSON = function()
     return this.href;
 };
 
-file.prototype.exist = function()
+file.prototype.existSync = function()
 {
     try
     {
-        return fs.statSync(this.path).isFile();
+        fs.accessSync(this.path, fs.R_OK | fs.W_OK);
+        return true;
     }
-    catch (err)
-    {
-        console.log(err);
-    }
+    catch (err) {}
 };
 
 file.prototype.cnts = function()
@@ -46,20 +45,22 @@ file.prototype.cnt = function()
     cnts[this.name] = this.cnts() + 1;
 };
 
-file.prototype.delete = function()
+file.prototype.deleteSync = function()
 {
     try
     {
         fs.unlinkSync(this.path);
-        console.log('file deleted [' + this.path + ']');
+        console.log('file delete success [' + this.path + ']');
+        return true;
     }
     catch (err)
     {
         console.log(err);
+        console.log('file delete fail [' + this.path + ']');
     }
 };
 
-file.list = function(dir)
+file.listSync = function(dir)
 {
     var ret = [];
 
@@ -72,17 +73,20 @@ file.list = function(dir)
     }
     catch (err)
     {
-        console.log(err);
+        mkdirp(dir, (err) =>
+        {
+            if (err) console.log(err);
+        });
     }
 
     return ret;
 };
 
-file.clear = function(dir)
+file.clearSync = function(dir)
 {
-    for (f of file.list(dir))
+    for (f of file.listSync(dir))
     {
-        f.delete();
+        f.deleteSync();
     }
     cnts = {};
 };

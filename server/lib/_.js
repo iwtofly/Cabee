@@ -21,7 +21,7 @@ _.track = new track
     1000,
     function()
     {
-        return file.list(_.mediaPath);
+        return file.listSync(_.mediaPath);
     },
     function(error, data)
     {

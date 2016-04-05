@@ -6,22 +6,22 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
     res.render('cache.j2',
     {
-        'caches' : cache.list(_.cachePath)
+        'caches' : cache.listSync(_.cachePath)
     });
 });
 
-router.get('/delete/:file', function(req, res)
+router.get('/delete/:file', (req, res) =>
 {
-    (new cache(req.params.file, _.cachePath).delete());
+    (new cache(req.params.file, _.cachePath).deleteSync());
     res.redirect('/cache');
 });
 
-router.get('/clear', function(req, res)
+router.get('/clear', (req, res) =>
 {
-    cache.clear(_.cachePath);
+    cache.clearSync(_.cachePath);
     res.redirect('/cache');
 });

@@ -1,10 +1,10 @@
-var fs   = require('fs');
-var url  = require('url');
-var path = require('path');
+var fs      = require('fs');
+var url     = require('url');
+var path    = require('path');
+var mkdirp  = require('mkdirp');
+var request = require('request');
 
 module.exports = cache;
-
-var hits = {};
 
 function cache(fileURL, dir)
 {
@@ -26,55 +26,78 @@ function cache(fileURL, dir)
     this.extname  = path.extname(this.name);
 };
 
-cache.prototype.exist = function()
+cache.prototype.existSync = function()
 {
     try
     {
         fs.accessSync(this.path, fs.R_OK | fs.W_OK);
         return true;
     }
-    catch (err)
-    {
-    }
+    catch (err) {}
 };
 
-cache.prototype.delete = function()
-{
-    try
-    {
-        fs.unlinkSync(this.path);
-        console.log('cache deleted [' + this.path + ']');
-    }
-    catch (err)
-    {
-        console.log(err);
-    }
-};
-
-cache.prototype.save = function(buffer)
-{
-    try
-    {
-        fs.writeFileSync(this.path, buffer);
-        hits[this.name] = 0;
-    }
-    catch (err)
-    {
-        console.log(err);
-    }
-};
+var hits = {};
 
 cache.prototype.hits = function()
 {
-    return hits[this.name] ? hits[this.name] : 0;
+    return hits[this.url] ? hits[this.url] : 0;
 };
 
 cache.prototype.hit = function()
 {
-    hits[this.name] = this.hits() + 1;
+    hits[this.url] = this.hits() + 1;
 };
 
-cache.list = function(dir)
+cache.prototype.deleteSync = function()
+{
+    try
+    {
+        fs.unlinkSync(this.path);
+        console.log('cache delete success [' + this.path + ']');
+        return true;
+    }
+    catch (err)
+    {
+        console.log(err);
+        console.log('cache delete fail [' + this.path + ']');
+    }
+};
+
+cache.prototype.saveSync = function(buffer)
+{
+    try
+    {
+        fs.writeFileSync(this.path, buffer);
+        hits[this.url] = 0;
+        console.log('cache save success [' + this.path + ']');
+        return true;
+    }
+    catch (err)
+    {
+        console.log(err);
+        console.log('cache save fail [' + this.path + ']');
+    }
+};
+
+cache.prototype.pull = function(timeout, cb)
+{
+    request(
+    {
+        'url'      : this.url,
+        'encoding' : null,
+        'timeout'  : timeout
+    },
+    (error, response, body) =>
+    {
+        var err = error ? error :
+                  response.statusCode != 200 ? response.statusMessage :
+                  this.saveSync(body) ? undefined : new Error('cache save fail') ;
+
+        if (cb) cb(err);
+    });
+};
+
+cache.listSync = function(dir)
 {
     var ret = [];
 
@@ -87,17 +110,20 @@ cache.list = function(dir)
     }
     catch (err)
     {
-        console.log(err);
+        mkdirp(dir, (err) =>
+        {
+            if (err) console.log(err);
+        });
     }
 
     return ret;
 };
 
-cache.clear = function(dir)
+cache.clearSync = function(dir)
 {
-    for (c of cache.list(dir))
+    for (c of cache.listSync(dir))
     {
-        c.delete();
+        c.deleteSync();
     }
     hits = {};
 };

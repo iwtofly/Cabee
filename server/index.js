@@ -47,8 +47,8 @@ back.use(bodyParser.json());
 back.use(express.static('public'));
 back.use(express.static('media'));
 
-back.use('/track', require('./lib/_track'));
 back.use('/media', require('./lib/_media'));
+back.use('/track', require('./lib/_track'));
 back.use('/delay', require('./lib/_delay'));
 
 back.get('*', function(req, res)

@@ -4,7 +4,7 @@ var _        = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
     res.render('track.j2',
     {
@@ -12,7 +12,7 @@ router.get('/', function(req, res)
     });
 });
 
-router.post('/edit', function(req, res)
+router.post('/edit', (req, res) =>
 {
     _.track.url      = req.body.url;
     _.track.interval = req.body.interval;
@@ -20,7 +20,7 @@ router.post('/edit', function(req, res)
     res.redirect('/track');
 });
 
-router.get('/active', function(req, res)
+router.get('/active', (req, res) =>
 {
     res.json(_.track.active);
 });

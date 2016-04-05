@@ -50,7 +50,7 @@ _.hits = function(server)
 // {
 //     '10.1.1.1' :
 //     [
-//         'kantai-1.jpg',
+//         '/kantai-1.jpg',
 //         ...
 //     ],
 //     ...

@@ -6,9 +6,9 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
-    var files = file.list(_.mediaPath);
+    var files = file.listSync(_.mediaPath);
 
     for (f of files)
     {
@@ -21,33 +21,33 @@ router.get('/', function(req, res)
     });
 });
 
-router.get('/delete/:file', function(req, res)
+router.get('/delete/:file', (req, res) =>
 {
-    (new file(req.params.file, _.mediaPath)).delete();
+    (new file(req.params.file, _.mediaPath)).deleteSync();
     res.redirect('/media');
 });
 
-router.get('/clear', function(req, res)
+router.get('/clear', (req, res) =>
 {
-    file.clear(_.mediaPath);
+    file.clearSync(_.mediaPath);
     res.redirect('/media');
 });
 
 var multer = require('multer');
 var storage = multer.diskStorage(
 {
-    'destination' : function (req, file, cb)
+    'destination' : (req, file, cb) =>
     {
         cb(null, _.mediaPath);
     },
-    'filename' : function (req, file, cb)
+    'filename' : (req, file, cb) =>
     {
         cb(null, file.originalname);
     }
 });
 var upload = multer({ storage: storage })
 
-router.post('/upload', upload.array('file'), function(req, res)
+router.post('/upload', upload.array('file'), (req, res) =>
 {
     if (req.files.length > 0)
     {

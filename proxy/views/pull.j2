@@ -9,48 +9,28 @@
 <!-- server-info -->
 <br/>
 <div class="row">
-    <!-- tab-nav -->
-    <div class="col-md-2">
-        <ul id="tabs" class="nav nav-pills nav-stacked" role="tablist">
-            {% set i = 1 %}
-            {% for ip, files in servers %}
-            <li role="presentation"><a href="#server{{ i }}" aria-controls="server{{ i }}" role="tab" data-toggle="pill">{{ ip }}</a></li>
-            {% set i = i + 1 %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Cache Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file, cached in files %}
+            <tr>
+                <td>{{ file }}</td>
+                <td>
+                    {% if cached == true %}
+                    Cached
+                    {% else %}
+                    <a class="btn btn-success" href="{{ cached }}">Pull</a>
+                    {% endif %}
+                </td>
+            </tr>
             {% endfor %}
-        </ul>
-    </div>
-    <!-- tab-panel -->
-    <div class="col-md-10">
-        <div class="tab-content">
-            {% set i = 1 %}
-            {% for ip, files in servers %}
-            <div id="server{{ i }}" class="tab-pane" role="tabpanel">
-                <!-- files -->
-                <h4>Files</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>File Name</th>
-                        </tr>
-                    </thead>
-                    {% for file in files %}
-                    <tr>
-                        <td>{{ file }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            {% set i = i + 1 %}
-            {% endfor %}
-        </div>
-    </div>
-</div>
-<!-- clear -->
-<br/>
-<div class="row">
-    <div class="col-md-2 col-md-offset-5">
-        <a class="btn btn-danger btn-block" href="/server/clear">Clear</a>
-    </div>
+        </tbody>
+    </table>
 </div>
 <!-- init tab -->
 <script>

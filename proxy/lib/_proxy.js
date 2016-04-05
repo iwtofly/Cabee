@@ -3,7 +3,7 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
     res.render('proxy.j2',
     {
@@ -11,7 +11,7 @@ router.get('/', function(req, res)
     });
 });
 
-router.get('/clear', function(req, res)
+router.get('/clear', (req, res) =>
 {
     _.proxies = {};
     res.redirect('/proxy');

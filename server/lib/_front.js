@@ -1,3 +1,4 @@
+
 var express = require('express');
 var fs      = require('fs');
 var path    = require('path');
@@ -8,9 +9,9 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
-    var files = file.list(_.mediaPath);
+    var files = file.listSync(_.mediaPath);
 
     for (f of files)
     {
@@ -23,11 +24,11 @@ router.get('/', function(req, res)
     });
 });
 
-router.get(/.+\.(jpg|mp4)$/, function(req, res)
+router.get(/.+\.(jpg|mp4)$/, (req, res) =>
 {
     var f = new file(req.url, _.mediaPath);
 
-    if (f.exist())
+    if (f.existSync())
     {
         var time = delay.match(req.ip, _.delays);
 
@@ -41,12 +42,11 @@ router.get(/.+\.(jpg|mp4)$/, function(req, res)
     }
     else
     {
-        console.log('file not found: ' + f.path);
         res.status(404).end();
     }
 });
 
-router.get('/ping', function(req, res)
+router.get('/ping', (req, res) =>
 {
     res.json(delay.match(req.ip, _.delays));
 });

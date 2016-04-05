@@ -22,7 +22,7 @@ _.track = new track
     1000,
     function()
     {
-        var caches = cache.list(_.cachePath);
+        var caches = cache.listSync(_.cachePath);
 
         var ret = {};
 

@@ -4,12 +4,12 @@ var _       = require('./_.js');
 
 var router = module.exports = express.Router();
 
-router.get('/', function(req, res)
+router.get('/', (req, res) =>
 {
     res.redirect('/proxy/p');
 });
 
-router.get('/p', function(req, res)
+router.get('/p', (req, res) =>
 {
     res.render('proxyP.j2',
     {
@@ -17,7 +17,7 @@ router.get('/p', function(req, res)
     });
 });
 
-router.get('/s', function(req, res)
+router.get('/s', (req, res) =>
 {
     res.render('proxyS.j2',
     {
@@ -25,13 +25,13 @@ router.get('/s', function(req, res)
     });
 });
 
-router.get('/clear', function(req, res)
+router.get('/clear', (req, res) =>
 {
     _.proxies = {};
     res.redirect('/proxy/p');
 });
 
-router.post('/check', function(req, res)
+router.post('/check', (req, res) =>
 {
     var addr = ipaddr.process(req.ip);
 
