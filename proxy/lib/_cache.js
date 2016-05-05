@@ -10,18 +10,18 @@ router.get('/', (req, res) =>
 {
     res.render('cache.j2',
     {
-        'caches' : cache.listSync(_.cachePath)
+        'caches' : cache.listSync(_.filePath)
     });
 });
 
 router.get('/delete/:file', (req, res) =>
 {
-    (new cache(req.params.file, _.cachePath).deleteSync());
+    (new cache(req.params.file, _.filePath).deleteSync());
     res.redirect('/cache');
 });
 
 router.get('/clear', (req, res) =>
 {
-    cache.clearSync(_.cachePath);
+    cache.clearSync(_.filePath);
     res.redirect('/cache');
 });

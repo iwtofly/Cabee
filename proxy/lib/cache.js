@@ -14,14 +14,16 @@ function cache(fileURL, dir)
     this.url      = fileURL;
     // /kantai-1.jpg
     this.name     = info.pathname;
-    // E:\Cabee\proxy\cache
-    this.dir      = dir;
     // http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
     this.filename = encodeURIComponent(this.url);
     // /http%253A%252F%252F10.1.1.1%252Fkantai-1.jpg
     this.href     = '/' + encodeURIComponent(this.filename);
-    // E:\Cabee\proxy\cache\http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
+    // cache
+    this.dir      = dir;
+    // cache\http%3A%2F%2F10.1.1.1%2Fkantai-1.jpg
     this.path     = path.join(dir, this.filename);
+    // wwwroot/upload/kantai-1.jpg
+    this.pathAbs  = path.resolve(this.path);
     // .jpg
     this.extname  = path.extname(this.name);
 };

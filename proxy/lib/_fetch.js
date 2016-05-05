@@ -9,7 +9,7 @@ var router = module.exports = express.Router();
 
 router.get('/:file', (req, res) =>
 {
-    var c = new cache(req.params.file, _.cachePath);
+    var c = new cache(req.params.file, _.filePath);
 
     // local cache  :D
     if (c.existSync())

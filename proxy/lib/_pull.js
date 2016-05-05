@@ -8,7 +8,7 @@ router.get('/', (req, res) =>
 {
     var caches = {};
 
-    for (c of cache.listSync(_.cachePath))
+    for (c of cache.listSync(_.filePath))
     {
         caches[c.url] = true;
     }
@@ -32,7 +32,7 @@ router.get('/', (req, res) =>
 
 router.get('/manual/:file', (req, res) =>
 {
-    var c = new cache(req.params.file, _.cachePath);
+    var c = new cache(req.params.file, _.filePath);
 
     c.pull(_.fetchTimeout, (err) =>
     {

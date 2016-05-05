@@ -18,7 +18,7 @@ nunjucks.configure('views',
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(express.static('public'));
-app.use(express.static('cache'));
+app.use(express.static(require('./lib/_').filePath));
 
 app.use('/track', require('./lib/_track'));
 app.use('/cache', require('./lib/_cache'));

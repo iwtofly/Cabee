@@ -16,6 +16,8 @@ router.post('/edit', (req, res) =>
 {
     _.track.url      = req.body.url;
     _.track.interval = req.body.interval;
+    console.log('track edited by ' + req.ip);
+    _.save();
 
     res.redirect('/track');
 });
@@ -25,5 +27,4 @@ router.get('/active', (req, res) =>
     res.json(_.track.active);
 });
 
-_.track.auto = true;
 _.track.check();

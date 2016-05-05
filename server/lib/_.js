@@ -20,16 +20,13 @@ _.load = function()
     {
         var conf = JSON.parse(fs.readFileSync(CONF_PATH, 'utf-8'));
 
-        // delays
         for (d of conf.delays)
         {
             _.delays.push(delay.fromJSON(d));
         }
 
-        // filePath
         _.filePath = conf.filePath;
 
-        // track
         _.track = track.fromJSON
         (
             conf.track,
