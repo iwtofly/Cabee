@@ -10,8 +10,12 @@ function track(url, interval, timeout, post, callback)
     this.post     = post;
     this.callback = callback;
     this.active   = false;
-    this.auto     = false;
 };
+
+track.fromJSON = function(json, post, callback)
+{
+    return new track(json.url, json.interval, json.timeout, post, callback);
+}
 
 track.prototype.check = function()
 {
@@ -42,9 +46,6 @@ track.prototype.check = function()
             this.callback(null, body);
         }
 
-        if (this.auto)
-        {
-            setTimeout(this.check.bind(this), this.interval);
-        }
+        setTimeout(this.check.bind(this), this.interval);
     });
 };

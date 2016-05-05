@@ -9,6 +9,11 @@ function delay(cidr, time)
     this.kind = ipaddr.parse(cidr.substr(0, cidr.indexOf('/'))).kind();
 };
 
+delay.fromJSON = function(json)
+{
+    return new delay(json.cidr, json.time);
+}
+
 delay.prototype.subnet = function(ip)
 {
     ip = ipaddr.parse(ip);

@@ -8,7 +8,7 @@ var router = module.exports = express.Router();
 
 router.get('/', (req, res) =>
 {
-    var files = file.listSync(_.mediaPath);
+    var files = file.listSync(_.filePath);
 
     for (f of files)
     {
@@ -23,13 +23,13 @@ router.get('/', (req, res) =>
 
 router.get('/delete/:file', (req, res) =>
 {
-    (new file(req.params.file, _.mediaPath)).deleteSync();
+    (new file(req.params.file, _.filePath)).deleteSync();
     res.redirect('/media');
 });
 
 router.get('/clear', (req, res) =>
 {
-    file.clearSync(_.mediaPath);
+    file.clearSync(_.filePath);
     res.redirect('/media');
 });
 
@@ -38,7 +38,7 @@ var storage = multer.diskStorage(
 {
     'destination' : (req, file, cb) =>
     {
-        cb(null, _.mediaPath);
+        cb(null, _.filePath);
     },
     'filename' : (req, file, cb) =>
     {

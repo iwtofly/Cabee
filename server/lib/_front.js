@@ -1,4 +1,3 @@
-
 var express = require('express');
 var fs      = require('fs');
 var path    = require('path');
@@ -11,7 +10,7 @@ var router = module.exports = express.Router();
 
 router.get('/', (req, res) =>
 {
-    var files = file.listSync(_.mediaPath);
+    var files = file.listSync(_.filePath);
 
     for (f of files)
     {
@@ -26,7 +25,7 @@ router.get('/', (req, res) =>
 
 router.get(/.+\.(jpg|mp4)$/, (req, res) =>
 {
-    var f = new file(req.url, _.mediaPath);
+    var f = new file(req.url, _.filePath);
 
     if (f.existSync())
     {
@@ -36,7 +35,7 @@ router.get(/.+\.(jpg|mp4)$/, (req, res) =>
         {
             console.log('client [' + req.ip + '] get [' + f.name + '] in ' + time + ' ms');
             f.cnt();
-            res.sendFile(f.path);
+            res.sendFile(f.pathAbs);
         },
         time);
     }

@@ -21,7 +21,7 @@ router.post('/edit', (req, res) =>
     if (cidr && !(cidr instanceof Array))
     {
         cidr = [cidr];
-        mask = [mask];
+        time = [time];
     }
 
     var delays = [];
@@ -40,8 +40,8 @@ router.post('/edit', (req, res) =>
     }
 
     _.delays = delays;
-
     console.log('ip-delay edited by ' + req.ip);
+    _.save();
 
     res.redirect('/delay');
 });

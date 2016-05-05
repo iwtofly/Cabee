@@ -1,0 +1,21 @@
+{
+    "filePath": "upload",
+    "track": {
+        "url": "http://127.0.0.1:12346/server/check",
+        "interval": "2000",
+        "timeout": 1000,
+        "active": false
+    },
+    "delays": [
+        {
+            "cidr": "0.0.0.0/0",
+            "time": 100,
+            "kind": "ipv4"
+        },
+        {
+            "cidr": "::/0",
+            "time": 100,
+            "kind": "ipv6"
+        }
+    ]
+}

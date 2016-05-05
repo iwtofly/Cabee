@@ -45,7 +45,7 @@ nunjucks.configure('views',
 back.use(bodyParser.urlencoded({extended: true}));
 back.use(bodyParser.json());
 back.use(express.static('public'));
-back.use(express.static('media'));
+back.use(express.static(require('./lib/_').filePath));
 
 back.use('/media', require('./lib/_media'));
 back.use('/track', require('./lib/_track'));

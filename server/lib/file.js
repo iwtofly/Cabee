@@ -10,12 +10,14 @@ function file(name, dir)
 {
     // kantai-1.jpg
     this.name    = name;
-    // /kantai-1.jpg
-    this.href    = '/' + name;
-    // E:\Cabee\server\media
+    // upload
     this.dir     = dir;
-    // E:\Cabee\server\media\kantai-1.jpg
+    // /kantai-1.jpg
+    this.href    = '/' + this.name;
+    // upload/kantai-1.jpg
     this.path    = path.join(dir, name);
+    // wwwroot/upload/kantai-1.jpg
+    this.pathAbs = path.resolve(this.path);
     // .jpg
     this.extname = path.extname(name);
 };
@@ -75,7 +77,11 @@ file.listSync = function(dir)
     {
         mkdirp(dir, (err) =>
         {
-            if (err) console.log(err);
+            if (err)
+            {
+                console.log(err);
+                process.exit(0);
+            }
         });
     }
 
