@@ -21,13 +21,14 @@ provide a direct view over the server in following aspects
 | route                   | response                                           |
 |-------------------------|----------------------------------------------------|
 | /                       | redirect to /track                                 |
-| /track                  | show track-ip                                      |
-| /track/edit             | edit track-ip and redirect to /track               |
+| /track                  | show track                                         |
+| /track/edit             | edit track                                         |
 | /track/active           | track connection status(true/false) in JSON        |
 | /media                  | show a list of all uploaded media files            |
-| /media/delete/:filename | delete an uploaded file and redirect to /media     |
-| /media/upload           | upload files to server and redirect to /media      |
+| /media/delete/:filename | delete single uploaded file                        |
+| /media/clear            | delete all uploaded file                           |
+| /media/upload           | upload files to server                             |
 | /media/list             | list of all uploaded media files in JSON           |
 | /delay                  | show a list of delay rules(ip-address, mask, time) |
-| /delay/edit             | edit list of delay rules and redirect to /delay    |
+| /delay/edit             | edit list of delay rules                           |
 | /delay/list             | list of all delay rules in JSON                    |

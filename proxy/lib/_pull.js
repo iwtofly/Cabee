@@ -20,7 +20,7 @@ router.get('/', (req, res) =>
         for (file of _.servers[ip])
         {
             var url = 'http://' + ip + file;
-            files[url] = caches[url] ? true : '/pull/manual/' + encodeURIComponent(url);
+            files[url] = caches[url] ? true : '/pull/' + encodeURIComponent(url);
         }
     }
 
@@ -30,7 +30,7 @@ router.get('/', (req, res) =>
     });
 });
 
-router.get('/manual/:file', (req, res) =>
+router.get('/:file', (req, res) =>
 {
     var c = new cache(req.params.file, _.filePath);
 
