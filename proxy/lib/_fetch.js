@@ -16,7 +16,7 @@ router.get('/:file', (req, res) =>
     {
         console.log('client [' + req.ip + '] get [' + c.url + '] from cache');
         c.hit();
-        res.sendFile(c.path);
+        res.sendFile(c.pathAbs);
         return;
     }
 
@@ -39,7 +39,7 @@ router.get('/:file', (req, res) =>
                     {
                         c.saveSync(body);
                         console.log('client [' + req.ip + '] get [' + c.url + '] from proxy [' + p.ip + ']');
-                        res.sendFile(c.path);
+                        res.sendFile(c.pathAbs);
                     }
                     else
                     {
@@ -62,7 +62,7 @@ router.get('/:file', (req, res) =>
         else
         {
             console.log('client [' + req.ip + '] get [' + c.url + '] from server');
-            res.sendFile(c.path);
+            res.sendFile(c.pathAbs);
         }
     });
 });
