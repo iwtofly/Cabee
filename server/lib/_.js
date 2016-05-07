@@ -1,4 +1,5 @@
-const CONF_PATH = 'conf.json';
+const CONF_PATH         = 'conf.json';
+const CONF_DEFAULT_PATH = 'conf.default.json';
 
 var path   = require('path');
 var fs     = require('fs');
@@ -16,45 +17,59 @@ _.hits     = {};
 
 _.load = function()
 {
+    var conf;
+
     try
     {
-        var conf = JSON.parse(fs.readFileSync(CONF_PATH, 'utf-8'));
-
-        for (d of conf.delays)
-        {
-            _.delays.push(delay.fromJSON(d));
-        }
-
-        _.filePath = conf.filePath;
-
-        _.track = track.fromJSON
-        (
-            conf.track,
-
-            () => { return file.listSync(_.filePath); },
-
-            function(error, data)
-            {
-                if (error)
-                {
-                    this.active = false;
-                    _.hits = {};
-                }
-                else
-                {
-                    this.active = true;
-                    _.hits = data;
-                }
-            }
-        );
-
+        conf = JSON.parse(fs.readFileSync(CONF_PATH, 'utf-8'));
     }
     catch (err)
     {
         console.log(err);
-        console.log('load conf-info from conf.json failed');
-        process.exit(0);
+        console.log('load from conf.json failed, try conf.default.json');
+
+        try
+        {
+            conf = JSON.parse(fs.readFileSync(CONF_DEFAULT_PATH, 'utf-8'));
+            fs.createReadStream(CONF_DEFAULT_PATH).pipe(fs.createWriteStream(CONF_PATH));
+        }
+        catch (err)
+        {
+            console.log(err);
+            console.log('load from conf.default.json also failed ╮(╯-╰)╭');
+            process.exit(0);
+        }
     }
+
+    // load configurations
+
+    for (d of conf.delays)
+    {
+        _.delays.push(delay.fromJSON(d));
+    }
+
+    _.filePath = conf.filePath;
+    
+    _.track = track.fromJSON
+    (
+        conf.track,
+
+        () => { return file.listSync(_.filePath); },
+
+        function(error, data)
+        {
+            if (error)
+            {
+                this.active = false;
+                _.hits = {};
+            }
+            else
+            {
+                this.active = true;
+                _.hits = data;
+            }
+        }
+    );
 }
 
 _.save = function()
