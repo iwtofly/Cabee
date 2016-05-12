@@ -2,7 +2,7 @@
 #
 # open/close tcp-direction(80->8080) for mitmproxy
 #
-# usage: [open/close] [net-interface(eth0,wlan0...)]
+# usage: net-interface(eth0,wlan0...) {on/off}
 
 if [ "$#" -lt 2 ] || [ "$2" != "on" ] && [ "$2" != "off" ]; then
     echo "usage: [net-interface(eth0,wlan0...)] [on/off]"
