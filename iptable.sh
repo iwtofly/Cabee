@@ -1,15 +1,16 @@
 #!/bin/bash
 #
-# open/close tcp-direction(80->8080) for mitmproxy
-#
-# usage: net-interface(eth0,wlan0...) {on/off}
+# open/close tcp-redirection(80->8080)
 
-if [ "$#" -lt 2 ] || [ "$2" != "on" ] && [ "$2" != "off" ]; then
-    echo "usage: [net-interface(eth0,wlan0...)] [on/off]"
+if [ "$#" -lt 2 ] || [ "$2" != "on" ] && [ "$2" != "off" ]
+then
+    echo "usage: <interface> <on|off>"
+    echo "example: ./iptable.sh eth0 on"
     exit 0
 fi
 
-if [ "$2" == "on" ]; then
+if [ "$2" == "on" ]
+then
     sudo iptables -t nat -A PREROUTING -i $1 -p tcp --dport 80 -j REDIRECT --to-port 8080
 else
     sudo iptables -t nat -D PREROUTING -i $1 -p tcp --dport 80 -j REDIRECT --to-port 8080
