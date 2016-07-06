@@ -1,0 +1,26 @@
+{
+  "name": "cabee",
+  "version": "0.1.0",
+  "description": "http transparent proxy & cache system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mrsuyi/Cabee.git"
+  },
+  "author": "Mrsuyi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mrsuyi/Cabee/issues"
+  },
+  "homepage": "https://github.com/Mrsuyi/Cabee#readme",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "js-yaml": "^3.6.1",
+    "multer": "^1.1.0",
+    "nunjucks": "^2.4.2"
+  }
+}

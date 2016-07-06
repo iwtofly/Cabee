@@ -1,0 +1,26 @@
+---
+
+#
+server:
+  port : 12345
+  track:
+    url      : http://10.108.145.75/s
+    interval : 1000
+    timeout  : 1000
+  delay:
+    0.0.0.0/0 : 100
+    \:\:/0    : 100
+
+#
+track:
+  port : 12346
+
+#
+proxy:
+  port : 12347
+  track:
+    url      : http://10.108.145.75/s
+    interval : 1000
+    timeout  : 1000
+  mitm:
+    timout: 2000
