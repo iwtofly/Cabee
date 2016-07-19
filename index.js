@@ -1,7 +1,3 @@
-// global const
-const PATH_ROOT   = '/';
-const PATH_APP    = PATH_ROOT + '/APP';
-
 // load configuration
 try
 {
@@ -15,23 +11,23 @@ catch (e)
     exit();
 }
 
+var static = require('express').static('_static');
+
 // start app
 switch (process.argv.length > 2 ? process.argv[2] : 's')
 {
     case 'server':
     case 's':
-        require('./app/server/index.js')(conf.server.port);
+        require('./server/index.js')(conf.server.port, static);
     break;
 
     case 'track':
     case 't':
-
-
+        require('./track/index.js')(conf.track.port, static);
     break;
 
     case 'proxy':
     case 'p':
-
-
+        require('./proxy/index.js')(conf.proxy.port, static);
     break;
 }
