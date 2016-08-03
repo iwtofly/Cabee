@@ -1,26 +1,12 @@
 Cabee
 =====
 
-# function
+# how to use
 
-## server
++ git clone
++ run "npm install", 
 
-+ file  (CRUD/publish-to-track)
-+ delay (CRUD)
-+ track ()
-
-# usage
+# how it works
 
 
-
-
-
-# analysis
-
-## general architecture
-
-## server
-
-## track
-
-## proxy
+# 

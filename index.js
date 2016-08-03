@@ -11,23 +11,21 @@ catch (e)
     exit();
 }
 
-var static = require('express').static('_static');
-
-// start app
-switch (process.argv.length > 2 ? process.argv[2] : 's')
+if (process.argv.length < 3)
 {
-    case 'server':
-    case 's':
-        require('./server/index.js')(conf.server.port, static);
-    break;
+    console.log('usage:  node index.js [stp]');
+    process.exit()
+}
 
-    case 'track':
-    case 't':
-        require('./track/index.js')(conf.track.port, static);
-    break;
-
-    case 'proxy':
-    case 'p':
-        require('./proxy/index.js')(conf.proxy.port, static);
-    break;
+if (process.argv[2].indexOf('s') > -1)
+{
+    require('./server/index.js')(conf.server);
+}
+if (process.argv[2].indexOf('t') > -1)
+{
+    require('./track/index.js')(conf.track);
+}
+if (process.argv[2].indexOf('p') > -1)
+{
+    require('./proxy/index.js')(conf.proxy);
 }

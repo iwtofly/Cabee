@@ -4,7 +4,8 @@
   "description": "http transparent proxy & cache system",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node -e \"var s='../_',d='node_modules/_',fs=require('fs');fs.exists(d,function(e){e||fs.symlinkSync(s,d,'dir')});\""
   },
   "repository": {
     "type": "git",
@@ -19,8 +20,11 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
+    "ipaddr.js": "^1.2.0",
     "js-yaml": "^3.6.1",
     "multer": "^1.1.0",
-    "nunjucks": "^2.4.2"
+    "nunjucks": "^2.4.2",
+    "request": "^2.74.0",
+    "socket.io": "^1.4.8"
   }
 }
