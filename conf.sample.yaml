@@ -2,25 +2,27 @@
 
 #
 server:
-  port : 12345
+  port: 12345
   track:
-    url      : http://10.108.145.75/s
-    interval : 1000
-    timeout  : 1000
+    url       : http://localhost:12346/server
+    retry     : 1000
+    retry_max : 5000
+    timeout   : 5000
   delay:
     0.0.0.0/0 : 100
-    \:\:/0    : 100
+    ::/0      : 100
 
 #
 track:
-  port : 12346
+  port: 12346
 
 #
 proxy:
-  port : 12347
+  port: 12347
   track:
-    url      : http://10.108.145.75/s
-    interval : 1000
-    timeout  : 1000
+    url       : http://localhost:12346/proxy
+    retry     : 1000
+    retry_max : 5000
+    timeout   : 5000
   mitm:
     timout: 2000

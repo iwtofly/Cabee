@@ -66,7 +66,7 @@ router.get('/:video/:chip', (req, res) =>
         res.status(404).end();
     }
 
-    var time = _.rules.match(req.ip);
+    var time = _.delay.match(req.ip);
     setTimeout(function()
     {
         console.log('client [' + req.ip + '] get [' + f + '] in ' + time + ' ms');

@@ -19,6 +19,7 @@ module.exports = function(config)
     app.use(express.static('../_static'));
 
     app.use('/server', require('./server'));
+    app.use('/proxy', require('./proxy'));
 
     app.get('*', (req, res) => { res.render('main.j2'); });
 

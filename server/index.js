@@ -25,6 +25,7 @@ module.exports = function(config)
     app.get('*', (req, res) => { res.status(404).end(); });
 
     require('./_.js').init(config.delay, config.track);
+    require('./_.js').track.connect();
 
     http.listen(config.port);
 };

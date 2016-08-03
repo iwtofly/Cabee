@@ -42,7 +42,8 @@ track.prototype.connect = function()
 
 track.prototype.disconnect = function()
 {
-    this.socket.disconnect();
+    if (this.socket)
+        this.socket.disconnect();
     this.socket = undefined;
 };
 
