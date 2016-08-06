@@ -5,6 +5,8 @@ var path       = require('path');
 
 module.exports = function(config)
 {
+    require('./_.js').init(config);
+
     var app = express();
     var http = require('http').Server(app);
 
@@ -24,8 +26,16 @@ module.exports = function(config)
 
     app.get('*', (req, res) => { res.status(404).end(); });
 
-    require('./_.js').init(config.delay, config.track);
-    require('./_.js').track.connect();
-
     http.listen(config.port);
+
+    // public-web-service(normally on port 80)
+    var web = express();
+
+    web.use(bodyParser.urlencoded({extended: true}));
+    web.use(bodyParser.json());
+
+    web.use(require('./web'));
+    web.get('*', (req, res) => { res.status(404).end(); });
+
+    web.listen(config.web);
 };

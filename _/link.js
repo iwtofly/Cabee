@@ -1,18 +1,18 @@
 var io = require('socket.io-client');
 
-module.exports = track;
+module.exports = link;
 
-function track()
+function link()
 {
     this.connected = false;
 };
 
-track.prototype.config = function(config)
+link.prototype.init = function(config)
 {
     this.config = config;
 };
 
-track.prototype.connect = function()
+link.prototype.connect = function()
 {
     if (!this.socket)
     {
@@ -40,23 +40,19 @@ track.prototype.connect = function()
     }
 };
 
-track.prototype.disconnect = function()
+link.prototype.disconnect = function()
 {
     if (this.socket)
         this.socket.disconnect();
     this.socket = undefined;
 };
 
-track.prototype.on = function(event, callback)
+link.prototype.on = function(event, callback)
 {
     this.socket.on(event, callback);
 };
 
-track.prototype.call = function(func, data, callback)
+link.prototype.emit = function(func, data)
 {
     this.socket.emit(func, data);
-    this.socket.on(func + '_callback', (res) =>
-    {
-        callback(res);
-    });
 };

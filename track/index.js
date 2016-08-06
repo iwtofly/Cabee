@@ -8,6 +8,8 @@ module.exports = function(config)
     var app = express();
     var http = require('http').Server(app);
 
+    require('./_.js').init(http);
+
     nunjucks.configure(__dirname + '/views',
     {
         autoescape: true,
@@ -22,8 +24,6 @@ module.exports = function(config)
     app.use('/proxy', require('./proxy'));
 
     app.get('*', (req, res) => { res.render('main.j2'); });
-
-    require('./_.js').init(http);
 
     http.listen(config.port);
 };

@@ -1,37 +1,33 @@
-var fs   = require('fs');
-var path = require('path');
+var fs     = require('fs');
+var path   = require('path');
 
 module.exports = file;
 
-function file(name, dir)
-{
-    // kantai-1.jpg
-    this.name    = name;
-    // upload
-    this.dir     = dir;
-    // /kantai-1.jpg
-    this.href    = '/' + this.name;
-    // upload/kantai-1.jpg
-    this.path    = path.join(dir, name);
-    // wwwroot/upload/kantai-1.jpg
-    this.pathAbs = path.resolve(this.path);
-    // .jpg
-    this.extname = path.extname(name);
-};
+function file() {};
 
 //========================= create =========================//
 file.mkdir = (dir) =>
 {
     try
     {
-        if (!file.exist(dir))
-        {
-            fs.mkdirSync(dir);
-            console.log('folder create [' + dir + ']');
-        }
+        var parent = path.dirname(dir);
+        if (!file.exist(parent) && !file.mkdir(parent))
+            return undefined;
+        fs.mkdirSync(dir);
+        console.log('folder create [' + dir + ']');
         return true;
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
+};
+
+file.save = (f, buffer) =>
+{
+    try
+    {
+        file.mkdir(path.dirname(f)) && fs.writeFileSync(f, buffer);
+        return true;
+    }
+    catch (err) {}
 };
 
 //========================= query =========================//
@@ -42,7 +38,7 @@ file.exist = (f) =>
         fs.accessSync(f, fs.R_OK | fs.W_OK);
         return true;
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
 };
 
 file.ls = (dir) =>
@@ -51,7 +47,7 @@ file.ls = (dir) =>
     {
         return fs.readdirSync(dir);
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
     return [];
 }
 
@@ -64,7 +60,7 @@ file.files = (dir) =>
             return fs.statSync(path.join(dir, f)).isFile();
         });
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
     return [];
 };
 
@@ -77,7 +73,7 @@ file.folders = (dir) =>
             return fs.statSync(path.join(dir, f)).isDirectory();
         });
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
     return [];
 };
 
@@ -97,7 +93,7 @@ file.rm = (f) =>
             return file.clear(f) && file.rmdir(f);
         }
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
 }
 
 file.unlink = (f) =>
@@ -108,7 +104,7 @@ file.unlink = (f) =>
         console.log('file rm [' + f + ']');
         return true;
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
 }
 
 file.clear = (dir) =>
@@ -133,5 +129,5 @@ file.rmdir = (dir) =>
         console.log('folder rm [' + dir + ']');
         return true;
     }
-    catch (err) { console.log(err); }
+    catch (err) {}
 }

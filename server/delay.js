@@ -1,6 +1,6 @@
 var router = module.exports = require('express').Router();
 
-var delay = require('./_.js').delay;
+var delay = require('./_').delay;
 
 router.get('/', (req, res) =>
 {

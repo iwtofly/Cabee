@@ -1,11 +1,14 @@
-var delay = module.exports.delay = new (require('_/delay.js'));
-var track = module.exports.track = new (require('_/track.js'));
+var delay  = module.exports.delay = new (require('_/delay'));
+var track  = module.exports.track = new (require('_/link'));
+var config = module.exports.config = {};
 
-module.exports.init = (conf_delay, conf_track) =>
+module.exports.init = (conf) =>
 {
-    for (cidr in conf_delay)
+    config = conf;
+    for (cidr in conf.delay)
     {
-        delay.add(cidr, conf_delay[cidr]);
+        delay.add(cidr, conf.delay[cidr]);
     }
-    track.config(conf_track);
+    track.init(conf.track);
+    track.connect();
 };

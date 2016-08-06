@@ -1,6 +1,6 @@
 var router = module.exports= require('express').Router();
 
-var track = require('./_.js').track;
+var track = require('./_').track;
 
 router.put('/connect', (req, res) =>
 {

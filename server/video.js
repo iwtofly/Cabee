@@ -1,8 +1,8 @@
 var express = require('express');
 var path    = require('path');
 var multer  = require('multer');
-var file    = require('_/file.js');
-var _       = require('./_.js');
+var file    = require('_/file');
+var _       = require('./_');
 
 var router = module.exports = express.Router();
 
@@ -10,13 +10,7 @@ const dir = path.join(__dirname, 'videos');
 
 router.get('/', (req, res) =>
 {
-    list = {};
-    videos = file.folders(dir);
-    for (folder of videos)
-    {
-        list[folder] = file.files(path.join(dir, folder));
-    }
-    res.json(list);
+    res.json(videos());
 });
 
 router.get('/upload', (req, res) =>
@@ -49,11 +43,19 @@ router.post('/upload', upload.array('videos'), (req, res) =>
         }
     }
     res.json('ok');
+    _.track.emit('update', videos());
+});
+
+router.delete('/', (req, res) =>
+{
+    res.json(file.clear(dir) ? 'ok' : 'error');
+    _.track.emit('update', videos());
 });
 
 router.delete('/:video', (req, res) =>
 {
     res.json(file.rm(path.join(dir, req.params.video)) ? 'ok' : 'error');
+    _.track.emit('update', videos());
 });
 
 router.get('/:video/:chip', (req, res) =>
@@ -64,25 +66,24 @@ router.get('/:video/:chip', (req, res) =>
     {
         console.log('client [' + req.ip + '] req [' + f + '] not exist');
         res.status(404).end();
+        return;
     }
-
-    var time = _.delay.match(req.ip);
-    setTimeout(function()
-    {
-        console.log('client [' + req.ip + '] get [' + f + '] in ' + time + ' ms');
-        res.sendFile(f);
-    },
-    time);
+    console.log('client [' + req.ip + '] get [' + f + ']');
+    res.sendFile(f);
 });
 
-router.get('/:video/:chip/now', (req, res) =>
+function videos()
 {
-    var f = path.join(dir, req.params.video, req.params.chip);
-
-    if (!file.exist(f))
+    list = {};
+    folders = file.folders(dir);
+    for (folder of folders)
     {
-        console.log('client [' + req.ip + '] req [' + f + '] not exist');
-        res.status(404).end();
+        list[folder] = file.files(path.join(dir, folder));
     }
-    res.sendFile(f);
+    return list;
+};
+
+_.track.on('connect', () =>
+{
+    _.track.emit('update', videos());
 });
