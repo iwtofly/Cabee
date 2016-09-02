@@ -22,6 +22,7 @@ module.exports = function(config)
 
     app.use('/server', require('./server'));
     app.use('/proxy', require('./proxy'));
+    app.use('/gui', require('./gui'));
 
     app.get('*', (req, res) => { res.render('main.j2'); });
 

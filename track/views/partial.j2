@@ -1,7 +1,0 @@
-{% macro nav(val) %}
-<ul class="nav nav-tabs">
-    <li {% if val == "proxyP" %}class="active"{% endif %}><a href="/proxy/p">Proxy Cache By P</a></li>
-    <li {% if val == "proxyS" %}class="active"{% endif %}><a href="/proxy/s">Proxy Cache By S</a></li>
-    <li {% if val == "server" %}class="active"{% endif %}><a href="/server">Server</a></li>
-</ul>
-{% endmacro %}

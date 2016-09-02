@@ -23,19 +23,20 @@ module.exports = function(config)
     app.use('/track', require('./track'));
     app.use('/video', require('./video'));
     app.use('/delay', require('./delay'));
+    app.get('/ring', (req, res) => { require('./_.js').track.emit('update', 'shit'); res.end('ring!!!'); });
 
     app.get('*', (req, res) => { res.status(404).end(); });
 
     http.listen(config.port);
 
-    // public-web-service(normally on port 80)
-    var web = express();
+    // public-pub-service(normally on port 80)
+    var pub = express();
 
-    web.use(bodyParser.urlencoded({extended: true}));
-    web.use(bodyParser.json());
+    pub.use(bodyParser.urlencoded({extended: true}));
+    pub.use(bodyParser.json());
 
-    web.use(require('./web'));
-    web.get('*', (req, res) => { res.status(404).end(); });
+    pub.use(require('./pub'));
+    pub.get('*', (req, res) => { res.status(404).end(); });
 
-    web.listen(config.web);
+    pub.listen(config.pub);
 };
