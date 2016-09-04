@@ -1,3 +1,4 @@
 node_modules
-conf.yaml
+proxy/caches
+server/videos
 test.js
