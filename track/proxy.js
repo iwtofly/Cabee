@@ -1,8 +1,38 @@
-var router = module.exports = require('express').Router();
+let express = require('express');
 
-var proxies = require('./_.js').proxies;
-
-router.get('/', (req, res) =>
+let mod = module.exports = function(app)
 {
-    res.json(proxies);
-});
+    this.app    = app;
+    this.list   = {};
+    this.router = express.Router();
+    this.io     = app.io.of('/proxy');
+
+    this.io.on('connection', this.on_connect.bind(this));
+
+    this.init();
+};
+
+mod.prototype.init = function()
+{
+    let router = this.router;
+
+    router.get('/', (req, res) =>
+    {
+        res.json(this.list);
+    });
+};
+
+mod.prototype.on_connect = function(socket)
+{
+    let ip = socket.request.connection.remoteAddress;
+    console.log('proxy [' + ip + '] connected');
+    this.list[ip] = {};
+    socket.on('disconnect', this.on_disconnect.bind(this, socket));
+};
+
+mod.prototype.on_disconnect = function(socket)
+{
+    let ip = socket.request.connection.remoteAddress;
+    console.log('proxy [' + ip + '] disconnected');
+    delete this.list[ip];
+};

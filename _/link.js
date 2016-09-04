@@ -1,38 +1,27 @@
 var io = require('socket.io-client');
 
-module.exports = link;
+module.exports = Link;
 
-function link()
+function Link(url)
 {
+    this.url       = url;
     this.connected = false;
+    this.events    =
+    {
+        'connect'    : this.on_connect,
+        'disconnect' : this.on_disconnect
+    };
 };
 
-link.prototype.init = function(config)
-{
-    this.config = config;
-};
-
-link.prototype.connect = function()
+Link.prototype.connect = function()
 {
     if (!this.socket)
     {
-        this.socket = io.connect(this.config.url,
+        this.socket = io(this.url);
+        for (event in this.events)
         {
-            reconnect: true,
-            reconnectionDelay: this.config.retry,
-            reconnectionDelayMax: this.config.retry_max,
-            timeout: this.config.timeout
-        });
-
-        this.socket.on('connect', () =>
-        {
-            this.connected = true;
-        });
-
-        this.socket.on('disconnect', () =>
-        {
-            this.connected = false;
-        });
+            this.on(event, this.events[event]);
+        }
     }
     else if (!this.connected)
     {
@@ -40,19 +29,29 @@ link.prototype.connect = function()
     }
 };
 
-link.prototype.disconnect = function()
+Link.prototype.disconnect = function()
 {
     if (this.socket)
         this.socket.disconnect();
-    this.socket = undefined;
+    delete this.socket;
 };
 
-link.prototype.on = function(event, callback)
+Link.prototype.on = function(event, callback)
 {
-    this.socket.on(event, callback);
+    this.socket.on(event, callback.bind(this));
 };
 
-link.prototype.emit = function(func, data)
+Link.prototype.emit = function(func, data)
 {
     this.socket.emit(func, data);
+};
+
+Link.prototype.on_connect = function()
+{
+    this.connected = true;
+};
+
+Link.prototype.on_disconnect = function()
+{
+    this.connected = false;
 };

@@ -1,50 +1,61 @@
-var request = require('request');
-var express = require('express');
-var path    = require('path');
-var file    = require('_/file');
-const dir   = path.join(__dirname, 'caches');
+let express = require('express');
+let path    = require('path');
+let multer  = require('multer');
+let File    = require('_/File');
 
-var router = module.exports = express.Router();
-
-router.get('/', (req, res) =>
+let mod = module.exports = function(app)
 {
-    res.json('shit');
-});
+    this.dir    = path.join(__dirname, 'caches', app.conf.port.toString());
+    this.router = express.Router();
 
-// original url of target is [http://$ip/video/$video/$piece]
-router.get('/:ip/:video/:piece', (req, res) =>
+    this.init();
+};
+
+mod.prototype.init = function()
 {
-    var c = new cache(req.params.ip, req.params.video, req.params.piece);
+    let dir    = this.dir;
+    let router = this.router;
 
-    request(
+    router.get('/', (req, res) =>
     {
-        'url'      : c.url,
-        'encoding' : null,
-        'timeout'  : 3000,
-    },
-    (error, response, body) =>
-    {
-        if (!error && response.statusCode == 200 && file.save(c.path, body))
-        {
-            console.log('client [' + req.ip + '] get [' + c.url + ']');
-            res.sendFile(c.path);
-        }
-        else
-        {
-            res.status(404).end();
-        }
+        res.json('shit');
     });
-});
 
-router.delete('/', (req, res) =>
-{
-    res.json(file.clear(dir) ? 'ok' : 'error');
-});
+    // original url of target is [http://$ip/video/$video/$piece]
+    router.get('/:ip/:video/:piece', (req, res) =>
+    {
+        var c = new cache(req.params.ip, req.params.video, req.params.piece);
 
-router.delete('/:ip/:video', (req, res) =>
-{
-    res.json(file.rm(path.join(dir, req.params.ip)) ? 'ok' : 'error');
-});
+        request(
+        {
+            'url'      : c.url,
+            'encoding' : null,
+            'timeout'  : 3000,
+        },
+        (error, response, body) =>
+        {
+            if (!error && response.statusCode == 200 && file.save(c.path, body))
+            {
+                console.log('client [' + req.ip + '] get [' + c.url + ']');
+                res.sendFile(c.path);
+            }
+            else
+            {
+                res.status(404).end();
+            }
+        });
+    });
+
+    router.delete('/', (req, res) =>
+    {
+        res.json(file.clear(dir) ? 'ok' : 'error');
+    });
+
+    router.delete('/:ip/:video', (req, res) =>
+    {
+        res.json(file.rm(path.join(dir, req.params.ip)) ? 'ok' : 'error');
+    });
+};
 
 function cache(ip, video, piece)
 {

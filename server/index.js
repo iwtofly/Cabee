@@ -1,42 +1,40 @@
-var express    = require('express');
-var nunjucks   = require('nunjucks');
-var bodyParser = require('body-parser');
-var path       = require('path');
+let express    = require('express');
+let nunjucks   = require('nunjucks');
+let bodyParser = require('body-parser');
+let http       = require('http');
+let path       = require('path');
+let io         = require('socket.io');
 
-module.exports = function(config)
+let Track = require('_/track');
+let Delay = require('_/delay');
+let Video = require('./video');
+
+module.exports = function app(conf)
 {
-    require('./_.js').init(config);
-
-    var app = express();
-    var http = require('http').Server(app);
+    this.conf = conf;
+    this.expr = express();
+    this.http = http.Server(this.expr);
+    this.io   = io(http);
 
     nunjucks.configure(__dirname + '/views',
     {
         autoescape: true,
-        express: app
+        express: this.expr
     });
 
-    app.use(bodyParser.urlencoded({extended: true}));
-    app.use(bodyParser.json());
-    app.use(express.static('_static'));
+    this.expr.use(bodyParser.urlencoded({extended: true}));
+    this.expr.use(bodyParser.json());
+    this.expr.use(express.static('_static'));
 
-    app.use('/track', require('./track'));
-    app.use('/video', require('./video'));
-    app.use('/delay', require('./delay'));
-    app.get('/ring', (req, res) => { require('./_.js').track.emit('update', 'shit'); res.end('ring!!!'); });
+    this.delay = new Delay(this);
+    this.video = new Video(this);
+    this.track = new Track(this);
 
-    app.get('*', (req, res) => { res.status(404).end(); });
+    this.expr.use('/delay', this.delay.router);
+    this.expr.use('/video', this.video.router);
+    this.expr.use('/track', this.track.router);
 
-    http.listen(config.port);
+    this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
-    // public-pub-service(normally on port 80)
-    var pub = express();
-
-    pub.use(bodyParser.urlencoded({extended: true}));
-    pub.use(bodyParser.json());
-
-    pub.use(require('./pub'));
-    pub.get('*', (req, res) => { res.status(404).end(); });
-
-    pub.listen(config.pub);
+    this.http.listen(conf.port);
 };

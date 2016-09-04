@@ -1,28 +1,23 @@
+%configuration file for Cabee
 ---
 
-#
-server:
-  port: 12345
-  track:
-    url       : http://localhost:12346/server
-    retry     : 1000
-    retry_max : 5000
-    timeout   : 5000
+- type: track
+  port: 30000
+
+- type : server
+  name : S1
+  port : 40001
+  track: http://localhost:30000/server
   delay:
     0.0.0.0/0 : 100
     ::/0      : 100
 
-#
-track:
-  port: 12346
+- type : proxy
+  name : MEC1
+  path : /0/1
+  port : 50001
+  track: http://localhost:30000/proxy
+  delay:
+    0.0.0.0/0 : 100
+    ::/0      : 100
 
-#
-proxy:
-  port: 12347
-  track:
-    url       : http://localhost:12346/proxy
-    retry     : 1000
-    retry_max : 5000
-    timeout   : 5000
-  mitm:
-    timout: 2000

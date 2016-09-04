@@ -1,51 +1,31 @@
-var ipaddr = require('ipaddr.js');
+let express = require('express');
+let Rules   = require('_/rules');
 
-module.exports = Delay;
-
-function Delay()
+let mod = module.exports = function(app)
 {
-    this.list = [];
+    this.rules = new Rules(app.conf.delay);
+    this.router = express.Router();
+
+    this.init();
 };
 
-Delay.prototype.add = function(cidr, time)
+mod.prototype.init = function()
 {
-    this.list.push(new Rule(cidr, time));
-};
+    let rules  = this.rules;
+    let router = this.router;
 
-Delay.prototype.all = function()
-{
-    return this.list;
-};
-
-Delay.prototype.clear = function(cidr, time)
-{
-    this.list = [];
-};
-
-Delay.prototype.match = function(ip)
-{
-    for (rule of this.list)
+    router.get('/', (req, res) =>
     {
-        if (rule.match(ip))
-            return rule.time;
-    }
-    return 0;
-};
+        res.json(rules.all());
+    });
 
-function Rule(cidr, time)
-{
-    this.cidr = cidr;
-    this.time = time;
-    this.kind = ipaddr.parse(cidr.substr(0, cidr.indexOf('/'))).kind();
-};
+    router.get('/ping/:ip', (req, res) =>
+    {
+        res.json(rules.match(req.params.ip));
+    });
 
-Rule.prototype.match = function(ip)
-{
-    ip = ipaddr.parse(ip);
-    return ip.kind() == this.kind && ip.match(ipaddr.parseCIDR(this.cidr));
-};
-
-Rule.prototype.toString = function()
-{
-    return '[rule|' + this.cidr + '|' + this.time + 'ms]';
+    router.get('/ping', (req, res) =>
+    {
+        res.json(rules.match(req.ip));
+    });
 };

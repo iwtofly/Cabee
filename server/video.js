@@ -1,89 +1,91 @@
-var express = require('express');
-var path    = require('path');
-var multer  = require('multer');
-var file    = require('_/file');
-var _       = require('./_');
+let express = require('express');
+let path    = require('path');
+let multer  = require('multer');
+let File    = require('_/File');
 
-var router = module.exports = express.Router();
-
-const dir = path.join(__dirname, 'videos');
-
-router.get('/', (req, res) =>
+let mod = module.exports = function(app)
 {
-    res.json(videos());
-});
+    this.dir    = path.join(__dirname, 'videos', app.conf.port.toString());
+    this.router = express.Router();
 
-router.get('/upload', (req, res) =>
-{
-    res.render('main.j2');
-});
+    this.init();
+};
 
-var storage = multer.diskStorage(
+mod.prototype.init = function()
 {
-    'destination' : (req, f, cb) =>
+    let router = this.router;
+    let dir    = this.dir;
+
+    router.get('/', (req, res) =>
     {
-        var dst = path.join(dir, req.body['name']);
-        file.mkdir(dst);
-        cb(null, dst);
-    },
-    'filename' : (req, f, cb) =>
-    {
-        cb(null, f.originalname);
-    }
-});
-var upload = multer({ storage: storage });
+        res.json(this.videos());
+    });
 
-router.post('/upload', upload.array('videos'), (req, res) =>
-{
-    if (req.files.length > 0)
+    router.get('/upload', (req, res) =>
     {
-        for (f of req.files)
+        res.render('main.j2');
+    });
+
+    let storage = multer.diskStorage(
+    {
+        'destination' : (req, f, cb) =>
         {
-            console.log('file uploaded [' + f.path + ']');
+            let dst = path.join(dir, req.body['name']);
+            File.mkdir(dst);
+            cb(null, dst);
+        },
+        'filename' : (req, f, cb) =>
+        {
+            cb(null, f.originalname);
         }
-    }
-    res.json('ok');
-    _.track.emit('update', videos());
-});
+    });
 
-router.delete('/', (req, res) =>
-{
-    res.json(file.clear(dir) ? 'ok' : 'error');
-    _.track.emit('update', videos());
-});
+    let upload = multer({ storage: storage });
 
-router.delete('/:video', (req, res) =>
-{
-    res.json(file.rm(path.join(dir, req.params.video)) ? 'ok' : 'error');
-    _.track.emit('update', videos());
-});
-
-router.get('/:video/:chip', (req, res) =>
-{
-    var f = path.join(dir, req.params.video, req.params.chip);
-
-    if (!file.exist(f))
+    router.post('/upload', upload.array('videos'), (req, res) =>
     {
-        console.log('client [' + req.ip + '] req [' + f + '] not exist');
-        res.status(404).end();
-        return;
-    }
-    console.log('client [' + req.ip + '] get [' + f + ']');
-    res.sendFile(f);
-});
+        if (req.files.length > 0)
+        {
+            for (f of req.files)
+            {
+                console.log('file uploaded [' + f.path + ']');
+            }
+        }
+        res.json('ok');
+    });
 
-function videos()
+    router.delete('/', (req, res) =>
+    {
+        res.json(File.clear(dir) ? 'ok' : 'error');
+    });
+
+    router.delete('/:video', (req, res) =>
+    {
+        res.json(File.rm(path.join(dir, req.params.video)) ? 'ok' : 'error');
+    });
+
+    router.get('/:video/:chip', (req, res) =>
+    {
+        let f = path.join(dir, req.params.video, req.params.chip);
+
+        if (!File.exist(f))
+        {
+            console.log('client [' + req.ip + '] req [' + f + '] not exist');
+            res.status(404).end();
+            return;
+        }
+        console.log('client [' + req.ip + '] get [' + f + ']');
+        res.sendFile(f);
+    });
+}
+
+mod.prototype.videos = function()
 {
     list = {};
-    folders = file.folders(dir);
+    folders = File.folders(this.dir);
     for (folder of folders)
     {
-        list[folder] = file.files(path.join(dir, folder));
+        list[folder] = File.Files(path.join(this.dir, folder));
     }
     return list;
 };
-
-_.track.on('connect', () =>
-{
-    _.track.emit('update', videos());
-});
