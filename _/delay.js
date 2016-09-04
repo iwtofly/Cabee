@@ -21,11 +21,16 @@ mod.prototype.init = function()
 
     router.get('/ping/:ip', (req, res) =>
     {
-        res.json(rules.match(req.params.ip));
+        res.json(this.time(req.params.ip));
     });
 
     router.get('/ping', (req, res) =>
     {
-        res.json(rules.match(req.ip));
+        res.json(this.time(req.ip));
     });
+};
+
+mod.prototype.time = function(ip)
+{
+    return this.rules.match(ip);
 };

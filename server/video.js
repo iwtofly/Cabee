@@ -18,7 +18,7 @@ mod.prototype.init = function()
 
     router.get('/', (req, res) =>
     {
-        res.json(this.videos());
+        res.json(this.list());
     });
 
     router.get('/upload', (req, res) =>
@@ -54,14 +54,14 @@ mod.prototype.init = function()
         res.json('ok');
     });
 
-    router.delete('/', (req, res) =>
+    router.delete(
+    [
+        '/',
+        '/:video'
+    ],
+    (req, res) =>
     {
-        res.json(File.clear(dir) ? 'ok' : 'error');
-    });
-
-    router.delete('/:video', (req, res) =>
-    {
-        res.json(File.rm(path.join(dir, req.params.video)) ? 'ok' : 'error');
+        res.json(File.rm(path.join(dir, req.params.video || '')) ? 'ok' : 'error');
     });
 
     router.get('/:video/:chip', (req, res) =>
@@ -79,7 +79,7 @@ mod.prototype.init = function()
     });
 }
 
-mod.prototype.videos = function()
+mod.prototype.list = function()
 {
     list = {};
     folders = File.folders(this.dir);
