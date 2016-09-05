@@ -9,7 +9,7 @@ let Track = require('_/track');
 let Delay = require('_/delay');
 let Cache = require('./cache');
 
-module.exports = function app(conf)
+let app = module.exports = function(conf)
 {
     this.conf = conf;
     this.expr = express();
@@ -37,4 +37,14 @@ module.exports = function app(conf)
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
+};
+
+app.prototype.info = function()
+{
+    return
+    {
+        name  : this.conf.name,
+        pos   : this.conf.pos,
+        caches: this.cache.list()
+    };
 };

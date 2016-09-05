@@ -5,6 +5,7 @@ let File    = require('_/File');
 
 let mod = module.exports = function(app)
 {
+    this.app    = app;
     this.dir    = path.join(__dirname, 'videos', app.conf.port.toString());
     this.router = express.Router();
 
@@ -64,7 +65,12 @@ mod.prototype.init = function()
         res.json(File.rm(path.join(dir, req.params.video || '')) ? 'ok' : 'error');
     });
 
-    router.get('/:video/:chip', (req, res) =>
+    router.get(
+    [
+        '/:video/:chip',
+        '/:video/:chip/:pos'
+    ],
+    (req, res) =>
     {
         let f = path.join(dir, req.params.video, req.params.chip);
 
@@ -74,8 +80,9 @@ mod.prototype.init = function()
             res.status(404).end();
             return;
         }
-        console.log('client [' + req.ip + '] get [' + f + ']');
-        res.sendFile(f);
+        let time = this.app.delay.match(req.params.pos);
+        console.log('client [' + req.ip + '] get [' + f + '] in [' + time + '] ms');
+        setTimeout(() => { res.sendFile(f); }, time);
     });
 }
 

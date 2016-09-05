@@ -7,6 +7,7 @@ let mod = module.exports = function(app)
     this.link   = new Link(app.conf.track);
     this.router = express.Router(app);
 
+    this.link.on('connect', )
     this.init();
 };
 

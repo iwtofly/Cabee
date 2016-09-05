@@ -34,7 +34,12 @@ mod.prototype.init = function()
     });
 
     // original url of target is [http://$ip:$port/video/$video/$piece]
-    router.get('/:ip/:port/:video/:piece', (req, res) =>
+    router.get(
+    [
+        '/:ip/:port/:video/:piece',
+        '/:ip/:port/:video/:piece/:pos'
+    ],
+    (req, res) =>
     {
         let c = new cache
         (
@@ -45,7 +50,7 @@ mod.prototype.init = function()
             req.params.piece
         );
 
-        let delay = app.delay.time(req.ip);
+        let delay = app.delay.match(req.params.pos);
 
         if (File.exist(c.path))
         {

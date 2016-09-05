@@ -1,9 +1,13 @@
 let express = require('express');
-let Rules   = require('_/rules');
+let Pos     = require('_/pos');
 
 let mod = module.exports = function(app)
 {
-    this.rules = new Rules(app.conf.delay);
+    this.rules = [];
+    for (rule of app.conf.delay)
+    {
+        this.rules.push([new Pos(rule[0]), rule[1]]);
+    }
     this.router = express.Router();
 
     this.init();
@@ -16,21 +20,30 @@ mod.prototype.init = function()
 
     router.get('/', (req, res) =>
     {
-        res.json(rules.all());
+        res.json(rules);
     });
 
-    router.get('/ping/:ip', (req, res) =>
+    router.get(
+    [
+        '/ping',
+        '/ping/:pos'
+    ],
+    (req, res) =>
     {
-        res.json(this.time(req.params.ip));
-    });
-
-    router.get('/ping', (req, res) =>
-    {
-        res.json(this.time(req.ip));
+        res.json(this.match(req.params.pos));
     });
 };
 
-mod.prototype.time = function(ip)
+mod.prototype.match = function(pos = '')
 {
-    return this.rules.match(ip);
+    pos = new Pos(pos.toString());
+
+    for (let [mask, time] of this.rules)
+    {
+        if (pos.equal(mask) || pos.inside(mask))
+        {
+            return time;
+        }
+    }
+    return 0;
 };

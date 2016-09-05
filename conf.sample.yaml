@@ -5,19 +5,20 @@
   port: 30000
 
 - type : server
-  name : S1
+  name : Sir1
   port : 40001
   track: http://localhost:30000/server
   delay:
-    0.0.0.0/0 : 1000
-    ::/0      : 1000
+    - ['12', 1000]
+    - ['1' , 2000]
+    - ['*' , 3000]
 
 - type : proxy
   name : MEC1
-  path : /0/1
+  pos  : "11"
   port : 50001
   track: http://localhost:30000/proxy
   delay:
-    0.0.0.0/0 : 1000
-    ::/0      : 1000
-
+    - ['12', 1000]
+    - ['1' , 2000]
+    - ['*' , 3000]

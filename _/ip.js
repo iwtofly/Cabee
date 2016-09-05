@@ -1,8 +1,6 @@
 var ipaddr = require('ipaddr.js');
 
-module.exports = Rules;
-
-function Rules(conf)
+let Rules = module.exports = function(conf)
 {
     this.list = [];
     for (cidr in conf)
@@ -47,9 +45,4 @@ Rule.prototype.match = function(ip)
 {
     ip = ipaddr.parse(ip);
     return ip.kind() == this.kind && ip.match(ipaddr.parseCIDR(this.cidr));
-};
-
-Rule.prototype.toString = function()
-{
-    return '[rule|' + this.cidr + '|' + this.time + 'ms]';
 };
