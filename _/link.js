@@ -4,22 +4,16 @@ module.exports = Link;
 
 function Link(url)
 {
-    this.url       = url;
     this.connected = false;
+    this.socket    = io(url);
+    
+    this.socket.on('connect', () => this.connected = true);
+    this.socket.on('disconnect', () => this.connected = false);
 };
 
-Link.prototype.connect = function()
+Link.prototype.reconnect = function()
 {
-    if (!this.socket)
-    {
-        this.socket = io(this.url);
-        this.socket.on('connect', () => this.connected = true);
-        this.socket.on('disconnect', () => this.connected = false);
-    }
-    else
-    {
-        this.socket.reconnect();
-    }
+    this.socket.reconnect();
 };
 
 Link.prototype.disconnect = function()
@@ -30,7 +24,8 @@ Link.prototype.disconnect = function()
 
 Link.prototype.on = function(event, callback)
 {
-    this.socket.on(event, callback.bind(this));
+    if (this.socket)
+        this.socket.on(event, callback.bind(this));
 };
 
 Link.prototype.emit = function(func, data)

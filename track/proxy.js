@@ -3,7 +3,7 @@ let express = require('express');
 let mod = module.exports = function(app)
 {
     this.app    = app;
-    this.list   = {};
+    this.list   = [];
     this.router = express.Router();
     this.io     = app.io.of('/proxy');
 
@@ -26,13 +26,22 @@ mod.prototype.on_connect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
     console.log('proxy [' + ip + '] connected');
-    this.list[ip] = {};
+
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
+    socket.on('notify',     this.on_nofity.bind(this, socket));
 };
 
 mod.prototype.on_disconnect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
     console.log('proxy [' + ip + '] disconnected');
-    delete this.list[ip];
+};
+
+mod.prototype.on_nofity = function(socket, data)
+{
+    data.ip = socket.request.connection.remoteAddress;
+    console.log('proxy [' + data.ip + '] notified');
+    this.list.push(data);
+    this.io.emit('proxy', this.list);
+    this.app.gui.io.emit('proxy', this.list);
 };

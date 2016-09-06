@@ -21,10 +21,12 @@
         
         local.on('connect', (socket) =>
         {
-            alert('connected!');
+            console.log('connected');
         });
 
-        local.on('server/update', () => { alert('server has changed !'); });
+        local.on('proxy', (data) => console.log(data) );
+
+        local.on('server', (data) => console.log(data) );
 
     </script>
 </body>

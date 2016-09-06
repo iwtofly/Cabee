@@ -9,7 +9,7 @@ let Track = require('_/track');
 let Delay = require('_/delay');
 let Video = require('./video');
 
-module.exports = function app(conf)
+let app = module.exports = function(conf)
 {
     this.conf = conf;
     this.expr = express();
@@ -30,6 +30,8 @@ module.exports = function app(conf)
     this.video = new Video(this);
     this.track = new Track(this);
 
+    this.track.link.on('connect', () => { this.notify(); });
+
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/video', this.video.router);
     this.expr.use('/track', this.track.router);
@@ -37,4 +39,19 @@ module.exports = function app(conf)
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
+};
+
+app.prototype.info = function()
+{
+    return ret =
+    {
+        port   : this.conf.port,
+        name   : this.conf.name,
+        videos : this.video.list()
+    };
+};
+
+app.prototype.notify = function()
+{
+    this.track.link.emit('notify', this.info());
 };
