@@ -24,15 +24,19 @@ mod.prototype.init = function()
 mod.prototype.on_connect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
-    console.log('user [' + ip + '] connected');
+    this.app.log('user [' + ip + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
 
-    socket.emit('server', this.app.server.list);
-    socket.emit('proxy', this.app.proxy.list);
+    socket.emit('update',
+    {
+        track  : this.app.info(),
+        server : this.app.server.list,
+        proxy  : this.app.proxy.list
+    });
 };
 
 mod.prototype.on_disconnect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
-    console.log('user [' + ip + '] disconnected');
+    this.app.log('user [' + ip + '] disconnected');
 };

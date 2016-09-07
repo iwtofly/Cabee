@@ -3,7 +3,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
     <title>{% block title %}default title{% endblock %}</title>
+    <script src="/jquery.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/io.js"></script>
+    <script src="/host.js"></script>
 </head>
 <body>
     <div class="container">
@@ -16,18 +19,5 @@
             <h5>made by Mrsuyi</h5>
         </footer>
     </div>
-    <script>
-        var local = io('/gui');
-        
-        local.on('connect', (socket) =>
-        {
-            console.log('connected');
-        });
-
-        local.on('proxy', (data) => console.log(data) );
-
-        local.on('server', (data) => console.log(data) );
-
-    </script>
 </body>
 </html>

@@ -7,6 +7,7 @@ let io         = require('socket.io');
 
 let Track = require('_/track');
 let Delay = require('_/delay');
+let Gui   = require('_/gui');
 let Video = require('./video');
 
 let app = module.exports = function(conf)
@@ -29,6 +30,7 @@ let app = module.exports = function(conf)
     this.delay = new Delay(this);
     this.video = new Video(this);
     this.track = new Track(this);
+    this.gui   = new Gui(this);
 
     this.track.link.on('connect', () => { this.notify(); });
 
@@ -36,6 +38,7 @@ let app = module.exports = function(conf)
     this.expr.use('/video', this.video.router);
     this.expr.use('/track', this.track.router);
 
+    this.expr.get('/ring', () => { this.gui.io.emit('ring', 'ring ring ring!'); });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
@@ -54,4 +57,11 @@ app.prototype.info = function()
 app.prototype.notify = function()
 {
     this.track.link.emit('notify', this.info());
+};
+
+app.prototype.log = function(text)
+{
+    console.log('S|' + this.conf.name +
+                 '|' + this.conf.port +
+                 '|  ' + text);
 };

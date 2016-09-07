@@ -50,7 +50,7 @@ app.prototype.info = function()
 {
     return ret =
     {
-        port   : this.conf.port,
+        port  : this.conf.port,
         name  : this.conf.name,
         pos   : this.conf.pos,
         caches: this.cache.list()
@@ -70,4 +70,12 @@ app.prototype.on_server = function(data)
 app.prototype.on_proxy = function(data)
 {
     this.proxies = data;
+};
+
+app.prototype.log = function(text)
+{
+    console.log('P|' + this.conf.name +
+                 '|' + this.conf.port +
+                 '|' + this.conf.pos +
+                 '|  ' + text);
 };

@@ -9,7 +9,7 @@ let Server     = require('./server');
 let Proxy      = require('./proxy');
 let Gui        = require('./gui');
 
-module.exports = function add(conf)
+let app = module.exports = function(conf)
 {
     this.conf = conf;
     this.expr = express();
@@ -24,7 +24,8 @@ module.exports = function add(conf)
 
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
-    this.expr.use(express.static('../_static'));
+    this.expr.use(express.static('_static'));
+    this.expr.use(express.static('track/views'));
 
     this.server = new Server(this);
     this.proxy  = new Proxy(this);
@@ -37,4 +38,20 @@ module.exports = function add(conf)
     this.expr.get('*', (req, res) => { res.render('main.j2'); });
 
     this.http.listen(conf.port);
+};
+
+app.prototype.info = function()
+{
+    return ret =
+    {
+        port : this.conf.port,
+        name : this.conf.name
+    };
+};
+
+app.prototype.log = function(text)
+{
+    console.log('T|' + this.conf.name +
+                 '|' + this.conf.port +
+                 '|  ' + text);
 };

@@ -25,7 +25,7 @@ mod.prototype.init = function()
 mod.prototype.on_connect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
-    console.log('server [' + ip + '] connected');
+    this.app.log('server [' + ip + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
     socket.on('notify',     this.on_nofity.bind(this, socket));
 };
@@ -33,14 +33,14 @@ mod.prototype.on_connect = function(socket)
 mod.prototype.on_disconnect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
-    console.log('server [' + ip + '] disconnected');
+    this.app.log('server [' + ip + '] disconnected');
 };
 
 mod.prototype.on_nofity = function(socket, data)
 {
     data.ip = socket.request.connection.remoteAddress;
     this.list.push(data);
-    console.log('server [' + data.ip + '] notified');
+    this.app.log('server [' + data.ip + '] notified');
     this.app.proxy.io.emit('server', this.list);
     this.app.gui.io.emit('server', this.list);
 };

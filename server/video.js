@@ -49,7 +49,7 @@ mod.prototype.init = function()
         {
             for (f of req.files)
             {
-                console.log('file uploaded [' + f.path + ']');
+                this.app.log('file uploaded [' + f.path + ']');
             }
         }
         res.json('ok');
@@ -76,12 +76,12 @@ mod.prototype.init = function()
 
         if (!File.exist(f))
         {
-            console.log('client [' + req.ip + '] req [' + f + '] not exist');
+            this.app.log('client [' + req.ip + '] req [' + f + '] not exist');
             res.status(404).end();
             return;
         }
         let time = this.app.delay.match(req.params.pos);
-        console.log('client [' + req.ip + '] get [' + f + '] in [' + time + '] ms');
+        this.app.log('client [' + req.ip + '] get [' + f + '] in [' + time + '] ms');
         setTimeout(() => { res.sendFile(f); }, time);
     });
 }

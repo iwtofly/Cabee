@@ -54,7 +54,7 @@ mod.prototype.init = function()
 
         if (File.exist(c.path))
         {
-            console.log('client [' + req.ip + '] ' +
+            this.app.log('client [' + req.ip + '] ' +
                         'get [' + c.url + '] ' +
                         'from [cache] in [' + delay + '] ms');
             setTimeout(() => { res.sendFile(c.path); }, delay);
@@ -71,7 +71,7 @@ mod.prototype.init = function()
         {
             if (!error && response.statusCode == 200 && File.save(c.path, body))
             {
-                console.log('client [' + req.ip + '] ' +
+                this.app.log('client [' + req.ip + '] ' +
                             'get [' + c.url + '] ' +
                             'from [source] in [' + delay + '] ms');
                 setTimeout(() => { res.sendFile(c.path); }, delay);

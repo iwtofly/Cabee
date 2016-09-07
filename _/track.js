@@ -15,9 +15,9 @@ mod.prototype.init = function()
     let router = this.router;
     let link   = this.link;
 
-    router.put('/connect', (req, res) =>
+    router.put('/reconnect', (req, res) =>
     {
-        link.connect();
+        link.reconnect();
         res.json('ok');
     });
 

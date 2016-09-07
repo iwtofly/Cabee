@@ -2,6 +2,7 @@
 ---
 
 - type: track
+  name: Tracker
   port: 30000
 
 - type : server
@@ -14,9 +15,17 @@
     - ['*' , 3000]
 
 - type : proxy
+  name : GATEWAY_1
+  pos  : "1"
+  port : 50001
+  track: http://localhost:30000/proxy
+  delay:
+    - ['*' , 3000]    
+
+- type : proxy
   name : MEC1
   pos  : "11"
-  port : 50001
+  port : 50002
   track: http://localhost:30000/proxy
   delay:
     - ['12', 1000]
@@ -26,7 +35,7 @@
 - type : proxy
   name : MEC2
   pos  : "12"
-  port : 50002
+  port : 50003
   track: http://localhost:30000/proxy
   delay:
     - ['12', 1000]
