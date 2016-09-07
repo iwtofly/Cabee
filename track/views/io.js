@@ -1,41 +1,35 @@
 $(document).ready(() =>
 {
-    let io_track = io('/gui');
+    window.track = new Track();
 
-    io_track.on('connect', () =>
+    window.track.io.on('connect', () =>
     {
         console.log('connect to track');
     });
 
-    io_track.on('disconnect', () =>
+    window.track.io.on('disconnect', () =>
     {
         console.log('disconnect to track');
     });
 
-    io_track.on('update', (data) =>
+    window.track.io.on('notify', (servers, proxies) =>
     {
         let core =
         {
-            type: 'core',
-            nodes: []
+            servers : [],
+            proxies : []
         };
 
-        // push track
-        data.track.type = 'track';
-        core.nodes.push(data.track);
-
         // push servers
-        for (server of data.server)
+        for (server of servers)
         {
             server.type = 'server';
-            core.nodes.push(server);
+            core.servers.push(server);
         }
-
-        console.log(data.proxy);
 
         // push proxies
         map = {};
-        for (proxy of data.proxy)
+        for (proxy of proxies)
         {
             map[proxy.pos] = proxy;
         }
@@ -49,7 +43,7 @@ $(document).ready(() =>
             }
             else
             {
-                core.nodes.push(map[key]);
+                core.proxies.push(map[key]);
             }
         }
 

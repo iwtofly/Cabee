@@ -22,26 +22,37 @@ mod.prototype.init = function()
     });
 };
 
+// a new proxy connect to this track
 mod.prototype.on_connect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
     this.app.log('proxy [' + ip + '] connected');
-
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
-    socket.on('notify',     this.on_nofity.bind(this, socket));
+    socket.on('notify',     this.on_notify.bind(this, socket));
+    this.app.gui.notify();
+    this.notify();
 };
 
+// a proxy disconnect from this track
 mod.prototype.on_disconnect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
     this.app.log('proxy [' + ip + '] disconnected');
+    this.app.gui.notify();
+    this.notify();
 };
 
-mod.prototype.on_nofity = function(socket, data)
+// a proxy emit a notify event [cache pull/delete]
+mod.prototype.on_notify = function(socket, data)
 {
     data.ip = socket.request.connection.remoteAddress;
     this.app.log('proxy [' + data.ip + '] notified');
     this.list.push(data);
-    this.io.emit('proxy', this.list);
-    this.app.gui.io.emit('proxy', this.list);
+    this.notify();
+};
+
+// notify all connected proxies
+mod.prototype.notify = function()
+{
+    this.io.emit('notify', this.app.server.list, this.app.proxy.list);
 };

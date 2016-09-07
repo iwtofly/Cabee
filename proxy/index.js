@@ -32,8 +32,7 @@ let app = module.exports = function(conf)
     this.track = new Track(this);
 
     this.track.link.on('connect', () => this.notify());
-    this.track.link.on('server', this.on_server.bind(this));
-    this.track.link.on('proxy', this.on_proxy.bind(this));
+    this.track.link.on('notify', this.on_notify.bind(this));
 
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/cache', this.cache.router);
@@ -62,14 +61,10 @@ app.prototype.notify = function()
     this.track.link.emit('notify', this.info());
 };
 
-app.prototype.on_server = function(data)
+app.prototype.on_notify = function(servers, proxies)
 {
-    this.servers = data;
-};
-
-app.prototype.on_proxy = function(data)
-{
-    this.proxies = data;
+    this.servers = servers;
+    this.proxies = proxies;
 };
 
 app.prototype.log = function(text)

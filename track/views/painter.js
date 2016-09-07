@@ -1,22 +1,19 @@
-$(document).read(() =>
+class Painter
 {
-    class Painter
+    tree(root)
     {
-        tree(root)
-        {
-            console.log('draw tree');
-        }
+        console.log('draw tree');
+    }
 
-        msg(host, type, text)
-        {
-            console.log('draw msg');
-        }
+    msg(host, type, text)
+    {
+        console.log('draw msg');
+    }
 
-        link(host1, host2, type, text)
-        {
-            console.log('draw link');
-        }
-    };
+    link(host1, host2, type, text)
+    {
+        console.log('draw link');
+    }
+};
 
-    window.painter = new Painter();
-});
+window.painter = new Painter();

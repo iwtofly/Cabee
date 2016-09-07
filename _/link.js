@@ -28,7 +28,7 @@ Link.prototype.on = function(event, callback)
         this.socket.on(event, callback.bind(this));
 };
 
-Link.prototype.emit = function(func, data)
+Link.prototype.emit = function()
 {
-    this.socket.emit(func, data);
+    this.socket.emit(...arguments);
 };

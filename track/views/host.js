@@ -6,41 +6,57 @@ class Host
     //     
     // logger must implement:
     //     + log(text)
-    constructor(conf, painter, logger = console)
-    {    
-        this.ip   = conf.ip;
-        this.port = conf.port;
-        this.name = conf.name;
-
-        this.url  = 'http://' + this.ip + ':' + this.port + '/gui';
-
+    constructor(painter, logger = console)
+    {
         this.painter = painter;
         this.logger  = logger;
     };
 
     log(text)
     {
-        logger.log(this.info() + '  ' + text);
+        logger.log(this.prefix + '  ' + text);
     };
 };
 
 class Track extends Host
 {
-    info() { return 'T|' + this.name + '|' + this.ip + ':' + this.port; };
-};
-
-class Server extends Host
-{
-    info() { return 'S|' + this.name + '|' + this.ip + ':' + this.port; };
-};
-
-class Proxy extends Host
-{
-    constructor(conf)
+    constructor(painter, logger)
     {
-        super(conf);
-        this.pos = conf.pos;
-    };
+        super(painter, logger);
+        this.io = io('/gui');
+        this.prefix = 'T|' + this.name + '|' + this.ip + ':' + this.port;
+    }
+};
 
-    info() { return 'P|' + this.name + '|' + this.ip + ':' + this.port + '|' + this.pos; };
+class RemoteHost extends Host
+{
+    constructor(info, painter, logger)
+    {
+        super(painter, logger);
+        this.port = info.port;
+        this.name = info.name;
+        this.ip   = info.ip;
+
+        this.url = 'http://' + this.ip + ':' + this.port + '/gui';
+        this.io  = io(this.url);
+    }
+};
+
+class Server extends RemoteHost
+{
+    constructor(info, painter, logger)
+    {
+        super(info, painter, logger);
+        this.prefix = 'S|' + this.name + '|' + this.ip + ':' + this.port; 
+    }
+};
+
+class Proxy extends RemoteHost
+{
+    constructor(info, painter, logger)
+    {
+        super(info, painter, logger);
+        this.pos = info.pos;
+        this.prefix = 'P|' + this.name + '|' + this.ip + ':' + this.port + '|' + this.pos;
+    };
 };

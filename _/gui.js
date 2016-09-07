@@ -21,3 +21,8 @@ mod.prototype.on_disconnect = function(socket)
     let ip = socket.request.connection.remoteAddress;
     this.app.log('user [' + ip + '] disconnected');
 };
+
+mod.prototype.emit = function()
+{
+    this.io.emit(...arguments);
+};

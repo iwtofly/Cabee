@@ -38,7 +38,7 @@ let app = module.exports = function(conf)
     this.expr.use('/video', this.video.router);
     this.expr.use('/track', this.track.router);
 
-    this.expr.get('/ring', () => { this.gui.io.emit('ring', 'ring ring ring!'); });
+    this.expr.get('/ring', () => { this.gui.emit('ring', 'ring ring ring!'); });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);

@@ -27,16 +27,16 @@ mod.prototype.on_connect = function(socket)
     this.app.log('user [' + ip + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
 
-    socket.emit('update',
-    {
-        track  : this.app.info(),
-        server : this.app.server.list,
-        proxy  : this.app.proxy.list
-    });
+    this.notify();
 };
 
 mod.prototype.on_disconnect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
     this.app.log('user [' + ip + '] disconnected');
+};
+
+mod.prototype.notify = function()
+{
+    this.io.emit('notify', this.app.server.list, this.app.proxy.list);
 };
