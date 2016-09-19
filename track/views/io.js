@@ -50,6 +50,6 @@ $(document).ready(() =>
         console.log(core);
 
         // draw
-        // window.painter.tree(core);
+        window.painter.tree(core);
     });  
 });

@@ -4,17 +4,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
     <title>{% block title %}default title{% endblock %}</title>
     <script src="/jquery.js"></script>
+    <script src="/d3.min.js"></script> 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/painter.js"></script>
     <script src="/host.js"></script>
     <script src="/io.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Cabee-track</h1>
         </header>
-        <div>{% block content %}default content{% endblock %}</div>
+        <div id="content"></div>
         <footer>
             <h4>© 2016 FNL-BUPT</h4>
             <h5>made by Mrsuyi</h5>

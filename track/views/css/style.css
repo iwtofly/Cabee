@@ -1,0 +1,54 @@
+*{
+    box-sizing:border-box; 
+    /*总高度=内容高度+padding;*/
+} 
+.tooltip,.msgTooltip{  
+    position: absolute;  
+    width: 200px;  
+    height: auto;  
+    word-wrap: break-word; 
+    word-break: normal;
+    text-shadow: 0 0.5px 0 grey;
+    box-shadow: -1px -1px 1px rgba(10, 0, 5, 0.3), -1px 1px 1px rgba(10, 0, 5, 0.3), 1px 1px 1px rgba(10, 0, 5, 0.3), 1px -1px 1px rgba(10, 0, 5, 0.3);
+
+    font-family: "friz", serif;
+    font-weight: normal;
+    font-size: 15px;  
+    text-align: center;  
+    border-style: solid;   
+    border-width: 1px;  
+    background-color: white;  
+    border-radius: 5px;
+    position: absolute;
+
+    padding: 10px;
+    border: 1px solid #ddd;
+
+    transition: opacity 500ms linear;
+    -moz-transition: opacity 500ms linear;
+    -webkit-transition: opacity 500ms linear;
+
+    transition-delay: 500ms
+    -moz-transition-delay: 500ms;
+    -webkit-transition-delay: 500ms;
+
+    -moz-box-shadow: 4px 4px 12px rgba(0,0,0,.5);
+    -webkit-box-shadow: 4px 4px 12px rgba(0,0,0,.5);
+    box-shadow: 4px 4px 12px rgba(0,0,0,.5);
+
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
+svg{
+    margin-top: 50px;
+    margin-left: 50px;
+    // border:1px solid;
+}
+
+.linetext {
+    font-size: 12px ;
+    font-family: SimSun;
+    fill:#0000FF;
+    fill-opacity:0.0;
+}
