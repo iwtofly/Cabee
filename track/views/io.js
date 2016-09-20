@@ -49,7 +49,15 @@ $(document).ready(() =>
 
         console.log(core);
 
-        // draw
-        window.painter.tree(core);
+        // draw test
+        // window.painter.tree(core);
+        // setTimeout(()=>{
+        //     window.painter.msg(core.proxies[0])
+        // },1000);
+        // setTimeout(()=>{
+        //     window.painter.linkArrow(core.proxies[0],core.proxies[0].nodes[0],"ask","text msg")
+        // },4000);
+
+        
     });  
 });

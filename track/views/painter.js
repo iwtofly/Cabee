@@ -186,12 +186,13 @@ class Painter
 
         var nameIndex, node;
 
-        node=findDOMNode(host);
-
-        var offsetTop=parseInt($("svg").css("margin-top"))+parseInt(node.attr("y"));
-        
-        var offsetLeft=parseInt($("svg").css("margin-left"))+parseInt(node.attr("x"));
-        console.log("offsetTop:"+offsetTop,"offsetLeft:"+offsetLeft)
+        node=this.findDOMNode(host);
+        console.log('node.attr("y")='+node.attr("y"))
+        // var offsetTop=parseInt($("svg").css("margin-top"))+parseInt(node.attr("y"));
+        var offsetTop = node.offset().top;
+        var offsetLeft = node.offset().left;
+        // var offsetLeft=parseInt($("svg").css("margin-left"))+parseInt(node.attr("x"));
+        console.log(JSON.stringify(node)+"offsetTop:"+offsetTop,"offsetLeft:"+offsetLeft)
         d3.select(".msgTooltip").html(nameIndex+": "+type+"-"+text)
             .style("left",offsetLeft+ "px")  
             .style("top", offsetTop-60+"px")
@@ -212,11 +213,8 @@ class Painter
                          .attr("class","linkTooltip")  
                          .style("opacity",0.0); 
 
-        var node1=findDOMNode(host1);
-        var node2=findDOMNode(host2);
-
-        console.log(node1)
-        console.log(node2) 
+        var node1=this.findDOMNode(host1);
+        var node2=this.findDOMNode(host2);
 
         var x1=parseInt(node1.attr("x"))+25,
             y1=parseInt(node1.attr("y"))+25,
@@ -287,9 +285,83 @@ class Painter
                             .duration(500)
                             .ease("linear")
                             .attr("opacity", 0);
-    };
+    }
+
+    //第二种动画，连线用延伸的箭头线
+    linkArrow(host1, host2, type, text){
+
+            var linkTooltip = d3.select("body")  
+                         .append("div")  
+                         .attr("class","linkTooltip")  
+                         .style("opacity",0.0); 
+
+            var node1=this.findDOMNode(host1);
+            var node2=this.findDOMNode(host2);
+
+            var x1=parseInt(node1.attr("x"))+25,
+                y1=parseInt(node1.attr("y"))+25,
+                x2=parseInt(node2.attr("x"))+25,
+                y2=parseInt(node2.attr("y"))+25;
+
+            var lineData=[
+                       {x:x1,y:y1},
+                       {x:x2,y:y2},
+                    ];
+
+            var svg = d3.select('svg');
+
+            var defs = svg.append("defs");
+
+            var textTip=svg.append("text")
+                            .attr({
+                                "x":(x1+x2)/2+10,
+                                "y":(y1+y2)/2+10,
+                                "stroke":"blue"
+                            })
+                            .text(text)
+                            .transition()
+                            .duration(1000)
+                            .delay(1500)
+                            .remove();
+
+
+            var arrowMarker = defs.append("marker")
+                                    .attr("id","arrow")
+                                    .attr("markerUnits","strokeWidth")
+                                    .attr("markerWidth","12")
+                                    .attr("markerHeight","12")
+                                    .attr("viewBox","0 0 12 12") 
+                                    .attr("refX","6")
+                                    .attr("refY","6")
+                                    .attr("orient","auto");
+
+            var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+                                    
+            arrowMarker.append("path")
+                        .attr("d",arrow_path)
+                        .attr("fill","#000");
+
+            //绘制直线
+            var line = svg.append("line")
+                         .attr("x1",x1)
+                         .attr("y1",y1)
+                         .attr("x2",x1)
+                         .attr("y2",y1)
+                         .attr("stroke","red")
+                         .attr("stroke-width",2)
+                         .attr("marker-end","url(#arrow)")
+                         .transition()
+                         .duration(1500)
+                         .attr("x2",x2)
+                         .attr("y2",y2)
+                         .delay(1000)
+                         .duration(1500)
+                         .remove();
+
+        }
 
     findDOMNode(host){
+        var node,nameIndex;
         switch (host.name){
             case "Sir1":
                 node=$("svg image[did='Server']");
