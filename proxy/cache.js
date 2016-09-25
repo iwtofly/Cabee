@@ -2,12 +2,13 @@ let express = require('express');
 let path    = require('path');
 let request = require('request');
 let multer  = require('multer');
-let File    = require('_/File');
+let File    = require('_/file');
+let Cache   = require('_/cache');
 
 let mod = module.exports = function(app)
 {
     this.app    = app;
-    this.dir    = path.join(__dirname, 'caches', app.conf.port.toString());
+    this.dir    = app.dir;
     this.router = express.Router();
 
     this.init();
@@ -23,11 +24,6 @@ mod.prototype.init = function()
     let dir    = this.dir;
     let router = this.router;
 
-    router.get('/:shit', (req, res) =>
-    {
-        res.json(req.params.shit);
-    });
-
     router.get('/', (req, res) =>
     {
         res.json(this.list());
@@ -41,7 +37,7 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        let c = new cache
+        let c = new Cache
         (
             dir,
             req.params.ip,
@@ -55,8 +51,8 @@ mod.prototype.init = function()
         if (File.exist(c.path))
         {
             this.app.log('client [' + req.ip + '] ' +
-                        'get [' + c.url + '] ' +
-                        'from [cache] in [' + delay + '] ms');
+                         'get [' + c.url + '] ' +
+                         'from [cache] in [' + delay + '] ms');
             setTimeout(() => { res.sendFile(c.path); }, delay);
             return;
         }
@@ -107,20 +103,16 @@ mod.prototype.list = function()
 {
     list = {};
     for (ip of File.folders(this.dir))
-    for (port of File.folders(path.join(this.dir, ip)))
-    for (video of File.folders(path.join(this.dir, ip, port)))
     {
-        list[ip][port][video] = File.Files(path.join(this.dir, ip, port, video));
+        list[ip] = {};
+        for (port of File.folders(path.join(this.dir, ip)))
+        {
+            list[ip][port] = {};
+            for (video of File.folders(path.join(this.dir, ip, port)))
+            {
+                list[ip][port][video] = File.files(path.join(this.dir, ip, port, video));
+            }
+        }
     }
     return list;
-};
-
-function cache(dir, ip, port, video, piece)
-{
-    this.ip    = ip;
-    this.port  = port;
-    this.video = video;
-    this.piece = piece;
-    this.url   = 'http://' + ip + ':' + port + '/video/' + video + '/' + piece;
-    this.path  = path.join(dir, ip, port, video, piece);
 };

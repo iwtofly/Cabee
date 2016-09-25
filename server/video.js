@@ -1,7 +1,7 @@
 let express = require('express');
 let path    = require('path');
 let multer  = require('multer');
-let File    = require('_/File');
+let File    = require('_/file');
 
 let mod = module.exports = function(app)
 {
@@ -92,7 +92,7 @@ mod.prototype.list = function()
     folders = File.folders(this.dir);
     for (folder of folders)
     {
-        list[folder] = File.Files(path.join(this.dir, folder));
+        list[folder] = File.files(path.join(this.dir, folder));
     }
     return list;
 };

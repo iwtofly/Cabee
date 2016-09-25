@@ -18,6 +18,7 @@
   name : GATEWAY_1
   pos  : "1"
   port : 50001
+  peer : true
   track: http://localhost:30000/proxy
   delay:
     - ['*' , 3000]    
@@ -26,6 +27,7 @@
   name : MEC1
   pos  : "11"
   port : 50002
+  peer : true
   track: http://localhost:30000/proxy
   delay:
     - ['12', 1000]
@@ -36,6 +38,7 @@
   name : MEC2
   pos  : "12"
   port : 50003
+  peer : true
   track: http://localhost:30000/proxy
   delay:
     - ['12', 1000]

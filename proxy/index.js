@@ -6,12 +6,16 @@ let path       = require('path');
 let io         = require('socket.io');
 
 let Track = require('_/track');
+let Proxy = require('_/proxy');
 let Delay = require('_/delay');
 let Cache = require('./cache');
+let Mitm  = require('./mitm');
 
 let app = module.exports = function(conf)
 {
     this.conf = conf;
+    this.dir  = path.join(__dirname, 'caches', conf.port.toString());
+    
     this.expr = express();
     this.http = http.Server(this.expr);
     this.io   = io(http).of('/gui');
@@ -30,6 +34,7 @@ let app = module.exports = function(conf)
     this.delay = new Delay(this);
     this.cache = new Cache(this);
     this.track = new Track(this);
+    this.mitm  = new Mitm(this);
 
     this.track.link.on('connect', () => this.notify());
     this.track.link.on('notify', this.on_notify.bind(this));
@@ -40,31 +45,26 @@ let app = module.exports = function(conf)
 
     this.expr.get('/server', (req, res) => { res.json(this.servers); });
     this.expr.get('/proxy', (req, res) => { res.json(this.proxies); });
-    this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
+
+    this.expr.use('/', this.mitm.router);
 
     this.http.listen(conf.port);
 };
 
-app.prototype.info = function()
-{
-    return ret =
-    {
-        port  : this.conf.port,
-        name  : this.conf.name,
-        pos   : this.conf.pos,
-        caches: this.cache.list()
-    };
-};
-
 app.prototype.notify = function()
 {
-    this.track.link.emit('notify', this.info());
+    this.track.link.emit('notify', new Proxy(this.conf, this.cache.list()));
 };
 
 app.prototype.on_notify = function(servers, proxies)
 {
     this.servers = servers;
-    this.proxies = proxies;
+
+    this.proxies = [];
+    for (proxy of proxies)
+    {
+        this.proxies.push(Proxy.fromJson(proxy));
+    }
 };
 
 app.prototype.log = function(text)
