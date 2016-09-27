@@ -2,8 +2,8 @@ let express = require('express');
 let path    = require('path');
 let request = require('request');
 let multer  = require('multer');
-let File    = require('_/File');
-let Cache   = require('_/Cache');
+let File    = require('_/file');
+let Cache   = require('_/cache');
 
 let mod = module.exports = function(app)
 {
@@ -56,7 +56,10 @@ mod.prototype.init = function()
 
         for (proxy of app.proxies)
         {
-            
+            if (proxy.has(cache))
+            {
+                
+            }
         }
 
         res.end('cache not found');
@@ -64,6 +67,8 @@ mod.prototype.init = function()
 
     router.get('*', (req, res) =>
     {
+        res.json(req.protocol + ':\/\/' + req.get('host') + req.originalUrl);
+        return;
         request(req.protocol + ':\/\/' + req.get('host') + req.originalUrl).pipe(res);
     });
 };
