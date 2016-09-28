@@ -22,7 +22,8 @@ mod.save = (f, buffer) =>
 {
     try
     {
-        mod.mkdir(path.dirname(f)) && fs.writemodSync(f, buffer);
+        mod.mkdir(path.dirname(f));
+        fs.writeFileSync(f, buffer);
         return true;
     }
     catch (err) {}
@@ -82,7 +83,7 @@ mod.rm = (f) =>
     {
         var stat = fs.statSync(f);
 
-        if (stat.ismod())
+        if (stat.isFile())
         {
             return mod.unlink(f);
         }

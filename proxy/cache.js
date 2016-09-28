@@ -48,6 +48,7 @@ mod.prototype.init = function()
 
         let delay = app.delay.match(req.params.pos);
 
+        // try get file from local cache
         if (File.exist(c.path))
         {
             this.app.log('client [' + req.ip + '] ' +
@@ -57,6 +58,7 @@ mod.prototype.init = function()
             return;
         }
 
+        // fetch file directly from source server
         request(
         {
             'url'      : c.url,

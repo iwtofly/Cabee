@@ -28,10 +28,11 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
+        let pos  = req.params.pos;
         let host = req.get('shit');
         //let host = req.get('host');
 
-        let c = new Cache
+         let cache = new Cache
         (
             dir,
             host.substr(0, host.indexOf(':')),
@@ -40,25 +41,24 @@ mod.prototype.init = function()
             req.params.piece
         );
 
-        // send from local cache
-        let delay = app.delay.match(req.params.pos);
-
-        if (File.exist(c.path))
+        let delay = this.app.delay.match(pos);
+        // try get file from local cache
+        
+        if (File.exist(cache.path))
         {
             this.app.log('client [' + req.ip + '] ' +
-                         'get [' + c.url + '] ' +
+                         'get [' + cache.url + '] ' +
                          'from [cache] in [' + delay + '] ms');
-            setTimeout(() => { res.sendFile(c.path); }, delay);
+            setTimeout(() => { res.sendFile(cache.path); }, delay);
             return;
         }
 
         // get from other proxies
-
-        for (proxy of app.proxies)
+        for (proxy of this.app.proxies)
         {
             if (proxy.has(cache))
             {
-                
+                proxy.ping(app.conf.pos, (err, time) => { console.log(time); });
             }
         }
 
