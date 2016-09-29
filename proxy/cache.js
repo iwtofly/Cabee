@@ -2,6 +2,7 @@ let express = require('express');
 let path    = require('path');
 let request = require('request');
 let multer  = require('multer');
+let util    = require('util');
 let File    = require('_/file');
 let Cache   = require('_/cache');
 
@@ -23,7 +24,6 @@ mod.prototype.init = function()
     let app    = this.app;
     let dir    = this.dir;
     let router = this.router;
-
     router.get('/', (req, res) =>
     {
         res.json(this.list());
@@ -37,46 +37,78 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        let c = new Cache
+        // collect info
+        let cache = new Cache
         (
-            dir,
             req.params.ip,
             req.params.port,
             req.params.video,
             req.params.piece
         );
+        
+        let log = (text) =>
+        {
+            app.log(util.format('[%s]=>[%s]  %s', req.ip, cache.url(), text));
+        };
 
-        let delay = app.delay.match(req.params.pos);
+        let time = app.delay.match(req.params.pos);
 
         // try get file from local cache
-        if (File.exist(c.path))
+        log('begin');
+
+        if (File.exist(cache.path(dir)))
         {
-            this.app.log('client [' + req.ip + '] ' +
-                         'get [' + c.url + '] ' +
-                         'from [cache] in [' + delay + '] ms');
-            setTimeout(() => { res.sendFile(c.path); }, delay);
+            log('cache found');
+            setTimeout(() =>
+            {
+                log('cache sent with delay ' + time);
+                res.sendFile(cache.path(dir));
+            },
+            time);
             return;
         }
+        log('cache not found');
+
+        // fetc from source
+        if (!app.conf.cache.fetch)
+        {
+            res.status(404).end('no cache in local, fetch is forbidden');
+            return;
+        }
+        log('try fetch from source');
 
         // fetch file directly from source server
-        request(
+        cache.fetch((err, response, body) =>
         {
-            'url'      : c.url,
-            'encoding' : null,
-            'timeout'  : 3000,
-        },
-        (error, response, body) =>
-        {
-            if (!error && response.statusCode == 200 && File.save(c.path, body))
+            if (err || response.statusCode != 200)
             {
-                this.app.log('client [' + req.ip + '] ' +
-                            'get [' + c.url + '] ' +
-                            'from [source] in [' + delay + '] ms');
-                setTimeout(() => { res.sendFile(c.path); }, delay);
+                log('fetch failed');
+                res.status(404).end('cache fetch failed');
             }
             else
             {
-                res.status(404).end();
+                log('fetch succeeded');
+                if (app.conf.cache.save && app.save(cache, body))
+                {
+                    log('save to [' + cache.path(dir) + ']');
+                    setTimeout(() =>
+                    {
+                        log('cache sent with delay ' + time);
+                        res.sendFile(cache.path(dir));
+                    },
+                    time);
+                }
+                else
+                {
+                    setTimeout(() =>
+                    {
+                        res.set('content-type', response.headers['content-type']);
+                        res.set('content-length', response.headers['content-length']);
+                        log('cache sent with delay ' + time);
+                        res.send(body);
+                    },
+                    time);
+                }
             }
         });
     });

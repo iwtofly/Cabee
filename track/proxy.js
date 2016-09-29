@@ -1,4 +1,5 @@
 let express = require('express');
+let ipaddr  = require('ipaddr.js');
 
 let mod = module.exports = function(app)
 {
@@ -45,7 +46,7 @@ mod.prototype.on_disconnect = function(socket)
 // a proxy emit a notify event [cache pull/delete]
 mod.prototype.on_notify = function(socket, data)
 {
-    data.ip = socket.request.connection.remoteAddress;
+    data.ip = ipaddr.parse(socket.request.connection.remoteAddress).toIPv4Address().toString();
     this.app.log('proxy [' + data.ip + '] notified');
     this.list.push(data);
     this.notify();

@@ -26,7 +26,8 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        res.json(this.match(req.params.pos));
+        let time = this.match(req.params.pos);
+        setTimeout(() => res.json(time), time);
     });
 };
 

@@ -14,32 +14,62 @@
     - ['1' , 2000]
     - ['*' , 3000]
 
+
 - type : proxy
   name : GATEWAY_1
   pos  : "1"
   port : 50001
-  peer : true
   track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
   delay:
     - ['1', 5000]
     - ['*', 3000]    
+
 
 - type : proxy
   name : MEC1
   pos  : "11"
   port : 50002
-  peer : true
   track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
   delay:
     - ['12', 1000]
     - ['*' , 100]
+
 
 - type : proxy
   name : MEC2
   pos  : "12"
   port : 50003
-  peer : true
   track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
   delay:
     - ['11', 1000]
     - ['*' , 100]

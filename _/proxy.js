@@ -1,17 +1,12 @@
 let request = require('request');
-let ipaddr  = require('ipaddr.js');
 
-let mod = module.exports = function(conf, caches = {})
+let mod = module.exports = function(json)
 {
-    this.conf   = conf;
-    this.caches = caches;
-};
-
-mod.fromJson = function(json)
-{
-    let res = new mod(json.conf, json.caches);
-    res.ip = ipaddr.parse(json.ip).toIPv4Address();
-    return res;
+    this.ip     = json.ip;
+    this.port   = json.port;
+    this.name   = json.name;
+    this.pos    = json.pos;
+    this.caches = json.caches;
 };
 
 mod.prototype.has = function(cache)
@@ -30,22 +25,33 @@ mod.prototype.ping = function(pos, callback)
     request(
     {
         'url'      : url,
-        'json'     : true,
-        'timeout'  : 3000,
+        'json'     : true
     },
     (error, response, body) =>
     {
-        if (error)
-        {
-            callback(error);
-        }
-        else if (response.statusCode != 200)
-        {
-            callback("HTTP status != 200");
-        }
-        else
-        {
-            callback(undefined, body);
-        }
+        callback(error, response, body);
+    });
+};
+
+mod.prototype.relay = function(cache, pos, callback)
+{
+    let url = 'http://' +
+               this.ip + ':' + this.port +
+               '/cache/' +
+               cache.ip + '/' +
+               cache.port + '/' +
+               cache.video + '/' +
+               cache.piece + '/' +
+               pos;
+               
+    // fetch file directly from source server
+    request(
+    {
+        'url'      : url,
+        'encoding' : null
+    },
+    (error, response, body) =>
+    {
+        callback(error, response, body);
     });
 };

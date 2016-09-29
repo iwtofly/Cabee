@@ -4,12 +4,13 @@ let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
 let io         = require('socket.io');
+let File       = require('_/file');
+let Proxy      = require('_/proxy');
 
-let Track = require('_/track');
-let Proxy = require('_/proxy');
 let Delay = require('_/delay');
+let Track = require('_/track');
 let Cache = require('./cache');
-let Mitm  = require('./mitm');
+let Relay = require('./relay');
 
 let app = module.exports = function(conf)
 {
@@ -32,38 +33,38 @@ let app = module.exports = function(conf)
     this.expr.use(express.static('_static'));
 
     this.delay = new Delay(this);
-    this.cache = new Cache(this);
     this.track = new Track(this);
-    this.mitm  = new Mitm(this);
+    this.cache = new Cache(this);
+    this.relay = new Relay(this);
 
     this.track.link.on('connect', () => this.notify());
     this.track.link.on('notify', this.on_notify.bind(this));
 
-    this.expr.use('/delay', this.delay.router);
-    this.expr.use('/cache', this.cache.router);
-    this.expr.use('/track', this.track.router);
-
     this.expr.get('/server', (req, res) => { res.json(this.servers); });
-    this.expr.get('/proxy', (req, res) => { res.json(this.proxies); });
+    this.expr.get('/proxy',  (req, res) => { res.json(this.proxies); });
 
-    this.expr.use('/', this.mitm.router);
+    this.expr.use('/delay', this.delay.router);
+    this.expr.use('/track', this.track.router);
+    this.expr.use('/cache', this.cache.router);
+    this.expr.use('/',      this.relay.router);
 
     this.http.listen(conf.port);
 };
 
 app.prototype.notify = function()
 {
-    this.track.link.emit('notify', new Proxy(this.conf, this.cache.list()));
+    let proxy = this.conf;
+    proxy.caches = this.cache.list();
+    this.track.link.emit('notify', new Proxy(proxy));
 };
 
 app.prototype.on_notify = function(servers, proxies)
 {
     this.servers = servers;
-
     this.proxies = [];
     for (proxy of proxies)
     {
-        this.proxies.push(Proxy.fromJson(proxy));
+        this.proxies.push(new Proxy(proxy));
     }
 };
 
@@ -73,4 +74,14 @@ app.prototype.log = function(text)
                  '|' + this.conf.port +
                  '|' + this.conf.pos +
                  '|  ' + text);
+};
+
+app.prototype.save = function(cache, buffer)
+{
+    let res = File.save(cache.path(this.dir), buffer);
+    if (res)
+    {
+        this.notify();
+    }
+    return res;
 };
