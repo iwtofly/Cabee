@@ -1,6 +1,13 @@
+/***************************************************
+ *                                                 *
+ * Painter对象包含三个方法。                       *
+ * tree()用于接收JSON格式数据，画出相应的网络拓扑；*
+ * msg()：当某个节点的内容发生改变时动画冒泡提示； *
+ * link():节点间进行数据传输的动画；               *
+ *                                                 *   
+ **************************************************/
 class Painter
 {   
-    //此处，需要统一各节点命名方式
     tree(root)
     {
         console.log('draw tree');
@@ -13,8 +20,8 @@ class Painter
             height = 700;
 
         var svg=d3.select("body")     //选择文档中的body元素
-                    .select("#content")
-                    .append("svg")     
+                    .select("#contact-section").select(".container")
+                    .select("svg")     
                     .attr({"width":width,
                             "height":height,
                        });
@@ -26,7 +33,7 @@ class Painter
               myNode.push(root.proxies[k1].nodes[k2]);
             }
         }
-        console.log(JSON.stringify(myNode));
+        // console.log(JSON.stringify(myNode));
 
         var targetT,targetS,targetA,targetB,subIndex,targetSub={}; 
 
@@ -52,9 +59,9 @@ class Painter
                     return {name:"MEC_B_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.png",data:"",x:200 , y : myNode[i].pos.substr(1,2)==1 ? 415:580}
                 }
            }
-        })
+        });
 
-        console.log(JSON.stringify(nodes));
+        // console.log(JSON.stringify(nodes));
 
         var edges = d3.range(1,nodeLength).map(function(i){
             console.log("nodes["+i+"]"+JSON.stringify(nodes[i]))
@@ -71,7 +78,7 @@ class Painter
             }
         })
 
-        console.log("edges: "+JSON.stringify(edges))
+        // console.log("edges: "+JSON.stringify(edges))
 
         var force = d3.layout.force()
                       .nodes(nodes) //指定节点数组
@@ -84,8 +91,8 @@ class Painter
         var drag = force.drag()
                       .on("dragstart", dragstart);
         force.start();
-        console.log(nodes);
-        console.log(edges);
+        // console.log(nodes);
+        // console.log(edges);
         //   添加连线
         var svg=d3.select("svg");
 
@@ -177,7 +184,7 @@ class Painter
     //在指定节点跳出tooltip提示出相应的text
     msg(host, type, text)
     {
-        console.log('draw msg');
+        // console.log('draw msg');
         var msgTooltip = d3.select("body")  
                          .append("div")  
                          .attr("class","msgTooltip")  
@@ -187,12 +194,12 @@ class Painter
         var nameIndex, node;
 
         node=this.findDOMNode(host);
-        console.log('node.attr("y")='+node.attr("y"))
+        // console.log('node.attr("y")='+node.attr("y"))
         // var offsetTop=parseInt($("svg").css("margin-top"))+parseInt(node.attr("y"));
         var offsetTop = node.offset().top;
         var offsetLeft = node.offset().left;
         // var offsetLeft=parseInt($("svg").css("margin-left"))+parseInt(node.attr("x"));
-        console.log(JSON.stringify(node)+"offsetTop:"+offsetTop,"offsetLeft:"+offsetLeft)
+        // console.log(JSON.stringify(node)+"offsetTop:"+offsetTop,"offsetLeft:"+offsetLeft)
         d3.select(".msgTooltip").html(nameIndex+": "+type+"-"+text)
             .style("left",offsetLeft+ "px")  
             .style("top", offsetTop-60+"px")
@@ -290,76 +297,77 @@ class Painter
     //第二种动画，连线用延伸的箭头线
     linkArrow(host1, host2, type, text){
 
-            var linkTooltip = d3.select("body")  
-                         .append("div")  
-                         .attr("class","linkTooltip")  
-                         .style("opacity",0.0); 
+        var linkTooltip = d3.select("body")  
+                     .append("div")  
+                     .attr("class","linkTooltip")  
+                     .style("opacity",0.0); 
 
-            var node1=this.findDOMNode(host1);
-            var node2=this.findDOMNode(host2);
+        var node1=this.findDOMNode(host1);
+        var node2=this.findDOMNode(host2);
 
-            var x1=parseInt(node1.attr("x"))+25,
-                y1=parseInt(node1.attr("y"))+25,
-                x2=parseInt(node2.attr("x"))+25,
-                y2=parseInt(node2.attr("y"))+25;
+        var x1=parseInt(node1.attr("x"))+25,
+            y1=parseInt(node1.attr("y"))+25,
+            x2=parseInt(node2.attr("x"))+25,
+            y2=parseInt(node2.attr("y"))+25;
 
-            var lineData=[
-                       {x:x1,y:y1},
-                       {x:x2,y:y2},
-                    ];
+        var lineData=[
+                   {x:x1,y:y1},
+                   {x:x2,y:y2},
+                ];
 
-            var svg = d3.select('svg');
+        var svg = d3.select('svg');
 
-            var defs = svg.append("defs");
+        var defs = svg.append("defs");
 
-            var textTip=svg.append("text")
-                            .attr({
-                                "x":(x1+x2)/2+10,
-                                "y":(y1+y2)/2+10,
-                                "stroke":"blue"
-                            })
-                            .text(text)
-                            .transition()
-                            .duration(1000)
-                            .delay(1500)
-                            .remove();
+        var textTip=svg.append("text")
+                        .attr({
+                            "x":(x1+x2)/2+10,
+                            "y":(y1+y2)/2+10,
+                            "stroke":"blue"
+                        })
+                        .text(text)
+                        .transition()
+                        .duration(1000)
+                        .delay(1500)
+                        .remove();
 
 
-            var arrowMarker = defs.append("marker")
-                                    .attr("id","arrow")
-                                    .attr("markerUnits","strokeWidth")
-                                    .attr("markerWidth","12")
-                                    .attr("markerHeight","12")
-                                    .attr("viewBox","0 0 12 12") 
-                                    .attr("refX","6")
-                                    .attr("refY","6")
-                                    .attr("orient","auto");
+        var arrowMarker = defs.append("marker")
+                                .attr("id","arrow")
+                                .attr("markerUnits","strokeWidth")
+                                .attr("markerWidth","12")
+                                .attr("markerHeight","12")
+                                .attr("viewBox","0 0 12 12") 
+                                .attr("refX","6")
+                                .attr("refY","6")
+                                .attr("orient","auto");
 
-            var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
-                                    
-            arrowMarker.append("path")
-                        .attr("d",arrow_path)
-                        .attr("fill","#000");
+        var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+                                
+        arrowMarker.append("path")
+                    .attr("d",arrow_path)
+                    .attr("fill","#000");
 
-            //绘制直线
-            var line = svg.append("line")
-                         .attr("x1",x1)
-                         .attr("y1",y1)
-                         .attr("x2",x1)
-                         .attr("y2",y1)
-                         .attr("stroke","red")
-                         .attr("stroke-width",2)
-                         .attr("marker-end","url(#arrow)")
-                         .transition()
-                         .duration(1500)
-                         .attr("x2",x2)
-                         .attr("y2",y2)
-                         .delay(1000)
-                         .duration(1500)
-                         .remove();
+        //绘制直线
+        var line = svg.append("line")
+                     .attr("x1",x1)
+                     .attr("y1",y1)
+                     .attr("x2",x1)
+                     .attr("y2",y1)
+                     .attr("stroke","red")
+                     .attr("stroke-width",2)
+                     .attr("marker-end","url(#arrow)")
+                     .transition()
+                     .duration(1500)
+                     .attr("x2",x2)
+                     .attr("y2",y2)
+                     .delay(1000)
+                     .duration(1500)
+                     .remove();
 
-        }
+    }
 
+    //找出相应的host对应的DOM节点
     findDOMNode(host){
         var node,nameIndex;
         switch (host.name){
@@ -375,13 +383,21 @@ class Painter
                 node=$("svg image[did='DGW_B']");
                 console.log("DGW_B");
                 break;
-            case "MEC1":
+            case "MEC_A_sub1":
                 node=$("svg image[did='MEC_A_sub1']");
                 console.log("MEC_A_sub1");
                 break;
-            case "MEC2":
+            case "MEC_A_sub2":
                 node=$("svg image[did='MEC_A_sub2']");
                 console.log("MEC_A_sub2");
+                break;
+            case "MEC_B_sub1":
+                node=$("svg image[did='MEC_B_sub1']");
+                console.log("MEC_B_sub1");
+                break;
+            case "MEC_B_sub2":
+                node=$("svg image[did='MEC_B_sub2']");
+                console.log("MEC_B_sub2");
                 break;
             default:
                 node={"x":60,"y":60};

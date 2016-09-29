@@ -9,18 +9,155 @@
     <script src="/painter.js"></script>
     <script src="/host.js"></script>
     <script src="/io.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Cabee-track</h1>
-        </header>
-        <div id="content"></div>
-        <footer>
-            <h4>© 2016 FNL-BUPT</h4>
-            <h5>made by Mrsuyi</h5>
-        </footer>
+    <nav id="menu" class="navbar navbar-default navbar-fixed-top">
+        <div class="container"> 
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+              <a class="navbar-brand" href="#">Cabee-track</a> </div>
+            
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#home" class="page-scroll">Home</a></li>
+                <li><a href="#about-section" class="page-scroll">About</a></li>
+                <li><a href="#contact-section" class="page-scroll">Animation</a></li>
+                <li><a href="#features-section" class="page-scroll">Features</a></li>
+                <li><a href="#team-section" class="page-scroll">Team</a></li>
+              </ul>
+        </div>
+        <!-- /.navbar-collapse --> 
+      </div>
+      <!-- /.container-fluid --> 
+    </nav>        
+
+    <!-- Header -->
+    <header class="text-center" name="home">
+      <div class="intro-text">
+        <h1>It is our <span class="color">Track</span></h1>
+        <p>A mobile CDN platform</p>
+        <div class="clearfix"></div>
+        <a href="#about-section" class="btn btn-default btn-lg page-scroll">Learn More</a> </div>
+    </header>
+    <!-- About Section -->
+    <div id="about-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>About Cabee</h2>
+          <hr>
+        </div>
+        <div class="space"></div>
+        <div class="row">
+          <div class="col-md-4">
+            <h4>What is Server</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam. Sed commodo nibh ante facilisis bibendum dolor feugiat at. Duis sed dapibus leo nec ornare diam commodo nibh ante facilisis bibendum.</p>
+          </div>
+          <div class="col-md-4">
+            <h4>What is BGW</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam. Sed commodo nibh ante facilisis bibendum dolor feugiat at. Duis sed dapibus leo nec ornare diam commodo nibh ante facilisis bibendum.</p>
+          </div>
+          <div class="col-md-4">
+            <h4>What is MEC</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dapibus leo nec ornare diam. Sed commodo nibh ante facilisis bibendum dolor feugiat at. Duis sed dapibus leo nec ornare diam commodo nibh ante facilisis bibendum.</p>
+          </div>
+        </div>
+      </div>
     </div>
+    <!-- Animation Display -->
+    <div id="contact-section">
+      <div class="container">
+        <div class="section-title center">
+          <h2>Animation</h2>
+          <hr>
+        </div>
+        <svg></svg>
+      </div>
+    </div>
+    <!-- features Section -->
+    <div id="features-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Features</h2>
+          <hr>
+        </div>
+        <div class="space"></div>
+        <div class="row">
+          <div class="col-md-3 col-sm-6 service"> <i class="fa fa-desktop"></i>
+            <h4>Push</h4>
+            <p>Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam.</p>
+          </div>
+          <div class="col-md-3 col-sm-6 service"> <i class="fa fa-gears"></i>
+            <h4>Pull</h4>
+            <p>Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque.</p>
+          </div>
+          <div class="col-md-3 col-sm-6 service"> <i class="fa fa-pie-chart"></i>
+            <h4>路由算法</h4>
+            <p>Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam.</p>
+          </div>
+          <div class="col-md-3 col-sm-6 service"> <i class="fa fa-line-chart"></i>
+            <h4>负载均衡</h4>
+            <p>Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque.</p>
+          </div>
+        </div>
+        <div class="space"></div>
+        <div class="row">
+          <div class="col-md-3 col-sm-6 service"> <i class="fa fa-shopping-cart"></i>
+            <h4>video</h4>
+            <p>Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam.</p>
+          </div>
+          <div class="col-md-3 col-sm-6 service"> <i class="fa fa-file-text-o"></i>
+            <h4>Content Development</h4>
+            <p>Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div id="team-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Meet the Team</h2>
+          <hr>
+        </div>
+        <div id="row">
+          <div class="col-md-3 col-sm-6 team">
+            <div class="thumbnail"> <img src="img/team/01.jpg" alt="..." class="team-img">
+              <div class="caption">
+                <h3>Huawei</h3>
+                <p>Founder</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 team">
+            <div class="thumbnail"> <img src="img/team/02.jpg" alt="..." class="team-img">
+              <div class="caption">
+                <h3>FNL</h3>
+                <p>Web Designer</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+        <p>Copyright &copy; 2016 FNL-BUPT. Designed by <a href="https://github.com/mrsuyi" rel="nofollow">Mrsuyi</a> and <a href="https://github.com/iwtofly" rel="nofollow">iwtofly</a></p>
+      </div>
+    </div>
+    <!-- Include all compiled plugins (below), or include individual files as needed --> 
+    <script src="bootstrap/bootstrap.min.js"></script> 
+    <script type="text/javascript" src="js/SmoothScroll.js"></script> 
+    
+    <!-- Javascripts
+    ================================================== --> 
+    <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>
