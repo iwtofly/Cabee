@@ -46,22 +46,22 @@ mod.prototype.init = function()
             req.params.piece
         );
         
-        let log = (text) =>
+        let log = (...args) =>
         {
-            app.log(util.format('[%s]=>[%s]  %s', req.ip, cache.url(), text));
+            app.log('[%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
         };
 
         let time = app.delay.match(req.params.pos);
 
         // try get file from local cache
-        log('begin');
+        log('[cache]');
 
         if (File.exist(cache.path(dir)))
         {
             log('cache found');
             setTimeout(() =>
             {
-                log('cache sent with delay ' + time);
+                log('cache sent with delay [%s]ms', time);
                 res.sendFile(cache.path(dir));
             },
             time);
@@ -93,7 +93,7 @@ mod.prototype.init = function()
                     log('save to [' + cache.path(dir) + ']');
                     setTimeout(() =>
                     {
-                        log('cache sent with delay ' + time);
+                        log('cache sent with delay [%s]ms', time);
                         res.sendFile(cache.path(dir));
                     },
                     time);
@@ -104,7 +104,7 @@ mod.prototype.init = function()
                     {
                         res.set('content-type', response.headers['content-type']);
                         res.set('content-length', response.headers['content-length']);
-                        log('cache sent with delay ' + time);
+                        log('cache sent with delay [%s]ms', time);
                         res.send(body);
                     },
                     time);

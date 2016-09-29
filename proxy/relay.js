@@ -43,15 +43,15 @@ mod.prototype.init = function()
             req.params.piece
         );
 
-        let log = (text) =>
+        let log = (...args) =>
         {
-            app.log(util.format('[%s]=>[%s]  %s', req.ip, cache.url(), text));
+            app.log('[%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
         };
 
         let time = app.delay.match(pos);
 
         // try get file from local cache
-        log('begin');
+        log('[relay]');
         
         if (File.exist(cache.path(dir)))
         {
@@ -68,8 +68,8 @@ mod.prototype.init = function()
 
         // try get file from other proxies
         let exist = false;
-        let start = false;
-        for (proxy of this.app.proxies)
+        let begin = false;
+        for (let proxy of app.proxies)
         {
             if (proxy.has(cache) && (
                 app.conf.relay.source.sub && Pos.sub(proxy.pos, app.conf.pos) ||
@@ -77,36 +77,53 @@ mod.prototype.init = function()
                 app.conf.relay.source.super && Pos.super(proxy.pos, app.conf.pos)))
             {
                 exist = true;
-                // proxy.ping(app.conf.pos, (err, time) => { console.log(time); });
-                proxy.relay(cache, this.app.conf.pos, (err, response, body) =>
+                log('ping [%s]', proxy.toString());
+                proxy.ping(app.conf.pos, (err, response, body) =>
                 {
                     if (err || response.statusCode != 200)
                     {
-                        log('relay failed');
+                        log('ping [%s] failed', proxy.toString());
                     }
                     else
                     {
-                        log('relay succeeded');
-                        if (app.conf.relay.save && app.save(cache, body))
+                        log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
+
+                        if (!begin)
                         {
-                            log('save to [' + cache.path(dir) + ']');
-                            setTimeout(() =>
+                            log('[%s] is chosen for relaying cache', proxy.toString());
+
+                            proxy.relay(cache, app.conf.pos, (err, response, body) =>
                             {
-                                log('cache sent with delay ' + time);
-                                res.sendFile(cache.path(dir));
-                            },
-                            time);
-                        }
-                        else
-                        {
-                            res.set('content-type', response.headers['content-type']);
-                            res.set('content-length', response.headers['content-length']);
-                            log('cache sent with delay ' + time);
-                            res.send(body);
+                                if (err || response.statusCode != 200)
+                                {
+                                    log('relay failed');
+                                }
+                                else
+                                {
+                                    log('relay succeeded');
+                                    if (app.conf.relay.save && app.save(cache, body))
+                                    {
+                                        log('save to [' + cache.path(dir) + ']');
+                                        setTimeout(() =>
+                                        {
+                                            log('cache sent with delay [%s]ms', time);
+                                            res.sendFile(cache.path(dir));
+                                        },
+                                        time);
+                                    }
+                                    else
+                                    {
+                                        res.set('content-type', response.headers['content-type']);
+                                        res.set('content-length', response.headers['content-length']);
+                                        log('cache sent with delay [%s]ms', time);
+                                        res.send(body);
+                                    }
+                                }
+                            });
+                            begin = true;
                         }
                     }
                 });
-                return;
             }
         }
 
@@ -116,6 +133,7 @@ mod.prototype.init = function()
             log('no proxy has cache');
             if (app.conf.relay.fetch)
             {
+                log('try fetch from source');
                 // fetch file directly from source server
                 cache.fetch((err, response, body) =>
                 {
@@ -141,8 +159,8 @@ mod.prototype.init = function()
                         {
                             setTimeout(() =>
                             {
-                                res.set('content-type', response.headers('content-type'));
-                                res.set('content-length', response.headers('content-length'));
+                                res.set('content-type', response.headers['content-type']);
+                                res.set('content-length', response.headers['content-length']);
                                 log('cache sent with delay ' + time);
                                 res.send(body);
                             },
@@ -160,8 +178,9 @@ mod.prototype.init = function()
 
     router.get('*', (req, res) =>
     {
-        res.json(req.protocol + ':\/\/' + req.get('host') + req.originalUrl);
-        return;
-        request(req.protocol + ':\/\/' + req.get('host') + req.originalUrl).pipe(res);
+        let url = req.protocol + ':\/\/' + req.get('host') + req.originalUrl;
+        app.log('intercept a normal request from [%s] for [%s]', req.ip, url);
+        res.json('you shall not pass!!!');
+        // request(req.protocol + ':\/\/' + req.get('host') + req.originalUrl).pipe(res);
     });
 };

@@ -9,6 +9,11 @@ let mod = module.exports = function(json)
     this.caches = json.caches;
 };
 
+mod.prototype.toString = function()
+{
+    return this.ip + ':' + this.port + '|' + this.pos;
+};
+
 mod.prototype.has = function(cache)
 {
     return this.caches[cache.ip] &&
@@ -19,13 +24,13 @@ mod.prototype.has = function(cache)
 
 mod.prototype.ping = function(pos, callback)
 {
-    let url = 'http://' + this.ip + ':' + this.conf.port + '/delay/ping/' + pos;
+    let url = 'http://' + this.ip + ':' + this.port + '/delay/ping/' + pos;
 
     // fetch file directly from source server
     request(
     {
-        'url'      : url,
-        'json'     : true
+        'url'  : url,
+        'json' : true
     },
     (error, response, body) =>
     {

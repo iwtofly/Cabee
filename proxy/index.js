@@ -4,6 +4,7 @@ let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
 let io         = require('socket.io');
+let util       = require('util');
 let File       = require('_/file');
 let Proxy      = require('_/proxy');
 
@@ -68,12 +69,12 @@ app.prototype.on_notify = function(servers, proxies)
     }
 };
 
-app.prototype.log = function(text)
+app.prototype.log = function()
 {
     console.log('P|' + this.conf.name +
                  '|' + this.conf.port +
                  '|' + this.conf.pos +
-                 '|  ' + text);
+                 '|  ' + util.format(...arguments));
 };
 
 app.prototype.save = function(cache, buffer)
