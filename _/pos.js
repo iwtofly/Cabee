@@ -1,25 +1,38 @@
+let assert = require('assert');
+
 let Pos = module.exports = function(path)
 {
     this.path = path;
 };
 
-Pos.prototype.equal = function(another)
+Pos.equal = (p1, p2) =>
 {
-    return this.path == another.path;
+    return p1 == p2;
 };
 
-Pos.prototype.peer = function(another)
+Pos.peer = (p1, p2) =>
 {
-    return this.path.slice(0, -1) == another.path.slice(0, -1);
+    return p1 != p2 && p1.slice(0, -1) == p2.slice(0, -1);
 };
 
-Pos.prototype.inside = function(another)
+Pos.sub = (p1, p2) =>
 {
-    return this.path.length > another.path.length &&
-           this.path.substr(0, another.path.length) == another.path;
+    return p1.length > p2.length &&
+           p1.substr(0, p2.length) == p2;
 };
 
-Pos.prototype.contain = function(another)
+Pos.super = (p1, p2) =>
 {
-    return another.inside(this);
+    return Pos.sub(p2, p1);
 };
+
+// test
+{
+    assert(Pos.equal('1', '1'));
+    assert(Pos.peer('11', '12'));
+    assert(!Pos.peer('12345', '1234'));
+    assert(Pos.sub('12345', '123'));
+    assert(!Pos.sub('123', '123'));
+    assert(!Pos.sub('123', '1234'));
+    assert(Pos.super('12', '123'));
+}

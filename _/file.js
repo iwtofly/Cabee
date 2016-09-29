@@ -1,17 +1,15 @@
 var fs     = require('fs');
 var path   = require('path');
 
-module.exports = File;
-
-function File() {};
+let mod = module.exports = {};
 
 //========================= create =========================//
-File.mkdir = (dir) =>
+mod.mkdir = (dir) =>
 {
     try
     {
         var parent = path.dirname(dir);
-        if (!File.exist(parent) && !File.mkdir(parent))
+        if (!mod.exist(parent) && !mod.mkdir(parent))
             return undefined;
         fs.mkdirSync(dir);
         console.log('folder create [' + dir + ']');
@@ -20,18 +18,19 @@ File.mkdir = (dir) =>
     catch (err) {}
 };
 
-File.save = (f, buffer) =>
+mod.save = (f, buffer) =>
 {
     try
     {
-        File.mkdir(path.dirname(f)) && fs.writeFileSync(f, buffer);
+        mod.mkdir(path.dirname(f));
+        fs.writeFileSync(f, buffer);
         return true;
     }
     catch (err) {}
 };
 
 //========================= query =========================//
-File.exist = (f) =>
+mod.exist = (f) =>
 {
     try
     {
@@ -41,7 +40,7 @@ File.exist = (f) =>
     catch (err) {}
 };
 
-File.ls = (dir) =>
+mod.ls = (dir) =>
 {
     try
     {
@@ -51,11 +50,11 @@ File.ls = (dir) =>
     return [];
 }
 
-File.Files = (dir) =>
+mod.files = (dir) =>
 {
     try
     {
-        return File.ls(dir).filter((f) =>
+        return mod.ls(dir).filter((f) =>
         {
             return fs.statSync(path.join(dir, f)).isFile();
         });
@@ -64,11 +63,11 @@ File.Files = (dir) =>
     return [];
 };
 
-File.folders = (dir) =>
+mod.folders = (dir) =>
 {
     try
     {  
-        return File.ls(dir).filter((f) =>
+        return mod.ls(dir).filter((f) =>
         {
             return fs.statSync(path.join(dir, f)).isDirectory();
         });
@@ -78,7 +77,7 @@ File.folders = (dir) =>
 };
 
 //========================= delete =========================//
-File.rm = (f) =>
+mod.rm = (f) =>
 {
     try
     {
@@ -86,33 +85,33 @@ File.rm = (f) =>
 
         if (stat.isFile())
         {
-            return File.unlink(f);
+            return mod.unlink(f);
         }
         else if (stat.isDirectory())
         {
-            return File.clear(f) && File.rmdir(f);
+            return mod.clear(f) && mod.rmdir(f);
         }
     }
     catch (err) {}
 }
 
-File.unlink = (f) =>
+mod.unlink = (f) =>
 {
     try
     {
         fs.unlinkSync(f);
-        console.log('File rm [' + f + ']');
+        console.log('mod rm [' + f + ']');
         return true;
     }
     catch (err) {}
 }
 
-File.clear = (dir) =>
+mod.clear = (dir) =>
 {
     var ret = true;
-    for (f of File.ls(dir))
+    for (f of mod.ls(dir))
     {
-        ret &= File.rm(path.join(dir, f));
+        ret &= mod.rm(path.join(dir, f));
     }
     if (ret)
     {
@@ -121,7 +120,7 @@ File.clear = (dir) =>
     }
 };
 
-File.rmdir = (dir) =>
+mod.rmdir = (dir) =>
 {
     try
     {

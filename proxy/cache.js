@@ -2,12 +2,14 @@ let express = require('express');
 let path    = require('path');
 let request = require('request');
 let multer  = require('multer');
-let File    = require('_/File');
+let util    = require('util');
+let File    = require('_/file');
+let Cache   = require('_/cache');
 
 let mod = module.exports = function(app)
 {
     this.app    = app;
-    this.dir    = path.join(__dirname, 'caches', app.conf.port.toString());
+    this.dir    = app.dir;
     this.router = express.Router();
 
     this.init();
@@ -22,12 +24,6 @@ mod.prototype.init = function()
     let app    = this.app;
     let dir    = this.dir;
     let router = this.router;
-
-    router.get('/:shit', (req, res) =>
-    {
-        res.json(req.params.shit);
-    });
-
     router.get('/', (req, res) =>
     {
         res.json(this.list());
@@ -41,44 +37,78 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        let c = new cache
+        // collect info
+        let cache = new Cache
         (
-            dir,
             req.params.ip,
             req.params.port,
             req.params.video,
             req.params.piece
         );
-
-        let delay = app.delay.match(req.params.pos);
-
-        if (File.exist(c.path))
+        
+        let log = (...args) =>
         {
-            this.app.log('client [' + req.ip + '] ' +
-                        'get [' + c.url + '] ' +
-                        'from [cache] in [' + delay + '] ms');
-            setTimeout(() => { res.sendFile(c.path); }, delay);
+            app.log('[%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
+        };
+
+        let time = app.delay.match(req.params.pos);
+
+        // try get file from local cache
+        log('[cache]');
+
+        if (File.exist(cache.path(dir)))
+        {
+            log('cache found');
+            setTimeout(() =>
+            {
+                log('cache sent with delay [%s]ms', time);
+                res.sendFile(cache.path(dir));
+            },
+            time);
             return;
         }
+        log('cache not found');
 
-        request(
+        // fetc from source
+        if (!app.conf.cache.fetch)
         {
-            'url'      : c.url,
-            'encoding' : null,
-            'timeout'  : 3000,
-        },
-        (error, response, body) =>
+            res.status(404).end('no cache in local, fetch is forbidden');
+            return;
+        }
+        log('try fetch from source');
+
+        // fetch file directly from source server
+        cache.fetch((err, response, body) =>
         {
-            if (!error && response.statusCode == 200 && File.save(c.path, body))
+            if (err || response.statusCode != 200)
             {
-                this.app.log('client [' + req.ip + '] ' +
-                            'get [' + c.url + '] ' +
-                            'from [source] in [' + delay + '] ms');
-                setTimeout(() => { res.sendFile(c.path); }, delay);
+                log('fetch failed');
+                res.status(404).end('cache fetch failed');
             }
             else
             {
-                res.status(404).end();
+                log('fetch succeeded');
+                if (app.conf.cache.save && app.save(cache, body))
+                {
+                    log('save to [' + cache.path(dir) + ']');
+                    setTimeout(() =>
+                    {
+                        log('cache sent with delay [%s]ms', time);
+                        res.sendFile(cache.path(dir));
+                    },
+                    time);
+                }
+                else
+                {
+                    setTimeout(() =>
+                    {
+                        res.set('content-type', response.headers['content-type']);
+                        res.set('content-length', response.headers['content-length']);
+                        log('cache sent with delay [%s]ms', time);
+                        res.send(body);
+                    },
+                    time);
+                }
             }
         });
     });
@@ -107,20 +137,16 @@ mod.prototype.list = function()
 {
     list = {};
     for (ip of File.folders(this.dir))
-    for (port of File.folders(path.join(this.dir, ip)))
-    for (video of File.folders(path.join(this.dir, ip, port)))
     {
-        list[ip][port][video] = File.Files(path.join(this.dir, ip, port, video));
+        list[ip] = {};
+        for (port of File.folders(path.join(this.dir, ip)))
+        {
+            list[ip][port] = {};
+            for (video of File.folders(path.join(this.dir, ip, port)))
+            {
+                list[ip][port][video] = File.files(path.join(this.dir, ip, port, video));
+            }
+        }
     }
     return list;
-};
-
-function cache(dir, ip, port, video, piece)
-{
-    this.ip    = ip;
-    this.port  = port;
-    this.video = video;
-    this.piece = piece;
-    this.url   = 'http://' + ip + ':' + port + '/video/' + video + '/' + piece;
-    this.path  = path.join(dir, ip, port, video, piece);
 };

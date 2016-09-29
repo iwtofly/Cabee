@@ -3,11 +3,7 @@ let Pos     = require('_/pos');
 
 let mod = module.exports = function(app)
 {
-    this.rules = [];
-    for (rule of app.conf.delay)
-    {
-        this.rules.push([new Pos(rule[0]), rule[1]]);
-    }
+    this.rules  = app.conf.delay;
     this.router = express.Router();
 
     this.init();
@@ -30,17 +26,16 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        res.json(this.match(req.params.pos));
+        let time = this.match(req.params.pos);
+        setTimeout(() => res.json(time), time);
     });
 };
 
 mod.prototype.match = function(pos = '')
 {
-    pos = new Pos(pos.toString());
-
-    for (let [mask, time] of this.rules)
+    for (let [pos2, time] of this.rules)
     {
-        if (pos.equal(mask) || pos.inside(mask))
+        if (pos2 == '*' || Pos.equal(pos, pos2) || Pos.sub(pos, pos2))
         {
             return time;
         }
