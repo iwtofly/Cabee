@@ -10,6 +10,7 @@ let Proxy      = require('_/proxy');
 
 let Delay = require('_/delay');
 let Track = require('_/track');
+let Gui   = require('_/gui');
 let Cache = require('./cache');
 let Relay = require('./relay');
 
@@ -20,7 +21,7 @@ let app = module.exports = function(conf)
     
     this.expr = express();
     this.http = http.Server(this.expr);
-    this.io   = io(http).of('/gui');
+    this.io   = io(this.http);
 
     nunjucks.configure(__dirname + '/views',
     {
@@ -37,6 +38,7 @@ let app = module.exports = function(conf)
     this.track = new Track(this);
     this.cache = new Cache(this);
     this.relay = new Relay(this);
+    this.gui   = new Gui(this);
 
     this.track.link.on('connect', () => this.notify());
     this.track.link.on('notify', this.on_notify.bind(this));

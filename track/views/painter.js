@@ -407,4 +407,29 @@ class Painter
     }
 };
 
-window.painter = new Painter();
+// delete this :D
+class Mrsuyi_Tmp_Painter
+{
+  log(text) { console.log(text); }
+
+  tree(track, servers, proxies)
+  {
+    console.log('draw a fucking tree');
+  }
+
+  msg(host, type, msg)
+  {
+    
+  }
+
+  // host: the host which receives a req
+  // pos : where the req comes from
+  // type: type of req
+  //   INTERCEPT: interception of UE's req
+  //   PING     : ping
+  //   RELAY    : proxy
+  line(host, pos, type)
+  {
+
+  }
+};

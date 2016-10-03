@@ -45,13 +45,13 @@ mod.prototype.init = function()
 
         let log = (...args) =>
         {
-            app.log('[%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
+            app.log('[relay] [%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
         };
 
         let time = app.delay.match(pos);
 
         // try get file from local cache
-        log('[relay]');
+        log('begin');
         
         if (File.exist(cache.path(dir)))
         {
@@ -78,6 +78,11 @@ mod.prototype.init = function()
             {
                 exist = true;
                 log('ping [%s]', proxy.toString());
+
+                // emit ping event to gui
+                app.gui.emit('ping_req', proxy.ip, proxy.pos);
+
+                // begin ping
                 proxy.ping(app.conf.pos, (err, response, body) =>
                 {
                     if (err || response.statusCode != 200)
@@ -88,6 +93,10 @@ mod.prototype.init = function()
                     {
                         log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
 
+                        // emit ping_res
+                        app.gui.emit('ping_res', proxy.ip, proxy.pos, body);
+
+                        // no other pinged proxy has returned yet, so we are the chosen one :D
                         if (!begin)
                         {
                             log('[%s] is chosen for relaying cache', proxy.toString());

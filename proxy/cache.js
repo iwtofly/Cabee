@@ -48,13 +48,13 @@ mod.prototype.init = function()
         
         let log = (...args) =>
         {
-            app.log('[%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
+            app.log('[cache] [%s|%s]=>[%s]  %s', req.ip, req.params.pos, cache.url(), util.format(...args));
         };
 
         let time = app.delay.match(req.params.pos);
 
         // try get file from local cache
-        log('[cache]');
+        log('begin');
 
         if (File.exist(cache.path(dir)))
         {

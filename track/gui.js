@@ -2,23 +2,15 @@ let express = require('express');
 
 let mod = module.exports = function(app)
 {
-    this.app    = app;
+    this.app = app;
     this.router = express.Router();
-    this.io     = app.io.of('/gui');
-
-    this.io.on('connection', this.on_connect.bind(this));
-
-    this.init();
-};
-
-mod.prototype.init = function()
-{
-    let router = this.router;
-
-    router.get('/', (req, res) =>
+    this.router.get('/', (req, res) =>
     {
         res.render('main.j2');
     });
+
+    this.io  = app.io.of('/gui');
+    this.io.on('connection', this.on_connect.bind(this));
 };
 
 mod.prototype.on_connect = function(socket)
@@ -27,7 +19,7 @@ mod.prototype.on_connect = function(socket)
     this.app.log('user [' + ip + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
 
-    this.notify();
+    this.refresh();
 };
 
 mod.prototype.on_disconnect = function(socket)
@@ -36,7 +28,12 @@ mod.prototype.on_disconnect = function(socket)
     this.app.log('user [' + ip + '] disconnected');
 };
 
-mod.prototype.notify = function()
+mod.prototype.emit = function()
 {
-    this.io.emit('notify', this.app.server.list, this.app.proxy.list);
+    this.io.emit(...arguments);
+};
+
+mod.prototype.refresh = function()
+{
+    this.io.emit('refresh', this.app.server.list, this.app.proxy.list);
 };

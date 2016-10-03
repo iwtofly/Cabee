@@ -35,7 +35,7 @@ let app = module.exports = function(conf)
     this.expr.use('/proxy', this.proxy.router);
     this.expr.use('/gui', this.gui.router);
 
-    this.expr.get('*', (req, res) => { res.render('main.j2'); });
+    this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
 };

@@ -3,6 +3,7 @@ let nunjucks   = require('nunjucks');
 let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
+let util       = require('util');
 let io         = require('socket.io');
 
 let Track = require('_/track');
@@ -15,7 +16,7 @@ let app = module.exports = function(conf)
     this.conf = conf;
     this.expr = express();
     this.http = http.Server(this.expr);
-    this.io   = io(http);
+    this.io   = io(this.http);
 
     nunjucks.configure(__dirname + '/views',
     {
@@ -38,7 +39,6 @@ let app = module.exports = function(conf)
     this.expr.use('/video', this.video.router);
     this.expr.use('/track', this.track.router);
 
-    this.expr.get('/ring', () => { this.gui.emit('ring', 'ring ring ring!'); });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
@@ -59,9 +59,9 @@ app.prototype.notify = function()
     this.track.link.emit('notify', this.info());
 };
 
-app.prototype.log = function(text)
+app.prototype.log = function()
 {
     console.log('S|' + this.conf.name +
                  '|' + this.conf.port +
-                 '|  ' + text);
+                 '|  ' + util.format(...arguments));
 };
