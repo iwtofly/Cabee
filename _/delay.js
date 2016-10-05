@@ -28,13 +28,16 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        app.gui.emit('pong_req', req.ip, req.params.pos);
+        app.log('[pong] [%s|%s] begin', req.ip, req.params.pos);
+        app.gui.emit('pong_bgn', req.ip, req.params.pos);
 
         let time = this.match(req.params.pos);
 
         setTimeout(() =>
         {
-            app.gui.emit('pong_res', req.ip, req.params.pos, time);
+            app.log('[pong] [%s|%s] end after [%s]ms', req.ip, req.params.pos, time);
+            app.gui.emit('pong_end', req.ip, req.params.pos, time);
+            
             res.json(time);
         },
         time);

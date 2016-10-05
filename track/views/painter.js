@@ -417,19 +417,20 @@ class Mrsuyi_Tmp_Painter
     console.log('draw a fucking tree');
   }
 
-  msg(host, type, msg)
+  // src & dst are object-reference to a User/Server/Proxy
+
+  line(src, dst, type, text)
   {
-    
+
   }
 
-  // host: the host which receives a req
-  // pos : where the req comes from
-  // type: type of req
-  //   INTERCEPT: interception of UE's req
-  //   PING     : ping
-  //   RELAY    : proxy
-  line(host, pos, type)
+  unline(src, dst)
   {
 
+  }
+
+  msg(src, type, text)
+  {
+    
   }
 };

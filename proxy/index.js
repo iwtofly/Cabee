@@ -5,9 +5,11 @@ let http       = require('http');
 let path       = require('path');
 let io         = require('socket.io');
 let util       = require('util');
+let ipaddr     = require('ipaddr.js');
 let File       = require('_/file');
 let Proxy      = require('_/proxy');
 
+let Ip    = require('_/ip');
 let Delay = require('_/delay');
 let Track = require('_/track');
 let Gui   = require('_/gui');
@@ -29,7 +31,6 @@ let app = module.exports = function(conf)
         express: this.expr
     });
 
-    // set up web-service
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
@@ -40,8 +41,8 @@ let app = module.exports = function(conf)
     this.relay = new Relay(this);
     this.gui   = new Gui(this);
 
-    this.track.link.on('connect', () => this.notify());
-    this.track.link.on('notify', this.on_notify.bind(this));
+    this.track.link.on('connect', () => this.refresh());
+    this.track.link.on('refresh', this.on_refresh.bind(this));
 
     this.expr.get('/server', (req, res) => { res.json(this.servers); });
     this.expr.get('/proxy',  (req, res) => { res.json(this.proxies); });
@@ -54,14 +55,14 @@ let app = module.exports = function(conf)
     this.http.listen(conf.port);
 };
 
-app.prototype.notify = function()
+app.prototype.refresh = function()
 {
     let proxy = this.conf;
     proxy.caches = this.cache.list();
-    this.track.link.emit('notify', new Proxy(proxy));
+    this.track.link.emit('refresh', new Proxy(proxy));
 };
 
-app.prototype.on_notify = function(servers, proxies)
+app.prototype.on_refresh = function(servers, proxies)
 {
     this.servers = servers;
     this.proxies = [];
@@ -84,7 +85,7 @@ app.prototype.save = function(cache, buffer)
     let res = File.save(cache.path(this.dir), buffer);
     if (res)
     {
-        this.notify();
+        this.refresh();
     }
     return res;
 };

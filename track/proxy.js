@@ -1,5 +1,5 @@
 let express = require('express');
-let ipaddr  = require('ipaddr.js');
+let Ip      = require('_/ip');
 
 let mod = module.exports = function(app)
 {
@@ -26,10 +26,9 @@ mod.prototype.init = function()
 // a new proxy connect to this track
 mod.prototype.on_connect = function(socket)
 {
-    let ip = socket.request.connection.remoteAddress;
-    this.app.log('proxy [' + ip + '] connected');
+    this.app.log('proxy [' + Ip.format(socket.request.connection.remoteAddress) + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
-    socket.on('refresh',     this.on_refresh.bind(this, socket));
+    socket.on('refresh', this.on_refresh.bind(this, socket));
     this.app.gui.refresh();
     this.refresh();
 };
@@ -37,8 +36,7 @@ mod.prototype.on_connect = function(socket)
 // a proxy disconnect from this track
 mod.prototype.on_disconnect = function(socket)
 {
-    let ip = socket.request.connection.remoteAddress;
-    this.app.log('proxy [' + ip + '] disconnected');
+    this.app.log('proxy [' + Ip.format(socket.request.connection.remoteAddress) + '] disconnected');
     this.app.gui.refresh();
     this.refresh();
 };
@@ -46,8 +44,16 @@ mod.prototype.on_disconnect = function(socket)
 // a proxy emit a refresh event [cache pull/delete]
 mod.prototype.on_refresh = function(socket, data)
 {
-    data.ip = ipaddr.parse(socket.request.connection.remoteAddress).toIPv4Address().toString();
-    this.app.log('proxy [' + data.ip + '] notified');
+    data.ip = Ip.format(socket.request.connection.remoteAddress);
+    this.app.log('proxy [' + data.ip + '] refreshed');
+    for (let i = 0; i < this.list.length; ++i)
+    {
+        if (this.list[i].pos == data.pos)
+        {
+            this.list.splice(i, 1);
+            break;
+        }
+    }
     this.list.push(data);
     this.refresh();
 };

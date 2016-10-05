@@ -4,10 +4,12 @@ let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
 let io         = require('socket.io');
+let ipaddr     = require('ipaddr.js');
 
-let Server     = require('./server');
-let Proxy      = require('./proxy');
-let Gui        = require('./gui');
+let Ip      = require('_/ip');
+let Server  = require('./server');
+let Proxy   = require('./proxy');
+let Gui     = require('./gui');
 
 let app = module.exports = function(conf)
 {

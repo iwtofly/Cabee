@@ -1,8 +1,8 @@
-let express = require('express');
-let path    = require('path');
+let express = require('express'); let path    = require('path');
 let request = require('request');
 let multer  = require('multer');
 let util    = require('util');
+let Ip      = require('_/ip');
 let File    = require('_/file');
 let Cache   = require('_/cache');
 let Pos     = require('_/pos');
@@ -31,10 +31,10 @@ mod.prototype.init = function()
     (req, res) =>
     {
         // collect info
-        let pos  = req.params.pos;
-        let host = req.get('shit');
-        //let host = req.get('host');
-
+        let src_ip  = Ip.format(req.ip);
+        let src_pos = req.params.pos;
+        // let host = req.get('shit');
+        let host = req.get('host');
         let cache = new Cache
         (
             host.substr(0, host.indexOf(':')),
@@ -42,26 +42,34 @@ mod.prototype.init = function()
             req.params.video,
             req.params.piece
         );
-
         let log = (...args) =>
         {
-            app.log('[relay] [%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
+            app.log('[relay] [%s|%s]=>[%s] %s', src_ip, src_pos, cache.url(), util.format(...args));
         };
-
-        let time = app.delay.match(pos);
+        let delay = app.delay.match(src_pos);
 
         // try get file from local cache
         log('begin');
+        app.gui.emit('offer_bgn',
+                      src_ip,
+                      src_pos,
+                      cache.toString());
         
         if (File.exist(cache.path(dir)))
         {
             log('cache found');
             setTimeout(() =>
             {
-                log('cache sent with delay ' + time);
+                log('cache sent with delay ' + delay);
+                app.gui.emit('offer_end',
+                              src_ip,
+                              src_pos,
+                              cache.toString(),
+                              delay,
+                              'ok');
                 res.sendFile(cache.path(dir));
             },
-            time);
+            delay);
             return;
         }
         log('cache not found, try relay from other proxies');
@@ -78,9 +86,10 @@ mod.prototype.init = function()
             {
                 exist = true;
                 log('ping [%s]', proxy.toString());
-
-                // emit ping event to gui
-                app.gui.emit('ping_req', proxy.ip, proxy.pos);
+                app.gui.emit('ping_bgn',
+                              proxy.ip,
+                              proxy.pos);
+                let tick = Date.now();
 
                 // begin ping
                 proxy.ping(app.conf.pos, (err, response, body) =>
@@ -88,44 +97,87 @@ mod.prototype.init = function()
                     if (err || response.statusCode != 200)
                     {
                         log('ping [%s] failed', proxy.toString());
+                        app.gui.emit('ping_end',
+                                      proxy.ip,
+                                      proxy.pos,
+                                      'HTTP failed',
+                                      Date.now() - tick);
                     }
                     else
                     {
                         log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
-
-                        // emit ping_res
-                        app.gui.emit('ping_res', proxy.ip, proxy.pos, body);
+                        app.gui.emit('ping_end',
+                                      proxy.ip,
+                                      proxy.pos,
+                                      'ok',
+                                      body);
 
                         // no other pinged proxy has returned yet, so we are the chosen one :D
                         if (!begin)
                         {
                             log('[%s] is chosen for relaying cache', proxy.toString());
+                            app.gui.emit('fetch_bgn',
+                                          proxy.ip,
+                                          proxy.pos,
+                                          cache.toString());
 
+                            // fetch from this proxy
+                            let tick = Date.now();
                             proxy.relay(cache, app.conf.pos, (err, response, body) =>
                             {
                                 if (err || response.statusCode != 200)
                                 {
                                     log('relay failed');
+                                    app.gui.emit('fetch_end',
+                                                  proxy.ip,
+                                                  proxy.pos,
+                                                  cache.toString(),
+                                                  'HTTP failed',
+                                                  Date.now() - tick);
                                 }
                                 else
                                 {
                                     log('relay succeeded');
+                                    app.gui.emit('fetch_end',
+                                                  proxy.ip,
+                                                  proxy.pos,
+                                                  cache.toString(),
+                                                  'ok',
+                                                  Date.now() - tick);
+
                                     if (app.conf.relay.save && app.save(cache, body))
                                     {
                                         log('save to [' + cache.path(dir) + ']');
                                         setTimeout(() =>
                                         {
-                                            log('cache sent with delay [%s]ms', time);
+                                            log('cache sent with delay [%s]ms', delay);
+                                            app.gui.emit('offer_end',
+                                                          src_ip,
+                                                          src_pos,
+                                                          cache.toString(),
+                                                          delay,
+                                                          'ok');
+
                                             res.sendFile(cache.path(dir));
                                         },
-                                        time);
+                                        delay);
                                     }
                                     else
                                     {
-                                        res.set('content-type', response.headers['content-type']);
-                                        res.set('content-length', response.headers['content-length']);
-                                        log('cache sent with delay [%s]ms', time);
-                                        res.send(body);
+                                        setTimeout(() =>
+                                        {
+                                            res.set('content-type', response.headers['content-type']);
+                                            res.set('content-length', response.headers['content-length']);
+                                            log('cache sent with delay [%s]ms', delay);
+                                            app.gui.emit('offer_end',
+                                                          src_ip,
+                                                          src_pos,
+                                                          cache.toString(),
+                                                          delay,
+                                                          'ok');
+                                            res.send(body);
+                                        },
+                                        delay);
                                     }
                                 }
                             });
@@ -140,48 +192,86 @@ mod.prototype.init = function()
         if (!exist)
         {
             log('no proxy has cache');
-            if (app.conf.relay.fetch)
+
+            // fetch forbidden
+            if (!app.conf.relay.fetch)
             {
-                log('try fetch from source');
-                // fetch file directly from source server
-                cache.fetch((err, response, body) =>
+                log('no cache & fetch is forbidden');
+                app.gui.emit('offer_end',
+                              src_ip,
+                              src_pos,
+                              cache.toString(),
+                              0,
+                              'no cache & fetch is forbidden');
+                res.status(404).end('no cache & fetch is forbidden');
+            }
+
+            log('try fetch from source');
+            app.gui.emit('fetch_bgn',
+                          cache.ip,
+                          cache.port,
+                          cache.toString());
+            let tick = Date.now();
+
+            // fetch file directly from source server
+            cache.fetch(app.conf.pos, (err, response, body) =>
+            {
+                if (err || response.statusCode != 200)
                 {
-                    if (err || response.statusCode != 200)
+                    log('fetch failed');
+                    app.gui.emit('fetch_end',
+                                  cache.ip,
+                                  cache.port,
+                                  cache.toString(),
+                                  Date.now() - tick,
+                                  'HTTP failed');
+                    res.status(404).end('cache fetch failed');
+                }
+                else
+                {
+                    log('fetch succeeded');
+                    app.gui.emit('fetch_end',
+                                  cache.ip,
+                                  cache.port,
+                                  cache.toString(),
+                                  Date.now() - tick,
+                                  'ok');
+
+                    if (app.conf.relay.save && app.save(cache, body))
                     {
-                        log('fetch failed');
-                        res.status(404).end('cache fetch failed');
+                        log('save to [' + cache.path(dir) + ']');
+                        setTimeout(() =>
+                        {
+                            log('cache sent with delay ' + delay);
+                            app.gui.emit('offer_end',
+                                          src_ip,
+                                          src_pos,
+                                          cache.toString(),
+                                          delay,
+                                          'ok');
+                            res.sendFile(cache.path(dir));
+                        },
+                        delay);
                     }
                     else
                     {
-                        log('fetch succeeded');
-                        if (app.conf.relay.save && app.save(cache, body))
+                        setTimeout(() =>
                         {
-                            log('save to [' + cache.path(dir) + ']');
-                            setTimeout(() =>
-                            {
-                                log('cache sent with delay ' + time);
-                                res.sendFile(cache.path(dir));
-                            },
-                            time);
-                        }
-                        else
-                        {
-                            setTimeout(() =>
-                            {
-                                res.set('content-type', response.headers['content-type']);
-                                res.set('content-length', response.headers['content-length']);
-                                log('cache sent with delay ' + time);
-                                res.send(body);
-                            },
-                            time);
-                        }
+                            res.set('content-type', response.headers['content-type']);
+                            res.set('content-length', response.headers['content-length']);
+                            log('cache sent with delay ' + delay);
+                            app.gui.emit('offer_end',
+                                          src_ip,
+                                          src_pos,
+                                          cache.toString(),
+                                          delay,
+                                          'ok');
+                            res.send(body);
+                        },
+                        delay); 
                     }
-                });
-            }
-            else
-            {
-                res.status(404).end('no cache in local/proxies, fetch is forbidden');
-            }
+                }
+            });
         }
     });
 
