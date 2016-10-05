@@ -26,6 +26,7 @@ let app = module.exports = function(conf)
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
+    this.expr.use(express.static('server/views'));
 
     this.delay = new Delay(this);
     this.video = new Video(this);
@@ -39,7 +40,15 @@ let app = module.exports = function(conf)
     this.expr.use('/track', this.track.router);
 
     this.expr.get('/ring', () => { this.gui.emit('ring', 'ring ring ring!'); });
+    this.expr.get("/home/",(req,res)=> { 
+        res.render('cabee-forUsers/index.html',{
+            'list':this.video.list()
+        }); 
+    });
+
+
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
+
 
     this.http.listen(conf.port);
 };
