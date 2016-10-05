@@ -3,6 +3,7 @@ let Pos     = require('_/pos');
 
 let mod = module.exports = function(app)
 {
+    this.app    = app;
     this.rules  = app.conf.delay;
     this.router = express.Router();
 
@@ -11,6 +12,7 @@ let mod = module.exports = function(app)
 
 mod.prototype.init = function()
 {
+    let app    = this.app;
     let rules  = this.rules;
     let router = this.router;
 
@@ -26,8 +28,19 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
+        app.log('[pong] [%s|%s] begin', req.ip, req.params.pos);
+        app.gui.emit('pong_bgn', req.ip, req.params.pos);
+
         let time = this.match(req.params.pos);
-        setTimeout(() => res.json(time), time);
+
+        setTimeout(() =>
+        {
+            app.log('[pong] [%s|%s] end after [%s]ms', req.ip, req.params.pos, time);
+            app.gui.emit('pong_end', req.ip, req.params.pos, time);
+            
+            res.json(time);
+        },
+        time);
     });
 };
 

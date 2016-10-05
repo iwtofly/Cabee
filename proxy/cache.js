@@ -3,6 +3,7 @@ let path    = require('path');
 let request = require('request');
 let multer  = require('multer');
 let util    = require('util');
+let Ip      = require('_/ip');
 let File    = require('_/file');
 let Cache   = require('_/cache');
 
@@ -38,6 +39,8 @@ mod.prototype.init = function()
     (req, res) =>
     {
         // collect info
+        let src_ip  = Ip.format(req.ip);
+        let src_pos = req.params.pos;
         let cache = new Cache
         (
             req.params.ip,
@@ -45,58 +48,101 @@ mod.prototype.init = function()
             req.params.video,
             req.params.piece
         );
-        
         let log = (...args) =>
         {
-            app.log('[%s]=>[%s]  %s', req.ip, cache.url(), util.format(...args));
+            app.log('[cache] [%s|%s]=>[%s] %s', src_ip, src_pos, cache.url(), util.format(...args));
         };
 
-        let time = app.delay.match(req.params.pos);
+        let delay = app.delay.match(req.params.pos);
 
         // try get file from local cache
-        log('[cache]');
+        log('begin');
+        app.gui.emit('offer_bgn',
+                      src_ip,
+                      src_pos,
+                      cache.toString());
 
         if (File.exist(cache.path(dir)))
         {
             log('cache found');
             setTimeout(() =>
             {
-                log('cache sent with delay [%s]ms', time);
+                log('cache sent with delay [%s]ms', delay);
+                app.gui.emit('offer_end',
+                              src_ip,
+                              src_pos,
+                              cache.toString(),
+                              delay,
+                              'ok');
                 res.sendFile(cache.path(dir));
             },
-            time);
+            delay);
             return;
         }
         log('cache not found');
 
-        // fetc from source
+        // fetch forbidden
         if (!app.conf.cache.fetch)
         {
-            res.status(404).end('no cache in local, fetch is forbidden');
+            log('no local cache & fetch is forbidden');
+            app.gui.emit('offer_end',
+                          src_ip,
+                          src_pos,
+                          cache.toString(),
+                          0,
+                          'local cache not exist');
+
+            res.status(404).end('no cache & fetch is forbidden');
             return;
         }
-        log('try fetch from source');
 
         // fetch file directly from source server
-        cache.fetch((err, response, body) =>
+        log('try fetch from source');
+        app.gui.emit('fetch_bgn',
+                      cache.toString(),
+                      cache.ip,
+                      cache.port);
+
+        let tick = Date.now();
+        cache.fetch(app.conf.pos, (err, response, body) =>
         {
             if (err || response.statusCode != 200)
             {
                 log('fetch failed');
+                app.gui.emit('fetch_end',
+                              cache.toString(),
+                              cache.ip,
+                              cache.port,
+                              Date.now() - tick,
+                              'HTTP failed');
                 res.status(404).end('cache fetch failed');
             }
             else
             {
                 log('fetch succeeded');
+                app.gui.emit('fetch_end',
+                              cache.toString(),
+                              cache.ip,
+                              cache.port,
+                              Date.now() - tick,
+                              'ok');
+
                 if (app.conf.cache.save && app.save(cache, body))
                 {
                     log('save to [' + cache.path(dir) + ']');
                     setTimeout(() =>
                     {
-                        log('cache sent with delay [%s]ms', time);
+                        log('cache sent with delay [%s]ms', delay);
+                        app.gui.emit('offer_end',
+                                      src_ip,
+                                      src_pos,
+                                      cache.toString(),
+                                      delay,
+                                      'ok');
+
                         res.sendFile(cache.path(dir));
                     },
-                    time);
+                    delay);
                 }
                 else
                 {
@@ -104,10 +150,18 @@ mod.prototype.init = function()
                     {
                         res.set('content-type', response.headers['content-type']);
                         res.set('content-length', response.headers['content-length']);
-                        log('cache sent with delay [%s]ms', time);
+
+                        log('cache sent with delay [%s]ms', delay);
+                        app.gui.emit('offer_end',
+                                      src_ip,
+                                      src_pos,
+                                      cache.toString(),
+                                      delay,
+                                      'ok');
+                        
                         res.send(body);
                     },
-                    time);
+                    delay);
                 }
             }
         });

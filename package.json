@@ -20,6 +20,7 @@
   "dependencies": {
     "async": "^2.0.1",
     "body-parser": "^1.15.1",
+    "cors": "^2.8.1",
     "express": "^4.13.4",
     "ipaddr.js": "^1.2.0",
     "js-yaml": "^3.6.1",

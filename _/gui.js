@@ -1,5 +1,3 @@
-let express = require('express');
-
 let mod = module.exports = function(app)
 {
     this.app = app;

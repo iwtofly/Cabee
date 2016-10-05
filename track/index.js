@@ -4,10 +4,12 @@ let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
 let io         = require('socket.io');
+let ipaddr     = require('ipaddr.js');
 
-let Server     = require('./server');
-let Proxy      = require('./proxy');
-let Gui        = require('./gui');
+let Ip      = require('_/ip');
+let Server  = require('./server');
+let Proxy   = require('./proxy');
+let Gui     = require('./gui');
 
 let app = module.exports = function(conf)
 {
@@ -35,7 +37,7 @@ let app = module.exports = function(conf)
     this.expr.use('/proxy', this.proxy.router);
     this.expr.use('/gui', this.gui.router);
 
-    this.expr.get('*', (req, res) => { res.render('main.j2'); });
+    this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
 };

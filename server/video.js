@@ -1,7 +1,9 @@
 let express = require('express');
 let path    = require('path');
 let multer  = require('multer');
+let util    = require('util');
 let File    = require('_/file');
+let Ip      = require('_/ip');
 
 let mod = module.exports = function(app)
 {
@@ -14,6 +16,7 @@ let mod = module.exports = function(app)
 
 mod.prototype.init = function()
 {
+    let app    = this.app;
     let router = this.router;
     let dir    = this.dir;
 
@@ -72,17 +75,52 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
+        let ip = Ip.format(req.ip);
+        let log = (...args) =>
+        {
+            app.log('[%s|%s]=>[%s]  %s',
+                    ip,
+                    req.params.pos,
+                    req.params.video + '/' + req.params.chip,
+                    util.format(...args));
+        };
+
+        log('begin');
+        app.gui.emit('offer_bgn',
+                      ip,
+                      req.params.pos,
+                      req.params.video + '/' + req.params.chip);
+
         let f = path.join(dir, req.params.video, req.params.chip);
 
         if (!File.exist(f))
         {
-            this.app.log('client [' + req.ip + '] req [' + f + '] not exist');
+            log('file not exist');
+            app.gui.emit('offer_end',
+                          ip,
+                          req.params.pos,
+                          req.params.video + '/' + req.params.chip,
+                          0,
+                          'file not exist');
+
             res.status(404).end();
             return;
         }
-        let time = this.app.delay.match(req.params.pos);
-        this.app.log('client [' + req.ip + '] get [' + f + '] in [' + time + '] ms');
-        setTimeout(() => { res.sendFile(f); }, time);
+        let delay = app.delay.match(req.params.pos);
+
+        setTimeout(() =>
+        {
+            log('file sent with delay [%s]ms', delay);
+            app.gui.emit('offer_end',
+                          ip,
+                          req.params.pos,
+                          req.params.video + '/' + req.params.chip,
+                          delay,
+                          'ok');
+
+            res.sendFile(f);
+        },
+        delay);
     });
 }
 

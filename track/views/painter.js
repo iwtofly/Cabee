@@ -407,4 +407,30 @@ class Painter
     }
 };
 
-window.painter = new Painter();
+// delete this :D
+class Mrsuyi_Tmp_Painter
+{
+  log(text) { console.log(text); }
+
+  tree(track, servers, proxies)
+  {
+    console.log('draw a fucking tree');
+  }
+
+  // src & dst are object-reference to a User/Server/Proxy
+
+  line(src, dst, type, text)
+  {
+
+  }
+
+  unline(src, dst)
+  {
+
+  }
+
+  msg(src, type, text)
+  {
+    
+  }
+};
