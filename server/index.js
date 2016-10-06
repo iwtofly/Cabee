@@ -41,12 +41,15 @@ let app = module.exports = function(conf)
     this.expr.use('/video', this.video.router);
     this.expr.use('/track', this.track.router);
 
-    this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
     this.expr.get("/home/",(req,res)=> { 
-        res.render('cabee-forUsers/index.html',{
+        window.list = this.video.list();
+        res.render('cabee-Users/index.html',{
             'list':this.video.list()
         }); 
+
+        console.log("videolist"+this.video.list());
     });
+    this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
 };
