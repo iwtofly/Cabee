@@ -42,7 +42,7 @@ let app = module.exports = function(conf)
     this.expr.use('/track', this.track.router);
 
     this.expr.get("/home/",(req,res)=> { 
-        window.list = this.video.list();
+        
         res.render('cabee-Users/index.html',{
             'list':this.video.list()
         }); 

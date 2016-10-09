@@ -56,8 +56,7 @@ ReactDOM.render(
 	    	<Route path="/users" component={Users}/>
 	    	<Route path="/videos" component={video_ListPage}>
 	    		<IndexRoute component={VideoList}/>
-	    		{/*<Route path="/video/:videoId" component={Video_Cached} />*/}
-	    		<Route path="b" component={Video_Cached} />
+	    		<Route path="detail/:videoId" component={Video_Cached} />
 	    	</Route>
 	    	<Route path="/cached" component={Video_Cached} />
 	    	<Route path="*" component={NoMatch}/>

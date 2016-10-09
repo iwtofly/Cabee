@@ -32,16 +32,40 @@ class videoList extends React.Component{
 				console.log("success")
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error(this.props.url, status, err.toString());
+				console.error("/video", status, err.toString());
 			}.bind(this)
 	    });
+	}
+
+	getVideolist(){
+		console.log("get list");
+		const {videos}=this.state;
+		var item,video,videoList=[];
+		for(var key in videos){
+			item=videos[key];
+			video=(
+			<tr key={key}>
+				<td className="text-center">{key}</td>
+				<td className="text-center">{item.length}</td>
+				<td className="text-center">
+					<Link to={"/videos/detail/"+key}>
+						<span className="btn btn-default">Play</span>
+					</Link>
+				</td>
+			</tr>
+			)
+			videoList.push(video);
+		}
+		return videoList;
+							
+		
 	}
 
 	render(){
 		var HStyle={
 	        textAlign:'center',
 	    }
-	    console.log(this.state.videos)
+	    var lists=this.getVideolist();
 		return(	
 			<div>
 				<h2  style={HStyle}>Videolist</h2>
@@ -57,19 +81,7 @@ class videoList extends React.Component{
 							</thead>
 							<tbody>
 								{
-									videos.map(
-										(video,n)=>(
-											<tr key={n}>
-												<td className="text-center">{video.name}</td>
-												<td className="text-center">{video.blocks}</td>
-												<td className="text-center">
-													<Link to={"/videos/video/"+video.videoId}>
-													<span className="btn btn-default">Play</span>
-													</Link>
-												</td>
-											</tr>
-										)
-									)
+									lists
 								}
 							</tbody>
 						</table>

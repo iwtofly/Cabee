@@ -12,44 +12,88 @@ var urlList=[
   url:'http://videos.thisisepic.com/2b9c1bf3-e19b-4be5-9d36-246c5d3607d8/high.mp4',
   poster: 'video/MY_VIDEO_POSTER.jpg'}
 ];
+var urlList1=[
+  {"url":"/video/shit/movie.mp4",
+  "text":"movie","duration":26},
+  {"url":"/video/shit/movie1.mp4","text":"movie1","duration":26}
+];
 
 // class Video_Cached extends React.Component {
 class Video_Cached extends React.Component {
-  // getInitialState:function(){
-  //   return{
-  //     videoId:null,
-  //     urlList:[],
-  //   }
-  // },
-  // componentDidMount:function(){
-  //   this.setState({
-  //     videoId:this.props.params.videoId
-  //   })
+  constructor(props, context) {
+    super(props, context);
 
-    //TODO:通过Ajax请求获取要播放的视频内容信息
-    //以下作为参考
-    // $.ajax({
-    //   url: IP地址+端口号+videoId,
-    //   dataType: 'json',
-    //   cache: false,
-    //   success: function(data) {
-    //     this.setState({urlList: data});
-    //   }.bind(this),
-    //   error: function(xhr, status, err) {
-    //     console.error(this.props.url, status, err.toString());
-    //   }.bind(this)
-    // });
-  // },
+    this.state = {
+      videoId:this.props.params.videoId,
+      currentUrlList:[],
+      videos:null,
+      fileName:"",
+      loading:true,
+    };
+  }
+
+  componentDidMount(){
+    var videoId=this.state.videoId;
+    $.ajax({
+        type: "get",
+        url: "/video",
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+            var tempUrlList=data[videoId];
+            var tempText,urlList=[];
+            for(var i = 0 ; i < tempUrlList.length ; i++){
+                tempText=tempUrlList[i];
+                tempUrlList[i]="/video/"+this.state.videoId+"/"+tempUrlList[i];
+                urlList.push({});
+                urlList[i].url=tempUrlList[i];
+                urlList[i].text=tempText.substr(0,tempText.length-4);
+                urlList[i].duration=26;
+            }
+            this.setState({
+                videos:data,
+                currentUrlList:urlList,
+            });
+            console.log("success")
+
+            this.setState({
+                loading:false
+            })
+        }.bind(this),
+        error: function(xhr, status, err) {
+            // console.error("/video", status, err.toString());
+            console.log("err");
+        }.bind(this)
+    });
+
+    this.setState({
+        fileName:this.state.videoId,
+    })
+
+
+  }
+
   render() {
     var HStyle={
       textAlign:'center',
     }
+    const { currentUrlList, loading } = this.state ;
+    console.log(JSON.stringify(currentUrlList));
     return (
-       <div>
-          <h2  style={HStyle}>video with cache</h2> {/*后期需要改成获取到的videoName*/}
-          <VideoPlayer urlList={urlList}/> {/*后期需要改成this.state.urlList*/}
+    <div>
+    {
+        loading &&
+        <div>正在获取视频···</div>
+    }
+    { !loading && 
+        <div>
+          <h2  style={HStyle}>{this.state.videoId}</h2> {/*后期需要改成获取到的videoName*/}
+          <VideoPlayer urlList={currentUrlList}/> {/*后期需要改成this.state.urlList*/}
           <StatusTable/>
        </div>
+    }
+    </div>
+       
     );
   } 
 }

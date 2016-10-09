@@ -84,7 +84,7 @@ var VideoVolumeButton = React.createClass({
 
 var VideoPlaybackToggleButton = React.createClass({
   render: function(){
-    var icon = this.props.playing ? (<i className="icon-pause"></i>) : (<i className="icon-play"></i>);
+    var icon = this.props.playing ? (<i className="icon-pause"></i>) : (<i className="icon-play"></i>) ;
     return (
       <button className="toggle_playback" onClick={this.props.handleTogglePlayback}>
         {icon}
@@ -168,7 +168,7 @@ var Video = React.createClass({
   },
   render: function(){
     return (
-      <video ref="video_test" src={this.props.url} poster={this.props.poster} text={this.props.text} preload="metadata"></video>
+      <video ref="video_test" src={this.props.url} preload="metadata"></video>
     );
   }
 });
@@ -230,7 +230,7 @@ var VideoPlayer = React.createClass({
         timebefore=0;
       }.bind(this));
     }else{
-      alert("点击确定按钮继续播放视频")
+      // alert("点击确定按钮继续播放视频")
       timebefore+=this.props.urlList[this.state.videoIndex].duration;
       this.setState({
         videoIndex: this.state.videoIndex+1,
@@ -366,7 +366,7 @@ var VideoPlayer = React.createClass({
                urlLength={this.props.urlList.length}
                totalDuration={this.state.totalDuration}
                volume={this.state.volumeLevel}
-               poster={this.props.urlList[this.state.videoIndex].poster}
+               
                currentTimeChanged={this.updateProgressBar}
                durationChanged={this.updateDuration}
                updatePlaybackStatus={this.videoEnded}
