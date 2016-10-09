@@ -88,7 +88,7 @@ mod.prototype.init = function()
                 log('ping [%s]', proxy.toString());
                 app.gui.emit('ping_bgn',
                               proxy.ip,
-                              proxy.pos);
+                              proxy.port);
                 let tick = Date.now();
 
                 // begin ping
@@ -99,7 +99,7 @@ mod.prototype.init = function()
                         log('ping [%s] failed', proxy.toString());
                         app.gui.emit('ping_end',
                                       proxy.ip,
-                                      proxy.pos,
+                                      proxy.port,
                                       'HTTP failed',
                                       Date.now() - tick);
                     }
@@ -108,7 +108,7 @@ mod.prototype.init = function()
                         log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
                         app.gui.emit('ping_end',
                                       proxy.ip,
-                                      proxy.pos,
+                                      proxy.port,
                                       'ok',
                                       body);
 
