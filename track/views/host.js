@@ -1,29 +1,15 @@
-//================================== Unit ===================================//
+//================================== User ===================================//
 class Unit
 {
-    constructor(ip)
+    constructor(ip, port)
     {
-        this.ip = ip;
+        this.ip   = ip;
+        this.port = port;
     }
 
     log(text)
     {
         window.painter.log(this.to_string() + '| ' + text);
-    }
-
-    line(dst, type, text)
-    {
-        window.painter.line(this, dst, type, text);
-    }
-
-    unline(dst, type, text)
-    {
-        window.painter.line(this, dst);
-    }
-
-    msg(type, text)
-    {
-        window.painter.msg(this, type, text);
     }
 };
 
@@ -32,7 +18,7 @@ class User extends Unit
 {
     to_string()
     {
-        return 'U|' + this.ip;
+        return 'U|' + this.ip + ':' + this.port;
     }
 };
 
@@ -47,8 +33,7 @@ class Host extends Unit
     //     + log(text)
     constructor(ip, port)
     {
-        super(ip);
-        this.port = port;
+        super(ip, port);
         this.url  = 'http://' + this.ip + ':' + this.port + '/gui';
 
         this.io = io(this.url);
@@ -56,23 +41,32 @@ class Host extends Unit
         this.io.on('disconnect', this.on_disconnect.bind(this));
     }
 
-    static get(ip, pos_or_port)
+    static get(ip, port, pos)
     {
         for (let proxy of this.proxies)
         {
-            if (pos_or_port == proxy.pos)
+            if (pos == proxy.pos || (ip == proxy.ip && port == proxy.port))
             {
                 return proxy;
             }
         }
         for (let server of this.servers)
         {
-            if (ip == server.ip && pos_or_port == server.port)
+            if (ip == server.ip && port == server.port)
             {
                 return server;
             }
         }
-        return new User(ip);
+        for (let user of this.users)
+        {
+            if (ip == user.ip && port == user.port)
+            {
+                return user;
+            }
+        }
+        let user = new User(ip, port);
+        this.users.push(user);
+        return user;
     }
     
     on_connect()    { this.log('connected'); }
@@ -101,6 +95,7 @@ class Track extends Host
     {
         Host.servers = [];
         Host.proxies = [];
+        Host.users   = [];
 
         for (let server of servers)
         {
@@ -136,58 +131,58 @@ class RemoteHost extends Host
     }
 
     // ping & pong
-    on_ping_bgn(dst_ip, dst_pos)
+    on_ping_bgn(dst_ip, dst_port)
     {
-        let dst = Host.get(dst_ip, dst_pos);
+        let dst = Host.get(dst_ip, dst_port);
         this.log('[PING] [{0}] begin'.format(dst.to_string()));
-        this.line(dst);
+        window.painter.line(this, dst);
     }
-    on_ping_end(dst_ip, dst_pos, status, time)
+    on_ping_end(dst_ip, dst_port, status, time)
     {
-        let dst = Host.get(dst_ip, dst_pos);
+        let dst = Host.get(dst_ip, dst_port);
         this.log('[PING] [{0}] end [{1}] after [{2}]ms'.format(dst.to_string(), status, time));
-        this.unline(dst);
+        window.painter.unline(this, dst);
     }
     on_pong_bgn(src_ip, src_pos)
     {
-        let src = Host.get(src_ip, src_pos);
+        let src = Host.get(src_ip, null, src_pos);
         this.log('[PONG] [{0}] begin'.format(src.to_string()));
-        this.line(src);
+        window.painter.line(src, this);
     }
     on_pong_end(src_ip, src_pos, time)
     {
-        let src = Host.get(src_ip, src_pos);
+        let src = Host.get(src_ip, null, src_pos);
         this.log('[PONG] [{0}] end after [{1}]ms'.format(src.to_string(), time));
-        this.unline(src);
+        window.painter.unline(src,this);
     }
 
     // fetch & offer
     on_offer_bgn(src_ip, src_pos, target)
     {
-        let src = Host.get(src_ip, src_pos);
+        let src = Host.get(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] begin'.format(target, src.to_string()));
-        this.line(src);
+        window.painter.line(src, this);
     }
     on_offer_end(src_ip, src_pos, target, time, status)
     {
-        let src = Host.get(src_ip, src_pos);
+        let src = Host.get(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] end [{2}] after [{3}]ms'.format(target, src.to_string(), status, time));
-        this.line(src);
+        window.painter.unline(src, this);
     }
     on_fetch_bgn(dst_ip, dst_port, target)
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[FETCH] [{0}] from [{1}] begin'.format(target, dst.to_string(), dst.to_string()));
-        this.line(dst);
+        window.painter.line(this, dst);
     }
     on_fetch_end(dst_ip, dst_port, target, time, status)
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[FETCH] [{0}] from [{1}] end [{2}] after [{3}]ms'.format(target, dst.to_string(), status, time));
-        this.line(dst);
+        window.painter.unline(this, dst);
     }
 };
- 
+
 // Server:
 //     ip
 //     port
