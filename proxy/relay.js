@@ -118,7 +118,7 @@ mod.prototype.init = function()
                             log('[%s] is chosen for relaying cache', proxy.toString());
                             app.gui.emit('fetch_bgn',
                                           proxy.ip,
-                                          proxy.pos,
+                                          proxy.port,
                                           cache.toString());
 
                             // fetch from this proxy
@@ -130,7 +130,7 @@ mod.prototype.init = function()
                                     log('relay failed');
                                     app.gui.emit('fetch_end',
                                                   proxy.ip,
-                                                  proxy.pos,
+                                                  proxy.port,
                                                   cache.toString(),
                                                   'HTTP failed',
                                                   Date.now() - tick);
@@ -140,7 +140,7 @@ mod.prototype.init = function()
                                     log('relay succeeded');
                                     app.gui.emit('fetch_end',
                                                   proxy.ip,
-                                                  proxy.pos,
+                                                  proxy.port,
                                                   cache.toString(),
                                                   'ok',
                                                   Date.now() - tick);

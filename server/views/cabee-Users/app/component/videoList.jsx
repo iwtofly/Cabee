@@ -56,9 +56,7 @@ class videoList extends React.Component{
 			)
 			videoList.push(video);
 		}
-		return videoList;
-							
-		
+		return videoList;		
 	}
 
 	render(){

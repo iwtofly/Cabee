@@ -197,6 +197,17 @@ class Painter
                      .append("div")  
                      .attr("class","linkTooltip")  
                      .style("opacity",0.0); 
+    var lineColor,dx,dy;
+    switch(type){
+      case "ping":
+        lineColor="#ccc"; dx=0;dy=0;break;
+      case "pong":
+        lineColor="yellow"; dx=0;dy=0;break;
+      case "fetch":
+        lineColor="red"; dx=0;dy=0;break;
+      case "offer":
+        lineColor="blue"; dx=0;dy=0;break;
+    }
 
     var node1=this.findDOMNode(src);
     var node2=this.findDOMNode(dst);
@@ -206,10 +217,10 @@ class Painter
         x2=parseInt(node2.attr("x"))+25,
         y2=parseInt(node2.attr("y"))+25;
 
-    if(x1-x2>30){ x1-=20; x2+=23; }
-    if(y2-y1>60){ y2-=20; y1+=18; }
-    if(y1-y2>60){ y1-=20; y2+=18; }
-    if(x2-x1>30){ x2-=20; x1+=23; }
+    if(x1-x2>30){ x1-=20+dx; x2+=23+dx; }
+    if(y2-y1>60){ y2-=20+dy; y1+=18+dy; }
+    if(y1-y2>60){ y1-=20+dy; y2+=18+dy; }
+    if(x2-x1>30){ x2-=20+dx; x1+=23+dx; }
 
     var lineData=[
                {x:x1,y:y1},
@@ -250,6 +261,8 @@ class Painter
                 .attr("fill","#000");
     var lidTemp = (src.name==undefined? "Tracker": src.name )+ (dst.name==undefined? "Tracker": dst.name );
     //绘制直线
+    
+    
     var line = svg.append("line")
                  .attr('lid',function(){
                     return lidTemp;
@@ -258,7 +271,7 @@ class Painter
                  .attr("y1",y1)
                  .attr("x2",x1)
                  .attr("y2",y1)
-                 .attr("stroke","#ccc")
+                 .attr("stroke",lineColor)
                  .attr("stroke-width",2)
                  .attr("marker-end","url(#arrow)")
                  .transition()
@@ -272,7 +285,7 @@ class Painter
 
   unline(src, dst)
   {
-    var node1=this.findDOMNode(src);
+    var node1=this.findDOMNode(src,"delete");
     var node2=this.findDOMNode(dst);
 
     var lidTemp = (src.name==undefined? "Tracker": src.name )+ (dst.name==undefined? "Tracker": dst.name );
@@ -309,7 +322,7 @@ class Painter
   }
 
   //找出相应的host对应的DOM节点
-  findDOMNode(host){
+  findDOMNode(host,type){
       var node,nameIndex;
       switch (host.name){
           case "Sir1":
@@ -343,8 +356,27 @@ class Painter
               } 
               break;
           default:
-              node=$("svg image[did='Tracker']");
-              console.log("Tracker");  
+              if(host instanceof User){
+                if(type=="delete"){
+                  node=$("svg image[did='User']").fadeOut(3000);
+
+                }else{
+                  var svg=d3.select('svg');
+                  var userNode=svg.append('image')
+                                  .attr("width",50)
+                                  .attr("height",50)
+                                  .attr("xlink:href","./img/phone.png")
+                                  .attr("x",50)
+                                  .attr("y",150)
+                                  .attr("did","User");
+                  node=$("svg image[did='User']");
+                  console.log("User in FE"); 
+                }    
+              }else{
+                node=$("svg image[did='Tracker']");
+                console.log("Tracker");  
+              }
+              
       }
       return node;
   }

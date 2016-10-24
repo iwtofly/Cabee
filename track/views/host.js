@@ -43,6 +43,8 @@ class Host extends Unit
 
     static get(ip, port, pos)
     {
+        console.log(ip, ' : ', port, ' : ', pos);
+
         for (let proxy of this.proxies)
         {
             if (pos == proxy.pos || (ip == proxy.ip && port == proxy.port))
@@ -135,7 +137,7 @@ class RemoteHost extends Host
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[PING] [{0}] begin'.format(dst.to_string()));
-        window.painter.line(this, dst);
+        window.painter.line(this, dst ,"ping");
     }
     on_ping_end(dst_ip, dst_port, status, time)
     {
@@ -147,13 +149,17 @@ class RemoteHost extends Host
     {
         let src = Host.get(src_ip, null, src_pos);
         this.log('[PONG] [{0}] begin'.format(src.to_string()));
-        window.painter.line(src, this);
+        // window.painter.line(src, this ,"pong");
+        window.painter.line(this, src ,"pong");
+
     }
     on_pong_end(src_ip, src_pos, time)
     {
         let src = Host.get(src_ip, null, src_pos);
         this.log('[PONG] [{0}] end after [{1}]ms'.format(src.to_string(), time));
-        window.painter.unline(src,this);
+        // window.painter.unline(src,this);
+        window.painter.unline(this,src);
+
     }
 
     // fetch & offer
@@ -161,7 +167,7 @@ class RemoteHost extends Host
     {
         let src = Host.get(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] begin'.format(target, src.to_string()));
-        window.painter.line(src, this);
+        window.painter.line(src, this ,"offer");
     }
     on_offer_end(src_ip, src_pos, target, time, status)
     {
@@ -173,7 +179,7 @@ class RemoteHost extends Host
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[FETCH] [{0}] from [{1}] begin'.format(target, dst.to_string(), dst.to_string()));
-        window.painter.line(this, dst);
+        window.painter.line(this, dst ,"fetch");
     }
     on_fetch_end(dst_ip, dst_port, target, time, status)
     {

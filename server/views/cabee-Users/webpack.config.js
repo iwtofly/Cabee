@@ -1,19 +1,17 @@
  var path=require('path');
  var config = {
    entry: './main.js',
-	
    output: {
       path:'./',
       publicPath: '/',
       filename: 'index.js',
       // publicPath:'http://localhost:7777/'
    },
-	
-   // devServer: {
-   //    inline: true,
-   //    host: '0.0.0.0' 
-   // },
-
+   devServer: {
+      port:7777,
+      inline: true,
+      host: '0.0.0.0' 
+   },
    module: {
       loaders: [ 
       {
