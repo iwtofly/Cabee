@@ -6,7 +6,9 @@ let mod = module.exports = function(app)
     this.router = express.Router();
     this.router.get('/', (req, res) =>
     {
-        res.render('main.j2');
+        res.render('main.j2',{
+            'files':[{name:"wf1"},{name:"mv2"}]
+        });
     });
 
     this.io  = app.io.of('/gui');

@@ -98,6 +98,7 @@ class Track extends Host
         Host.servers = [];
         Host.proxies = [];
         Host.users   = [];
+        Host.stations = [];
 
         for (let server of servers)
         {
@@ -106,9 +107,15 @@ class Track extends Host
         for (let proxy of proxies)
         {
             Host.proxies.push(new Proxy(proxy.ip, proxy.port, proxy.name, proxy.pos));
+            if (proxy.pos.length == 2)
+            {
+                Host.stations.push(new Station("station", proxy.pos));
+            }
         }
 
-        window.painter.tree(this, Host.servers, Host.proxies);
+        console.log(Host.stations)
+
+        window.painter.tree(this, Host.servers, Host.proxies, Host.stations);
     }
 };
 
@@ -151,6 +158,7 @@ class RemoteHost extends Host
         this.log('[PONG] [{0}] begin'.format(src.to_string()));
         // window.painter.line(src, this ,"pong");
         window.painter.line(this, src ,"pong");
+        // window.painter.msg(this,"Pong","return");
 
     }
     on_pong_end(src_ip, src_pos, time)
@@ -237,3 +245,13 @@ if (!String.prototype.format)
     });
   };
 }
+
+class Station extends Unit
+{
+    constructor( name, pos)
+    {
+        super();
+        this.name = name;
+        this.pos = pos;
+    };
+};

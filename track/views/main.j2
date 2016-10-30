@@ -87,6 +87,27 @@ $(document).ready(() =>
           <hr>
         </div>
         <svg></svg>
+        <table class="table table-bordered">
+          <thead>
+              <tr class="info">
+                  <th>File</th>
+                  <th>Direct Fetch Times</th>
+                  <th>Cache Hit Times</th>
+                  <th>Time(ms)</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for file in files %}
+              <tr>
+                  <!-- modal -->
+                  <td><button class="btn btn-default" type="button" data-file="{{ file.name }}">{{ file.name }}</button></td>
+                  <td>{{ file.name }}</td>
+                  <td>{{ file.name }}</td>
+                  <td>Not loaded</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
       </div>
     </div>
     <!-- features Section -->
@@ -147,7 +168,6 @@ $(document).ready(() =>
     <!-- Include all compiled plugins (below), or include individual files as needed --> 
     <script src="bootstrap/bootstrap.min.js"></script> 
     <script type="text/javascript" src="js/SmoothScroll.js"></script> 
-    
     <!-- Javascripts
     ================================================== --> 
     <script type="text/javascript" src="js/main.js"></script>

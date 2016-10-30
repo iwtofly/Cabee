@@ -10,7 +10,7 @@ class Painter
 {
   log(text) { console.log(text); }
 
-  tree(track, servers, proxies)
+  tree(track, servers, proxies, stations)
   {
     console.log('draw a fucking tree');
     var tooltip = d3.select("body")  
@@ -18,7 +18,7 @@ class Painter
                     .attr("class","tooltip")  
                     .style("opacity",0.0)
                     .style("background-color","agba( 100, 149 ,237,0.5)");
-    var width = 800,
+    var width = 900,
         height = 700;
 
     var svg=d3.select("body")     //选择文档中的body元素
@@ -30,58 +30,82 @@ class Painter
     var myNode =[];
     myNode.push(track);
     myNode.push(servers[0]);
-    for(var i=0 ; i < proxies.length ; i++ ){
-      myNode.push(proxies[i]);
+    for (let proxy of proxies){
+      myNode.push(proxy);
     }
-    // console.log(myNode);
+    for(let station of stations){
+      myNode.push(station)
+    }
 
-    var targetT,targetS,targetA,targetB,subIndex,targetSub={}; 
+    console.log(myNode);
+
+
+    var target = {};
 
     var nodeLength=myNode.length;
+    console.log(myNode.length);
     var nodes=d3.range(0,nodeLength).map(function(i){
       // console.log(myNode[i]);
       if(myNode[i] instanceof Track){
-          targetT=i;
-          return{name:"Tracker",img:"./img/cloud-server.png",data:"myNode[i]",x:570,y:100}
+          target.T=i;
+          return{name:"Tracker",img:"./img/cloud-server.tm.png",data:"myNode[i]",x:700,y:100}
       }
       if(myNode[i] instanceof Server){
-          targetS=i;
-          return{name:"Server",img:"./img/cloud-server.png",data:"myNode[i]",x:570,y:246}
+          target.S=i;
+          return{name:"Server",img:"./img/cloud-server.tm.png",data:"myNode[i]",x:700,y:246}
       }
       if(myNode[i].name.substr(0,7)=="GATEWAY"){
           if(myNode[i].pos=="1"){
-              targetA=i;
-              return{name:"DGW_A",img:"./img/swtich.png" ,data:myNode[i].data, x:380,y:248}
+              target.A=i;
+              return{name:"DGW_A",img:"./img/switch.tm.png" ,data:myNode[i].data, x:510,y:248}
           }else{
-              targetB=i;
-              return {name:"DGW_B",img:"./img/swtich.png", data:"",x:380,y:450}
+              target.B=i;
+              return {name:"DGW_B",img:"./img/switch.tm.png", data:"",x:510,y:450}
           }
        }
        if(myNode[i].pos.length==2){
-          if(myNode[i].pos.substr(0,1)=="1"){
-              return  {name:"MEC_A_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.png",data:"",x:200 , y : myNode[i].pos.substr(1,2)==1 ? 145:295}
-          }else{
-              return {name:"MEC_B_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.png",data:"",x:200 , y : myNode[i].pos.substr(1,2)==1 ? 415:580}
+          if(myNode[i].name.substr(0,3) == "MEC" ){
+              target[myNode[i].pos] = i;
+
+              if(myNode[i].pos.substr(0,1)=="1"){
+                  return {name:"MEC_A_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:"",x:330 , y : myNode[i].pos.substr(1,2)==1 ? 145:295}
+              }else{
+                  return {name:"MEC_B_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:"",x:330 , y : myNode[i].pos.substr(1,2)==1 ? 415:580}
+              }
+          }else if( myNode[i].name == "station" ){
+              if( myNode[i].pos.substr(0,1)=="1" ){
+                  return {
+                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:"",x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 145:295
+                  }
+              }else{
+                  return {
+                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:"",x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 415:580
+                  }
+              }
           }
+          
        }
     });
 
-    // console.log(JSON.stringify(nodes));
+    console.log(JSON.stringify(nodes)+nodes.length);
 
     var edges = d3.range(1,nodeLength).map(function(i){
         // console.log("nodes["+i+"]"+JSON.stringify(nodes[i]))
-        if(nodes[i].name=="Server"){
-             return {source: i,target: targetT}
+        if(nodes[i].name == "Server"){
+            return {source: i, target: target.T };
         }
-        if(nodes[i].name=="DGW_A"){
-             return {source: i,target: targetS}
-        }if(nodes[i].name=="DGW_B"){
-             return {source: i,target: targetS}
-        }else if(nodes[i].name.substr(0,9)=="MEC_A_sub"){
-          var temTar1= targetA==undefined ? targetS:targetA;
+        if(nodes[i].name == "DGW_A"){
+            return {source: i, target: target.S };
+        }if(nodes[i].name == "DGW_B"){
+            return {source: i, target: target.S };
+        }if(nodes[i].name == "station"){
+            return {source: i, target: target[nodes[i].pos]};
+        }
+        else if(nodes[i].name.substr(0,9)=="MEC_A_sub"){
+          var temTar1= target.A==undefined ? target.S:target.A;
           return {source:i,target:temTar1}
         }else if(nodes[i].name.substr(0,9)=="MEC_B_sub"){
-          var temTar2= targetB==undefined ? targetS:targetB;
+          var temTar2= target.B==undefined ? target.S:target.B;
           return {source:i,target:temTar2}
         }
     })
@@ -108,7 +132,7 @@ class Painter
                        .data(edges)
                        .enter()
                        .append("line")
-                       .style("stroke","white")
+                       .style("stroke","#ccc")
                        .style("stroke-width",3)
                        .attr('lid',function(d,i){
                         return i+1;
@@ -158,8 +182,8 @@ class Painter
                         .enter()
                         .append("text")
                         .style("fill","black")
-                        .attr("dx",20)
-                        .attr("dy",8)
+                        .attr("dx",10)
+                        .attr("dy",15)
                         .text(function(d){
                              return d.name;
                         });
@@ -172,7 +196,7 @@ class Painter
                   .attr("x2",function(d){d.fixed = true; return d.target.x ;})
                   .attr("y2",function(d){d.fixed = true; return d.target.y})
         //更新节点坐标
-        svg_nodes_img.attr("x",function(d){d.fixed = true; return d.x-15})
+        svg_nodes_img.attr("x",function(d){d.fixed = true; return d.x-25})
                   .attr("y",function(d){ d.fixed = true; return d.y-30});
 
         svg_texts.attr("x",function(d){ d.fixed = true; return d.x+10})
@@ -200,7 +224,7 @@ class Painter
     var lineColor,dx,dy;
     switch(type){
       case "ping":
-        lineColor="#ccc"; dx=0;dy=0;break;
+        lineColor="pink"; dx=0;dy=0;break;
       case "pong":
         lineColor="yellow"; dx=0;dy=0;break;
       case "fetch":
@@ -309,7 +333,7 @@ class Painter
     node=this.findDOMNode(host);
     var offsetTop = node.position().top;
     var offsetLeft = node.position().left;
-
+    
     d3.select(".msgTooltip").html(nameIndex+": "+type+"-"+text)
         .style("left",offsetLeft+ "px")  
         .style("top", offsetTop-60+"px")
