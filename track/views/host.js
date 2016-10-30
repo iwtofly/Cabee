@@ -102,17 +102,19 @@ class Track extends Host
 
         for (let server of servers)
         {
-            Host.servers.push(new Server(server.ip, server.port, server.name));
+            Host.servers.push(new Server(server.ip, server.port, server.name, server.videos));
         }
         for (let proxy of proxies)
         {
-            Host.proxies.push(new Proxy(proxy.ip, proxy.port, proxy.name, proxy.pos));
+            Host.proxies.push(new Proxy(proxy.ip, proxy.port, proxy.name, proxy.pos, proxy.caches));
             if (proxy.pos.length == 2)
             {
                 Host.stations.push(new Station("station", proxy.pos));
             }
         }
 
+        console.log(Host.servers);
+        console.log(Host.proxies);
         console.log(Host.stations)
 
         window.painter.tree(this, Host.servers, Host.proxies, Host.stations);
@@ -203,9 +205,10 @@ class RemoteHost extends Host
 //     name
 class Server extends RemoteHost
 {
-    constructor(ip, port, name)
+    constructor(ip, port, name, videos)
     {
         super(ip, port, name);
+        this.videos = videos;
     }
 
     to_string()
@@ -221,10 +224,11 @@ class Server extends RemoteHost
 //     pos
 class Proxy extends RemoteHost
 {
-    constructor(ip, port, name, pos)
+    constructor(ip, port, name, pos, caches)
     {
         super(ip, port, name);
         this.pos = pos;
+        this.caches = caches;
     };
 
     to_string()
