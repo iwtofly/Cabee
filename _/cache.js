@@ -21,7 +21,7 @@ cache.prototype.url = function()
 
 cache.prototype.path = function(dir)
 {
-    return path.join(dir, this.ip, this.port, this.video, this.piece);
+    return path.join(dir, this.ip, '' + this.port, this.video, this.piece);
 };
 
 cache.prototype.fetch = function(pos, callback)

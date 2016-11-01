@@ -43,8 +43,6 @@ class Host extends Unit
 
     static get(ip, port, pos)
     {
-        console.log(ip, ' : ', port, ' : ', pos);
-
         for (let proxy of this.proxies)
         {
             if (pos == proxy.pos || (ip == proxy.ip && port == proxy.port))
@@ -86,6 +84,7 @@ class Track extends Host
     {
         super(window.location.hostname, window.location.port);
         this.io.on('refresh', this.on_refresh.bind(this));
+        this.io.on('push', this.on_push.bind(this));
     }
 
     to_string()
@@ -95,6 +94,7 @@ class Track extends Host
 
     on_refresh(servers, proxies)
     {
+        Host.track   = this;
         Host.servers = [];
         Host.proxies = [];
         Host.users   = [];
@@ -118,6 +118,14 @@ class Track extends Host
         console.log(Host.stations)
 
         window.painter.tree(this, Host.servers, Host.proxies, Host.stations);
+    }
+
+    on_push(server_ip, server_port, video, piece)
+    {
+        let src = Host.get(server_ip, server_port);
+        this.log('server [{0}] push [{1}|{2}] to proxies'
+            .format(src.to_string(), video, piece));
+        // window.broadcast(this, Host.proxies, 'push');
     }
 };
 
@@ -209,6 +217,14 @@ class Server extends RemoteHost
     {
         super(ip, port, name);
         this.videos = videos;
+
+        this.io.on('push', this.on_push.bind(this));
+    }
+
+    on_push(video, piece)
+    {
+        this.log('push [{0}|{1}]'.format(video, piece || 'all'));
+        // window.painter.line(this, Host.track, 'push');
     }
 
     to_string()

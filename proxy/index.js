@@ -15,6 +15,7 @@ let Track = require('_/track');
 let Gui   = require('_/gui');
 let Cache = require('./cache');
 let Relay = require('./relay');
+let Push  = require('./push');
 
 let app = module.exports = function(conf)
 {
@@ -40,9 +41,11 @@ let app = module.exports = function(conf)
     this.cache = new Cache(this);
     this.relay = new Relay(this);
     this.gui   = new Gui(this);
+    this.push  = new Push(this);
 
     this.track.link.on('connect', () => this.refresh());
     this.track.link.on('refresh', this.on_refresh.bind(this));
+    this.track.link.on('push', this.push.on_push.bind(this.push));
 
     this.expr.get('/server', (req, res) => { res.json(this.servers); });
     this.expr.get('/proxy',  (req, res) => { res.json(this.proxies); });

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <script type="text/javascript" src="/jquery.js"></script>
+<body>
+    <ul>
+    {% for video, pieces in list %}
+        <h3><a href="/push/{{video}}/" target="_blank">{{ video }}</a></h3>
+        <ul>
+        {% for piece in pieces %}
+            <li><a href="/push/{{video}}/{{piece}}" target="_blank">{{ piece }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+    </ul>
+</body>
+</html>
