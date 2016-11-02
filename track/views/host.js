@@ -118,6 +118,7 @@ class Track extends Host
         console.log(Host.stations)
 
         var tbody = $('tbody');
+        tbody.empty();
         
 
         for (let server of Host.servers)

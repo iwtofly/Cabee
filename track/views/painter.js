@@ -154,7 +154,7 @@ class Painter
                         return d.name;
                        })
                        .on("mouseover",function(d,i){                                 
-                            tooltip.html(JSON.stringify(d.data).split(",").join('<br/>'))  
+                            tooltip.html(d.data==undefined ? "空" : JSON.stringify(d.data).split(",").join('<br/>'))  
                                     .style("left", (d3.event.pageX) + "px")  
                                     .style("top", (d3.event.pageY + 20) + "px")  
                                     .style("opacity",1.0)
