@@ -1,7 +1,6 @@
 let express = require('express');
 let path    = require('path');
 let request = require('request');
-let multer  = require('multer');
 let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
@@ -99,9 +98,9 @@ mod.prototype.init = function()
         // fetch file directly from source server
         log('try fetch from source');
         app.gui.emit('fetch_bgn',
-                      cache.toString(),
                       cache.ip,
-                      cache.port);
+                      cache.port,
+                      cache.toString());
 
         let tick = Date.now();
         cache.fetch(app.conf.pos, (err, response, body) =>
@@ -110,9 +109,9 @@ mod.prototype.init = function()
             {
                 log('fetch failed');
                 app.gui.emit('fetch_end',
-                              cache.toString(),
                               cache.ip,
                               cache.port,
+                              cache.toString(),
                               Date.now() - tick,
                               'HTTP failed');
                 res.status(404).end('cache fetch failed');
@@ -121,9 +120,9 @@ mod.prototype.init = function()
             {
                 log('fetch succeeded');
                 app.gui.emit('fetch_end',
-                              cache.toString(),
                               cache.ip,
                               cache.port,
+                              cache.toString(),
                               Date.now() - tick,
                               'ok');
 

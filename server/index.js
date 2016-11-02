@@ -11,6 +11,7 @@ let Track = require('_/track');
 let Delay = require('_/delay');
 let Gui   = require('_/gui');
 let Video = require('./video');
+let Push  = require('./push');
 
 let app = module.exports = function(conf)
 {
@@ -31,15 +32,17 @@ let app = module.exports = function(conf)
     this.expr.use(express.static('server/views'));
     
     this.delay = new Delay(this);
-    this.video = new Video(this);
     this.track = new Track(this);
     this.gui   = new Gui(this);
+    this.video = new Video(this);
+    this.push  = new Push(this);
 
     this.track.link.on('connect', () => { this.refresh(); });
 
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/video', this.video.router);
     this.expr.use('/track', this.track.router);
+    this.expr.use('/push', this.push.router);
 
     this.expr.get("/home/",(req,res)=> { 
         

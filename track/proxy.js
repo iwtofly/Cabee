@@ -63,3 +63,9 @@ mod.prototype.refresh = function()
 {
     this.io.emit('refresh', this.app.server.list, this.app.proxy.list);
 };
+
+// push to all proxies
+mod.prototype.push = function(server_ip, server_port, video, piece)
+{
+    this.io.emit('push', server_ip, server_port, video, piece);
+};
