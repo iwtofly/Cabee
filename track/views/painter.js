@@ -48,19 +48,19 @@ class Painter
       // console.log(myNode[i]);
       if(myNode[i] instanceof Track){
           target.T=i;
-          return{name:"Tracker",img:"./img/cloud-server.tm.png",data:"myNode[i]",x:700,y:100}
+          return{name:"Tracker",img:"./img/cloud-server.tm.png",data:"Tracker",x:700,y:100}
       }
       if(myNode[i] instanceof Server){
           target.S=i;
-          return{name:"Server",img:"./img/cloud-server.tm.png",data:"myNode[i]",x:700,y:246}
+          return{name:"Server",img:"./img/cloud-server.tm.png",data:myNode[i]["videos"],x:700,y:246}
       }
       if(myNode[i].name.substr(0,7)=="GATEWAY"){
           if(myNode[i].pos=="1"){
               target.A=i;
-              return{name:"DGW_A",img:"./img/switch.tm.png" ,data:myNode[i].data, x:510,y:248}
+              return{name:"DGW_A",img:"./img/switch.tm.png" ,data:myNode[i].caches, x:510,y:248}
           }else{
               target.B=i;
-              return {name:"DGW_B",img:"./img/switch.tm.png", data:"",x:510,y:450}
+              return {name:"DGW_B",img:"./img/switch.tm.png", data:myNode[i].caches,x:510,y:450}
           }
        }
        if(myNode[i].pos.length==2){
@@ -68,18 +68,18 @@ class Painter
               target[myNode[i].pos] = i;
 
               if(myNode[i].pos.substr(0,1)=="1"){
-                  return {name:"MEC_A_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:"",x:330 , y : myNode[i].pos.substr(1,2)==1 ? 145:295}
+                  return {name:"MEC_A_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:myNode[i].caches,x:330 , y : myNode[i].pos.substr(1,2)==1 ? 145:295}
               }else{
-                  return {name:"MEC_B_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:"",x:330 , y : myNode[i].pos.substr(1,2)==1 ? 415:580}
+                  return {name:"MEC_B_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:myNode[i].caches,x:330 , y : myNode[i].pos.substr(1,2)==1 ? 415:580}
               }
           }else if( myNode[i].name == "station" ){
               if( myNode[i].pos.substr(0,1)=="1" ){
                   return {
-                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:"",x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 145:295
+                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:myNode[i].caches,x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 145:295
                   }
               }else{
                   return {
-                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:"",x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 415:580
+                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:myNode[i].caches,x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 415:580
                   }
               }
           }
@@ -154,8 +154,7 @@ class Painter
                         return d.name;
                        })
                        .on("mouseover",function(d,i){                                 
-                            tooltip.html(JSON.stringify(d.data)+"<br />" +   
-                              d.data+" ggggggggg")  
+                            tooltip.html(JSON.stringify(d.data).split(",").join('<br/>'))  
                                     .style("left", (d3.event.pageX) + "px")  
                                     .style("top", (d3.event.pageY + 20) + "px")  
                                     .style("opacity",1.0)

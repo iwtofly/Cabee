@@ -117,6 +117,27 @@ class Track extends Host
         console.log(Host.proxies);
         console.log(Host.stations)
 
+        var tbody = $('tbody');
+        
+
+        for (let server of Host.servers)
+        {
+            let serverVideos = JSON.stringify(server.videos);
+            tbody.append("<tr><td>" +  server.name +" : "+server.ip+"</td>" 
+                + "<td>" + serverVideos +"</td>"
+                + "</tr>"); 
+            
+        }
+        for (let proxy of Host.proxies)
+        {
+            let videos = isOwnEmpty(proxy.caches)? "无": JSON.stringify(proxy.caches);
+            tbody.append("<tr><td>" +  proxy.name +" : "+proxy.ip+"</td>" 
+                + "<td>" + videos +"</td>"
+                + "</tr>"); 
+            
+        }
+
+
         window.painter.tree(this, Host.servers, Host.proxies, Host.stations);
     }
 };
@@ -258,4 +279,16 @@ class Station extends Unit
         this.name = name;
         this.pos = pos;
     };
+};
+
+function isOwnEmpty(obj)
+{
+    for(var name in obj)
+    {
+        if(obj.hasOwnProperty(name))
+        {
+            return false;
+        }
+    }
+    return true;
 };
