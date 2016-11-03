@@ -60,7 +60,8 @@ mod.prototype.on_refresh = function(socket, data)
 
 // refresh all connected proxies
 mod.prototype.refresh = function()
-{
+{   
+    this.app.gui.refresh();
     this.io.emit('refresh', this.app.server.list, this.app.proxy.list);
 };
 

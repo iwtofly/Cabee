@@ -2,6 +2,7 @@ let express = require('express');
 let path    = require('path');
 let multer  = require('multer');
 let util    = require('util');
+let ffprobe = require('node-ffprobe');
 let File    = require('_/file');
 let Ip      = require('_/ip');
 
@@ -66,6 +67,27 @@ mod.prototype.init = function()
     (req, res) =>
     {
         res.json(File.rm(path.join(dir, req.params.video || '')) ? 'ok' : 'error');
+    });
+
+    router.get('/time/:video/:chip', (req, res) =>
+    {
+        let relative = req.params.video + '/' + req.params.chip;
+        let absolute = path.join(dir, relative);
+
+        ffprobe(absolute, (err, data) =>
+        {
+            if (err)
+            {
+                this.app.log('time-query [%s] error: [%s]', relative, err);
+                res.status(404).end();
+            }
+            else
+            {
+                let time = data.format.duration.toString();
+                this.app.log('time-query [%s] return: [%s]', relative, time);
+                res.json(time);
+            }
+        });
     });
 
     router.get(

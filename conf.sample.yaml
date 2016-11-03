@@ -31,6 +31,8 @@
       sub  : false
       peer : true
       super: true
+  push:
+    save: true
   delay:
     - ['1', 5000]
     - ['*', 3000]    
@@ -51,6 +53,8 @@
       sub  : false
       peer : true
       super: true
+  push:
+    save: true
   delay:
     - ['12', 1000]
     - ['*' , 100]
@@ -71,6 +75,8 @@
       sub  : false
       peer : true
       super: true
+  push:
+    save: true
   delay:
     - ['11', 1000]
     - ['*' , 100]

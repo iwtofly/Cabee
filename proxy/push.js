@@ -56,6 +56,11 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
                          cache.toString(),
                          Date.now() - tick,
                          'ok');
+
+            if (app.conf.push.save && app.save(cache, body))
+                log('save to [' + cache.path(dir) + '] success');
+            else
+                log('save to [' + cache.path(dir) + '] fail');
         }
     });
 };

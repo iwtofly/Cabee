@@ -49,6 +49,7 @@ mod.prototype.on_refresh = function(socket, data)
     this.list.push(data);
     this.app.log('server [' + data.ip + '] notified');
     this.app.proxy.refresh();
+    this.app.gui.refresh();
 };
 
 // 
