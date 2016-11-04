@@ -1,16 +1,48 @@
 <!DOCTYPE html>
 <html>
+<head>
     <script type="text/javascript" src="/jquery.js"></script>
+    <script type="text/javascript" src="/bootstrap/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.min.css">
+    <style type="text/css">
+        #wrap{
+            width: 75%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
 <body>
-    <ul>
-    {% for video, pieces in list %}
-        <h3><a href="/push/{{video}}/" target="_blank">{{ video }}</a></h3>
-        <ul>
-        {% for piece in pieces %}
-            <li><a href="/push/{{video}}/{{piece}}" target="_blank">{{ piece }}</a></li>
-        {% endfor %}
-        </ul>
-    {% endfor %}
-    </ul>
+<div id="wrap">
+    <h2>Videos of Server</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr class="info">
+                <th>VideoName</th>
+                <th>Video-peice</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for video, pieces in list %}
+            {% for i in range(0,pieces.length) %}
+            <tr>
+                {% if i==0 %}
+                <td rowspan="{{pieces.length}}" >
+                    <a href="/push/{{video}}/" target="_blank">{{ video }} </a></h3>
+                </td>
+                <td>
+                    <a href="/push/{{video}}/{{piece}}" target="_blank">{{ pieces[i] }}</a>
+                </td>
+                {% else %}
+                <td>
+                    <a href="/push/{{video}}/{{piece}}" target="_blank">{{ pieces[i] }}</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>

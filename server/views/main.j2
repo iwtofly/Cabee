@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <script type="text/javascript" src="/jquery.js"></script>
+<head>
+	<script type="text/javascript" src="/jquery.js"></script>
+    <script type="text/javascript" src="/bootstrap/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.min.css">
+    <style type="text/css">
+    	.wrap{
+    		width: 80%;
+    		margin: 20px auto;
+    	}
+    </style>
+</head>
 <body>
+<div class="wrap">
     <form action="/video/upload" method="post" enctype="multipart/form-data">
-        <input type="text" name="name" value="shit">
-        <input type="file" name="videos" multiple>
-        <button class="btn btn-primary" type="submit">Submit</button>
+    	<div class="form-group">
+	        <input style="margin-bottom: 10px;" type="text" name="name" value="shit">
+	        <input type="file" class="form-control" name="videos" multiple><br/>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
     </form>
+</div>
 </body>
 </html>
