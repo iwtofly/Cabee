@@ -18,7 +18,8 @@
         <thead>
             <tr class="info">
                 <th>VideoName</th>
-                <th>Video-peice</th>
+                <th>Video-Piece</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -27,14 +28,20 @@
             <tr>
                 {% if i==0 %}
                 <td rowspan="{{pieces.length}}" >
-                    <a href="/push/{{video}}/" target="_blank">{{ video }} </a></h3>
+                    <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
                 </td>
                 <td>
-                    <a href="/push/{{video}}/{{piece}}" target="_blank">{{ pieces[i] }}</a>
+                    <span >{{ pieces[i] }}</span>
+                </td>
+                <td>
+                    <button class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
                 </td>
                 {% else %}
                 <td>
-                    <a href="/push/{{video}}/{{piece}}" target="_blank">{{ pieces[i] }}</a>
+                    <span>{{ pieces[i] }}</span>
+                </td>
+                <td>
+                    <button class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
                 </td>
                 {% endif %}
             </tr>
@@ -42,7 +49,25 @@
             {% endfor %}
         </tbody>
     </table>
+    <br/><br/>
+    <a href="/video/upload">去给Server上传些视频>></a>
 </div>
+<script>
+$(document).ready(function()
+{
+    $('button').click( function(){
 
+        var that = this;
+        var url = $(this).data('url');
+        $(this).html("Pushing");
+
+        $.get( url, function(){
+            $(that).removeClass("btn-primary")
+                   .addClass("btn-success")
+                   .html("pushed");
+        })
+    })
+});
+</script>
 </body>
 </html>
