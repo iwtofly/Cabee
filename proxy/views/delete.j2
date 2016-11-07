@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <ul>
+        {% for ip, ports in list %}
+        <li>
+            <a href="/cache/delete/{{ip}}" target="_blank">{{ ip }}</a>
+            <ul>
+                {% for port, videos in ports %}
+                <li>
+                    <a href="/cache/delete/{{ip}}/{{port}}" target="_blank">{{ port }}</a>
+                    <ul>
+                    {% for video, pieces in videos %}
+                        <li>
+                            <a href="/cache/delete/{{ip}}/{{port}}/{{video}}" target="_blank">{{ video }}</a>
+                            <ul>
+                            {% for piece in pieces %}
+                                <li><a href="/cache/delete/{{ip}}/{{port}}/{{video}}/{{piece}}" target="_blank">{{ piece }}</a></li>
+                            {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="/cache/delete" target="_blank">Clear All</a>
+</div>
+</body>
+</html>

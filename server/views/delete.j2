@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <ul>
+        {% for video, pieces in list %}
+            <li>
+                <a href="/video/delete/{{video}}" target="_blank">{{ video }}</a>
+                    <ul>
+                {% for piece in pieces %}
+                    <li><a href="/video/delete/{{video}}/{{piece}}" target="_blank">{{ piece }}</a></li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="/video/delete" target="_blank">Clear All</a>
+</div>
+</body>
+</html>

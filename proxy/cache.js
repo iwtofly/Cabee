@@ -9,7 +9,6 @@ let Cache   = require('_/cache');
 let mod = module.exports = function(app)
 {
     this.app    = app;
-    this.dir    = app.dir;
     this.router = express.Router();
 
     this.init();
@@ -22,11 +21,33 @@ let mod = module.exports = function(app)
 mod.prototype.init = function()
 {
     let app    = this.app;
-    let dir    = this.dir;
+    let dir    = app.dir;
     let router = this.router;
+
     router.get('/', (req, res) =>
     {
-        res.json(this.list());
+        res.render('delete.j2', {'list' : this.list()});
+    });
+    
+    router.get(
+    [
+        '/delete/',
+        '/delete/:ip',
+        '/delete/:ip/:port',
+        '/delete/:ip/:port/:video',
+        '/delete/:ip/:port/:video/:piece'
+    ],
+    (req, res) =>
+    {
+        let folder = path.join
+        (
+            dir,
+            req.params.ip    || '',
+            req.params.port  || '',
+            req.params.video || '',
+            req.params.piece || ''
+        );
+        res.json(File.rm(folder) ? 'ok' : 'error');
     });
 
     // original url of target is [http://$ip:$port/video/$video/$piece]
@@ -53,6 +74,7 @@ mod.prototype.init = function()
         };
 
         let delay = app.delay.match(req.params.pos);
+        app.count.req(cache);
 
         // try get file from local cache
         log('begin');
@@ -76,6 +98,7 @@ mod.prototype.init = function()
                 res.sendFile(cache.path(dir));
             },
             delay);
+            app.count.hit(cache);
             return;
         }
         log('cache not found');
@@ -164,25 +187,6 @@ mod.prototype.init = function()
                 }
             }
         });
-    });
-
-    router.delete(
-    [
-        '/',
-        '/:ip',
-        '/:ip/:port',
-        '/:ip/:port/:video'
-    ],
-    (req, res) =>
-    {
-        let folder = path.join
-        (
-            dir,
-            req.params.ip    || '',
-            req.params.port  || '',
-            req.params.video || ''
-        );
-        res.json(File.rm(folder) ? 'ok' : 'error');
     });
 };
 

@@ -47,6 +47,7 @@ mod.prototype.init = function()
             app.log('[relay] [%s|%s]=>[%s] %s', src_ip, src_pos, cache.url(), util.format(...args));
         };
         let delay = app.delay.match(src_pos);
+        app.count.req(cache);
 
         // try get file from local cache
         log('begin');
@@ -70,6 +71,7 @@ mod.prototype.init = function()
                 res.sendFile(cache.path(dir));
             },
             delay);
+            app.count.hit(cache);
             return;
         }
         log('cache not found, try relay from other proxies');

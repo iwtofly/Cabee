@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <ul>
+        {% for ip, ports in list %}
+        <li>
+            <a href="/count/delete/{{ip}}" target="_blank">{{ ip }}</a>
+            <ul>
+                {% for port, videos in ports %}
+                <li>
+                    <a href="/count/delete/{{ip}}/{{port}}" target="_blank">{{ port }}</a>
+                    <ul>
+                    {% for video, pieces in videos %}
+                        <li>
+                            <a href="/count/delete/{{ip}}/{{port}}/{{video}}" target="_blank">{{ video }}</a>
+                            <ul>
+                            {% for piece, info in pieces %}
+                                <li><a href="/count/delete/{{ip}}/{{port}}/{{video}}/{{piece}}" target="_blank">{{ piece }} req: {{ info.req }} hit: {{ info.hit }}</a></li>
+                            {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="/count/delete" target="_blank">Clear All</a>
+</div>
+</body>
+</html>

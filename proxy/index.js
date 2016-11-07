@@ -16,6 +16,7 @@ let Gui   = require('_/gui');
 let Cache = require('./cache');
 let Relay = require('./relay');
 let Push  = require('./push');
+let Count = require('./count');
 
 let app = module.exports = function(conf)
 {
@@ -42,6 +43,7 @@ let app = module.exports = function(conf)
     this.relay = new Relay(this);
     this.gui   = new Gui(this);
     this.push  = new Push(this);
+    this.count = new Count(this);
 
     this.track.link.on('connect', () => this.refresh());
     this.track.link.on('refresh', this.on_refresh.bind(this));
@@ -53,6 +55,7 @@ let app = module.exports = function(conf)
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/track', this.track.router);
     this.expr.use('/cache', this.cache.router);
+    this.expr.use('/count', this.count.router);
     this.expr.use('/',      this.relay.router);
 
     this.http.listen(conf.port);

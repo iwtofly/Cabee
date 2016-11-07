@@ -23,7 +23,24 @@ mod.prototype.init = function()
 
     router.get('/', (req, res) =>
     {
-        res.json(this.list());
+        res.render('delete.j2', {'list' : this.list()});
+    });
+
+    router.get(
+    [
+        '/delete/',
+        '/delete/:video',
+        '/delete/:video/:piece'
+    ],
+    (req, res) =>
+    {
+        let folder = path.join
+        ( 
+            dir,
+            req.params.video || '',
+            req.params.piece || ''
+        );
+        res.json(File.rm(folder) ? 'ok' : 'error');
     });
 
     router.get('/upload', (req, res) =>
@@ -57,16 +74,6 @@ mod.prototype.init = function()
             }
         }
         res.json('ok');
-    });
-
-    router.delete(
-    [
-        '/',
-        '/:video'
-    ],
-    (req, res) =>
-    {
-        res.json(File.rm(path.join(dir, req.params.video || '')) ? 'ok' : 'error');
     });
 
     router.get('/time/:video/:chip', (req, res) =>
