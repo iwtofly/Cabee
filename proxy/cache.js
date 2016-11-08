@@ -10,6 +10,7 @@ let mod = module.exports = function(app)
 {
     this.app    = app;
     this.router = express.Router();
+    this.dir = app.dir;
 
     this.init();
 };
@@ -21,12 +22,13 @@ let mod = module.exports = function(app)
 mod.prototype.init = function()
 {
     let app    = this.app;
-    let dir    = app.dir;
+    let dir    = this.dir;
     let router = this.router;
 
     router.get('/', (req, res) =>
     {
-        res.render('delete.j2', {'list' : this.list()});
+        res.render('main.j2', {'list' : this.list()});
+        console.log(this.list());
     });
     
     router.get(
@@ -180,7 +182,7 @@ mod.prototype.init = function()
                                       cache.toString(),
                                       delay,
                                       'ok');
-                        
+
                         res.send(body);
                     },
                     delay);

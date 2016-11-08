@@ -18,8 +18,10 @@
         <thead>
             <tr class="info">
                 <th>VideoName</th>
+                <th>Delete-Folder</th>
                 <th>Video-Piece</th>
                 <th>Action</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -30,18 +32,27 @@
                 <td rowspan="{{pieces.length}}" >
                     <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
                 </td>
+                <td rowspan="{{pieces.length}}">
+                    <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}" >Del</button>
+                </td>
                 <td>
                     <span >{{ pieces[i] }}</span>
                 </td>
                 <td>
-                    <button class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
+                    <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
+                </td>
+                <td>
+                    <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
                 </td>
                 {% else %}
                 <td>
                     <span>{{ pieces[i] }}</span>
                 </td>
                 <td>
-                    <button class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
+                    <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
+                </td>
+                <td>
+                    <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
                 </td>
                 {% endif %}
             </tr>
@@ -56,17 +67,28 @@
 $(document).ready(function()
 {
     $('button').click( function(){
-
         var that = this;
         var url = $(this).data('url');
-        $(this).html("Pushing");
 
-        $.get( url, function(){
-            $(that).removeClass("btn-primary")
-                   .addClass("btn-success")
-                   .html("pushed");
-        })
-    })
+        if($(this).attr("id")=="push"){
+
+            $(this).html("Pushing");
+
+            $.get( url, function(){
+                $(that).removeClass("btn-primary")
+                       .addClass("btn-success")
+                       .html("pushed");
+            });
+
+        }else{
+            console.log("delete "+url);
+            $.get( url, function(){
+                // $(that).parent().parent().remove();
+                location.reload(true) ;
+            } )
+        }
+
+    });
 });
 </script>
 </body>

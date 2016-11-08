@@ -67,7 +67,7 @@
   track: http://localhost:30000/proxy
   cache:
     fetch: true    # if cache not found, fetch from server
-    save : false    # after fetch from server, save to local
+    save : true    # after fetch from server, save to local
   relay:
     fetch : true   # if no proxy has cache, fetch from server
     save  : false  # after relay from proxy/server, save to local

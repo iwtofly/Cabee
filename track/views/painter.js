@@ -4,7 +4,7 @@
  * tree()用于接收JSON格式数据，画出相应的网络拓扑；*
  * msg()：当某个节点的内容发生改变时动画冒泡提示； *
  * line():画线，type还未确定；                     *
- * unline():删除某条线；                           *   
+ * unline():删除某条线；                           *
  **************************************************/
 class Painter
 {
@@ -13,9 +13,9 @@ class Painter
   tree(track, servers, proxies, stations)
   {
     console.log('draw a fucking tree');
-    var tooltip = d3.select("body")  
-                    .append("div")  
-                    .attr("class","tooltip")  
+    var tooltip = d3.select("body")
+                    .append("div")
+                    .attr("class","tooltip")
                     .style("opacity",0.0)
                     .style("background-color","agba( 100, 149 ,237,0.5)");
     var width = 900,
@@ -23,7 +23,7 @@ class Painter
 
     var svg=d3.select("body")     //选择文档中的body元素
                 .select("#contact-section").select(".container")
-                .select("svg")     
+                .select("svg")
                 .attr({"width":width,
                         "height":height,
                    });
@@ -83,7 +83,7 @@ class Painter
                   }
               }
           }
-          
+
        }
     });
 
@@ -153,23 +153,23 @@ class Painter
                        .attr('did',function(d,i){
                         return d.name;
                        })
-                       .on("mouseover",function(d,i){                                 
-                            tooltip.html(d.data==undefined ? "空" : JSON.stringify(d.data).split(",").join('<br/>'))  
-                                    .style("left", (d3.event.pageX) + "px")  
-                                    .style("top", (d3.event.pageY + 20) + "px")  
+                       .on("mouseover",function(d,i){
+                            tooltip.html(d.data==undefined ? "空" : JSON.stringify(d.data).split(",").join('<br/>'))
+                                    .style("left", (d3.event.pageX) + "px")
+                                    .style("top", (d3.event.pageY + 20) + "px")
                                     .style("opacity",1.0)
-                                    .style("background-color","rgba(  238, 232, 205,0.8)");  
-                        })  
-                        .on("mousemove",function(d){  
-                        /* 鼠标移动时，更改样式 left 和 top 来改变提示框的位置 */  
-                         
-                            tooltip.style("left", (d3.event.pageX) + "px")  
-                                   .style("top", (d3.event.pageY + 20) + "px");  
-                        })  
-                        .on("mouseout",function(d){  
-                        /* 鼠标移出时，将透明度设定为0.0（完全透明）*/  
-                         
-                           tooltip.style("opacity",0.0);  
+                                    .style("background-color","rgba(  238, 232, 205,0.8)");
+                        })
+                        .on("mousemove",function(d){
+                        /* 鼠标移动时，更改样式 left 和 top 来改变提示框的位置 */
+
+                            tooltip.style("left", (d3.event.pageX) + "px")
+                                   .style("top", (d3.event.pageY + 20) + "px");
+                        })
+                        .on("mouseout",function(d){
+                        /* 鼠标移出时，将透明度设定为0.0（完全透明）*/
+
+                           tooltip.style("opacity",0.0);
                         })
 
     // console.log("svg_nodes_img:"+JSON.stringify(svg_nodes_img))
@@ -188,7 +188,7 @@ class Painter
                         });
 
     force.on("tick",function(){ //每个时间间隔
-        
+
         //更新连线坐标
         svg_edges.attr("x1",function(d){d.fixed = true ;return d.source.x ;})
                   .attr("y1",function(d){d.fixed = true; return d.source.y ;})
@@ -211,15 +211,23 @@ class Painter
         d3.select(this).classed("fixed", d.fixed = true);
     }
 
+    // setTimeout(()=>{
+    //   this.push( track , proxies )
+    // },2000)
+
+    // setTimeout(()=>{
+    //   this.line( track , proxies[0] )
+    // },2000)
+
   }
 
   // src & dst are object-reference to a User/Server/Proxy
   line(src, dst, type, text)
   {
-    var linkTooltip = d3.select("body")  
-                     .append("div")  
-                     .attr("class","linkTooltip")  
-                     .style("opacity",0.0); 
+    var linkTooltip = d3.select("body")
+                     .append("div")
+                     .attr("class","linkTooltip")
+                     .style("opacity",0.0);
     var lineColor,dx,dy;
     switch(type){
       case "ping":
@@ -230,11 +238,15 @@ class Painter
         lineColor="red"; dx=0;dy=0;break;
       case "offer":
         lineColor="blue"; dx=0;dy=0;break;
+      default:
+        lineColor="black"; dx=0;dy=0;
     }
 
     var node1=this.findDOMNode(src);
     var node2=this.findDOMNode(dst);
 
+    // console.log("node2");
+    // console.log(node2)
     var x1=parseInt(node1.attr("x"))+25,
         y1=parseInt(node1.attr("y"))+25,
         x2=parseInt(node2.attr("x"))+25,
@@ -272,20 +284,20 @@ class Painter
                             .attr("markerUnits","strokeWidth")
                             .attr("markerWidth","12")
                             .attr("markerHeight","12")
-                            .attr("viewBox","0 0 12 12") 
+                            .attr("viewBox","0 0 12 12")
                             .attr("refX","6")
                             .attr("refY","6")
                             .attr("orient","auto");
 
     var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
-                            
+
     arrowMarker.append("path")
                 .attr("d",arrow_path)
                 .attr("fill","#000");
     var lidTemp = (src.name==undefined? "Tracker": src.name )+ (dst.name==undefined? "Tracker": dst.name );
     //绘制直线
-    
-    
+
+
     var line = svg.append("line")
                  .attr('lid',function(){
                     return lidTemp;
@@ -317,14 +329,32 @@ class Painter
 
   }
 
+  //还有点问题
+  push(src,dstArr){
+    var node1=this.findDOMNode(src);
+    // console.log(dstArr);
+    dstArr.map((item,index) => {
+      let dstItem=this.findDOMNode(item);
+      // console.log(dstItem);
+      this.line(node1, dstItem, "push", "push");
+
+      setTimeout(()=>{
+        this.unline(node1, dstItem);
+      },2000)
+
+    });
+
+  }
+
+
   //在指定节点跳出tooltip提示出相应的text
   msg(host, type, text)
   {
     console.log('draw msg');
-    var msgTooltip = d3.select("body")  
-                     .append("div")  
-                     .attr("class","msgTooltip")  
-                     .style("opacity",0.0); 
+    var msgTooltip = d3.select("body")
+                     .append("div")
+                     .attr("class","msgTooltip")
+                     .style("opacity",0.0);
 
 
     var nameIndex, node;
@@ -332,9 +362,9 @@ class Painter
     node=this.findDOMNode(host);
     var offsetTop = node.position().top;
     var offsetLeft = node.position().left;
-    
+
     d3.select(".msgTooltip").html(nameIndex+": "+type+"-"+text)
-        .style("left",offsetLeft+ "px")  
+        .style("left",offsetLeft+ "px")
         .style("top", offsetTop-60+"px")
         .style("opacity",1.0);
 
@@ -347,35 +377,36 @@ class Painter
   //找出相应的host对应的DOM节点
   findDOMNode(host,type){
       var node,nameIndex;
+      console.log(host+" : "+host.name);
       switch (host.name){
           case "Sir1":
               node=$("svg image[did='Server']");
-            break;
+              break;
           case "GATEWAY_1":
-              console.log("DGW_A");
+              // console.log("DGW_A");
               node=$("svg image[did='DGW_A']");
               nameIndex="DGW_A";
               break;
           case "GATEWAY_2":
               node=$("svg image[did='DGW_B']");
-              console.log("DGW_B");
+              // console.log("DGW_B");
               break;
           case "MEC1":
               if(host.pos=="11"){
                 node=$("svg image[did='MEC_A_sub1']");
-                console.log("MEC_A_sub1");
+                // console.log("MEC_A_sub1");
               }else{
                 node=$("svg image[did='MEC_B_sub1']");
-                console.log("MEC_B_sub1");
+                // console.log("MEC_B_sub1");
               } 
               break;
           case "MEC2":
               if(host.pos=="12"){
                 node=$("svg image[did='MEC_A_sub2']");
-                console.log("MEC_A_sub2");
+                // console.log("MEC_A_sub2");
               }else{
                 node=$("svg image[did='MEC_B_sub2']");
-                console.log("MEC_B_sub2");
+                // console.log("MEC_B_sub2");
               } 
               break;
           default:
@@ -393,43 +424,15 @@ class Painter
                                   .attr("y",150)
                                   .attr("did","User");
                   node=$("svg image[did='User']");
-                  console.log("User in FE"); 
-                }    
+                  console.log("User in FE");
+                }
               }else{
                 node=$("svg image[did='Tracker']");
-                console.log("Tracker");  
+                console.log("Tracker");
               }
-              
+
       }
       return node;
   }
 
-};
-
-// delete this :D
-class Mrsuyi_Tmp_Painter
-{
-  log(text) { console.log(text); }
-
-  tree(track, servers, proxies)
-  {
-    console.log('draw a fucking tree');
-  }
-
-  // src & dst are object-reference to a User/Server/Proxy
-
-  line(src, dst, type, text)
-  {
-
-  }
-
-  unline(src, dst)
-  {
-
-  }
-
-  msg(src, type, text)
-  {
-    
-  }
 };
