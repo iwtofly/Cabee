@@ -87,7 +87,7 @@ class Painter
        }
     });
 
-    console.log(JSON.stringify(nodes)+nodes.length);
+    // console.log(JSON.stringify(nodes)+nodes.length);
 
     var edges = d3.range(1,nodeLength).map(function(i){
         // console.log("nodes["+i+"]"+JSON.stringify(nodes[i]))
@@ -210,20 +210,12 @@ class Painter
     function dragstart(d) {
         d3.select(this).classed("fixed", d.fixed = true);
     }
-
-    // setTimeout(()=>{
-    //   this.push( track , proxies )
-    // },2000)
-
-    // setTimeout(()=>{
-    //   this.line( track , proxies[0] )
-    // },2000)
-
   }
 
   // src & dst are object-reference to a User/Server/Proxy
   line(src, dst, type, text)
-  {
+  { 
+    console.log(dst);
     var linkTooltip = d3.select("body")
                      .append("div")
                      .attr("class","linkTooltip")
@@ -239,7 +231,7 @@ class Painter
       case "offer":
         lineColor="blue"; dx=0;dy=0;break;
       default:
-        lineColor="black"; dx=0;dy=0;
+        lineColor="green"; dx=0;dy=0;
     }
 
     var node1=this.findDOMNode(src);
@@ -329,21 +321,21 @@ class Painter
 
   }
 
-  //还有点问题
+  // src is Track or server.
+  // dstArr is an Array(contains some proxies). 
   push(src,dstArr){
+
     var node1=this.findDOMNode(src);
-    // console.log(dstArr);
+
     dstArr.map((item,index) => {
-      let dstItem=this.findDOMNode(item);
-      // console.log(dstItem);
-      this.line(node1, dstItem, "push", "push");
+
+      this.line(node1, item, "push", "push");
 
       setTimeout(()=>{
-        this.unline(node1, dstItem);
+        this.unline(node1, item);
       },2000)
 
     });
-
   }
 
 
@@ -377,7 +369,7 @@ class Painter
   //找出相应的host对应的DOM节点
   findDOMNode(host,type){
       var node,nameIndex;
-      console.log(host+" : "+host.name);
+      // console.log(host+" : "+host.name);
       switch (host.name){
           case "Sir1":
               node=$("svg image[did='Server']");
@@ -428,7 +420,7 @@ class Painter
                 }
               }else{
                 node=$("svg image[did='Tracker']");
-                console.log("Tracker");
+                // console.log("Tracker");
               }
 
       }
