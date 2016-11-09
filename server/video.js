@@ -90,7 +90,7 @@ mod.prototype.init = function()
             }
             else
             {
-                let time = data.format.duration.toString();
+                let time = data.format.duration;
                 this.app.log('time-query [%s] return: [%s]', relative, time);
                 res.json(time);
             }
