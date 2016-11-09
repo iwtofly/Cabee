@@ -10,7 +10,7 @@ let mod = module.exports = function(app)
 {
     this.app    = app;
     this.router = express.Router();
-    // this.dir = app.dir;
+    this.dir = app.dir;
 
     this.init();
 };
@@ -22,7 +22,7 @@ let mod = module.exports = function(app)
 mod.prototype.init = function()
 {
     let app    = this.app;
-    let dir    = app.dir;
+    let dir    = this.dir;
     let router = this.router;
 
     router.get('/', (req, res) =>
