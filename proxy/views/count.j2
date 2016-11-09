@@ -1,33 +1,98 @@
-<!DOCTYPE html>
-<html>
-<body>
-    <ul>
+{% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
+
+{% block title %}Counts{% endblock %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("Counts") }}</div>
+<br/>
+<!-- Counts-info -->
+<div class="col-md-2">
+    <ul id="tabs" class="nav nav-pills nav-stacked" role="tablist">
         {% for ip, ports in list %}
-        <li>
-            <a href="/count/delete/{{ip}}" target="_blank">{{ ip }}</a>
-            <ul>
-                {% for port, videos in ports %}
-                <li>
-                    <a href="/count/delete/{{ip}}/{{port}}" target="_blank">{{ port }}</a>
-                    <ul>
-                    {% for video, pieces in videos %}
-                        <li>
-                            <a href="/count/delete/{{ip}}/{{port}}/{{video}}" target="_blank">{{ video }}</a>
-                            <ul>
-                            {% for piece, info in pieces %}
-                                <li><a href="/count/delete/{{ip}}/{{port}}/{{video}}/{{piece}}" target="_blank">{{ piece }} req: {{ info.req }} hit: {{ info.hit }}</a></li>
-                            {% endfor %}
-                            </ul>
-                        </li>
-                    {% endfor %}
-                    </ul>
-                </li>
-                {% endfor %}
-            </ul>
-        </li>
+            {% for port, videos in ports %}
+            <li role="presentation"><a aria-controls="proxy{{ i }}" role="tab" data-toggle="pill">{{ ip }} : {{port}}</a></li>
+            {% endfor %}
         {% endfor %}
     </ul>
-    <a href="/count/delete" target="_blank">Clear All</a>
 </div>
-</body>
-</html>
+<div class="col-md-10">
+    <div class="tab-content">
+        <!-- <h3>Counts of Proxy</h3> -->
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="info">
+                    <th>File Name</th>
+                    <!-- <th>Reset-Folder</th> -->
+                    <th>Video-Piece</th>
+                    <th>Request times</th>
+                    <th>Hit Times</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ip, ports in list %}
+                {% for port, videos in ports %}
+                    {% for video, pieces in videos %}
+                        {% for piece, info in pieces %}
+                        <tr>
+
+                            <td rowspan="{{pieces.length}}" >
+                                <span  target="_blank">{{ video }} </span>
+                            </td>
+                            <td>
+                                <span >{{ piece }}</span>
+                            </td>
+                            <td>
+                                <span > {{ info.req }} </span>
+                            </td>
+                            <td>
+                                <span > {{ info.hit }} </span>
+                            </td>
+                            <td rowspan="{{pieces.length}}">
+                                <button id="delete" class="btn btn-danger" data-url="/count/delete/{{ip}}/{{port}}/{{video}}/{{piece}}" >Del</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2 col-md-offset-5">
+        <button class="btn btn-danger btn-block" data-url="/count/delete">Clear</button>
+    </div>
+</div>
+
+
+<script>
+$(document).ready(function()
+{
+    $('#tabs a').click(function (e)
+    {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    $('#tabs a:first').tab('show');
+
+    $('button').click( function(){
+        var that = this;
+        var url = $(this).data('url');
+
+        console.log("delete "+url);
+        $.get( url, function(){
+            location.reload(true) ;
+        } )
+
+    });
+
+});
+
+</script>
+{% endblock %}

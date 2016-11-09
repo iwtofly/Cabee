@@ -40,6 +40,7 @@ mod.prototype.init = function()
     router.get('/', (req, res) =>
     {
         res.render('count.j2', {'list' : this.list});
+        console.log(JSON.stringify(this.list));
     });
 
     router.get('/delete', (req, res) =>

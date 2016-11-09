@@ -1,0 +1,6 @@
+{% macro nav(val) %}
+<ul class="nav nav-tabs">
+    <li {% if val == "List" %}class="active"{% endif %}><a href="/cache">Cache in Proxy</a></li>
+    <li {% if val == "Counts" %}class="active"{% endif %}><a href="/count">Counts of Proxy</a></li>
+</ul>
+{% endmacro %}

@@ -1,68 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script type="text/javascript" src="/jquery.js"></script>
-    <script type="text/javascript" src="/bootstrap/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.min.css">
-    <style type="text/css">
-        #wrap{
-            width: 75%;
-            margin: 20px auto;
-        }
-    </style>
-</head>
-<body>
-<div id="wrap">
-    <h2>Videos of Server</h2>
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr class="info">
-                <th>VideoName</th>
-                <th>Delete-Folder</th>
-                <th>Video-Piece</th>
-                <th>Action</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for video, pieces in list %}
-            {% for i in range(0,pieces.length) %}
-            <tr>
-                {% if i==0 %}
-                <td rowspan="{{pieces.length}}" >
-                    <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
-                </td>
-                <td rowspan="{{pieces.length}}">
-                    <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}" >Del</button>
-                </td>
-                <td>
-                    <span >{{ pieces[i] }}</span>
-                </td>
-                <td>
-                    <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
-                </td>
-                <td>
-                    <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
-                </td>
-                {% else %}
-                <td>
-                    <span>{{ pieces[i] }}</span>
-                </td>
-                <td>
-                    <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
-                </td>
-                <td>
-                    <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-            {% endfor %}
-        </tbody>
-    </table>
-    <br/><br/>
-    <a href="/video/upload">去给Server上传些视频>></a>
-</div>
+{% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
+
+{% block title %}Cache in Server{% endblock %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("Push") }}</div>
+<br/>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr class="info">
+            <th>VideoName</th>
+            <th>Delete-Folder</th>
+            <th>Video-Piece</th>
+            <th>Action</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for video, pieces in list %}
+        {% for i in range(0,pieces.length) %}
+        <tr>
+            {% if i==0 %}
+            <td rowspan="{{pieces.length}}" >
+                <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
+            </td>
+            <td rowspan="{{pieces.length}}">
+                <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}" >Del</button>
+            </td>
+            <td>
+                <span >{{ pieces[i] }}</span>
+            </td>
+            <td>
+                <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
+            </td>
+            <td>
+                <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
+            </td>
+            {% else %}
+            <td>
+                <span>{{ pieces[i] }}</span>
+            </td>
+            <td>
+                <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
+            </td>
+            <td>
+                <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+<br/><br/>
+<!-- <a href="/video/upload">去给Server上传些视频>></a> -->
+
 <script>
 $(document).ready(function()
 {
@@ -91,5 +85,4 @@ $(document).ready(function()
     });
 });
 </script>
-</body>
-</html>
+{% endblock %}

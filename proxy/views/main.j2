@@ -1,89 +1,76 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script type="text/javascript" src="/jquery.js"></script>
-    <script type="text/javascript" src="/bootstrap/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.min.css">
-    <style type="text/css">
-        #wrap{
-            width: 75%;
-            margin: 20px auto;
-        }
-    </style>
-</head>
-<body>
-<div id="wrap">
-    <h2>Cache in Proxy</h2>
-    <div class="col-md-2">
-        <ul id="tabs" class="nav nav-pills nav-stacked" role="tablist">
+{% extends "frame.j2" %}
+{% import "partial.j2" as partial %}
+
+{% block title %}List{% endblock %}
+
+{% block content %}
+<!-- nav -->
+<div class="row">{{ partial.nav("List") }}</div>
+<br/>
+<!-- <h2>Cache in Proxy</h2> -->
+<div class="col-md-2">
+    <ul id="tabs" class="nav nav-pills nav-stacked" role="tablist">
+        {% for ip, ports in list %}
+            {% for port, videos in ports %}
+            <li role="presentation"><a aria-controls="proxy{{ i }}" role="tab" data-toggle="pill">{{ ip }} : {{port}}</a></li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+<div class="col-md-10">
+    <div class="tab-content">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="info">
+                    <th>File Name</th>
+                    <th>Delete-Folder</th>
+                    <th>Video-Piece</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for ip, ports in list %}
                 {% for port, videos in ports %}
-                <li role="presentation"><a aria-controls="proxy{{ i }}" role="tab" data-toggle="pill">{{ ip }} : {{port}}</a></li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="col-md-10">
-        <div class="tab-content">
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr class="info">
-                        <th>File Name</th>
-                        <th>Delete-Folder</th>
-                        <th>Video-Piece</th>
-                        <th>Hit Times</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for ip, ports in list %}
-                    {% for port, videos in ports %}
-                        {% for video, pieces in videos %}
-                            {% for i in range(0,pieces.length) %}
-                            <tr>
-                                {% if i==0 %}
-                                <td rowspan="{{pieces.length}}" >
-                                    <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
-                                </td>
-                                <td rowspan="{{pieces.length}}">
-                                    <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}" >Del</button>
-                                </td>
-                                <td>
-                                    <span >{{ pieces[i] }}</span>
-                                </td>
-                                <td>
-                                    <span > 0 </span>
-                                </td>
-                                <td>
-                                    <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
-                                </td>
-                                {% else %}
-                                <td>
-                                    <span>{{ pieces[i] }}</span>
-                                </td>
-                                <td>
-                                    <span > 0 </span>
-                                </td>
-                                <td>
-                                    <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
+                    {% for video, pieces in videos %}
+                        {% for i in range(0,pieces.length) %}
+                        <tr>
+                            {% if i==0 %}
+                            <td rowspan="{{pieces.length}}" >
+                                <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
+                            </td>
+                            <td rowspan="{{pieces.length}}">
+                                <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}" >Del</button>
+                            </td>
+                            <td>
+                                <span >{{ pieces[i] }}</span>
+                            </td>
+                            <td>
+                                <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
+                            </td>
+                            {% else %}
+                            <td>
+                                <span>{{ pieces[i] }}</span>
+                            </td>
+                            <td>
+                                <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
+                            </td>
+                            {% endif %}
+                        </tr>
                         {% endfor %}
                     {% endfor %}
                 {% endfor %}
+            {% endfor %}
 
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 col-md-offset-5">
-            <button class="btn btn-danger btn-block" data-url="/cache/delete">Clear</button>
-        </div>
+            </tbody>
+        </table>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-2 col-md-offset-5">
+        <button class="btn btn-danger btn-block" data-url="/cache/delete">Clear</button>
+    </div>
+</div>
+
 
 <script>
 $(document).ready(function()
@@ -110,5 +97,4 @@ $(document).ready(function()
 });
 
 </script>
-</body>
-</html>
+{% endblock %}

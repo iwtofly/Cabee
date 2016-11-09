@@ -32,7 +32,7 @@ class videoList extends React.Component{
 				console.log("success")
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error("/video", status, err.toString());
+				console.error(err, status, err.toString());
 			}.bind(this)
 	    });
 	}

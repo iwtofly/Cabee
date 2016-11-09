@@ -23,7 +23,8 @@ mod.prototype.init = function()
 
     router.get('/', (req, res) =>
     {
-        res.render('delete.j2', {'list' : this.list()});
+        res.json(this.list());
+        // res.render('delete.j2', {'list' : this.list()});
     });
 
     router.get(
