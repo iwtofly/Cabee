@@ -61,11 +61,17 @@ let app = module.exports = function(conf)
     this.http.listen(conf.port);
 };
 
-app.prototype.refresh = function()
+app.prototype.info = function()
 {
     let proxy = this.conf;
     proxy.caches = this.cache.list();
-    this.track.link.emit('refresh', new Proxy(proxy));
+    return new Proxy(proxy);
+};
+
+app.prototype.refresh = function()
+{
+    this.track.emit('refresh', this.info());
+    this.gui.emit('refresh', this.info());
 };
 
 app.prototype.on_refresh = function(servers, proxies)
@@ -84,14 +90,4 @@ app.prototype.log = function()
                  '|' + this.conf.port +
                  '|' + this.conf.pos +
                  '|  ' + util.format(...arguments));
-};
-
-app.prototype.save = function(cache, buffer)
-{
-    let res = File.save(cache.path(this.dir), buffer);
-    if (res)
-    {
-        this.refresh();
-    }
-    return res;
 };

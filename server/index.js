@@ -44,13 +44,10 @@ let app = module.exports = function(conf)
     this.expr.use('/track', this.track.router);
     this.expr.use('/push', this.push.router);
 
-    this.expr.get("/home",(req,res)=> { 
-        
-        res.render('cabee-Users/index.html',{
+    this.expr.get('/home', (req,res) => { 
+        res.render('cabee-Users/index.html', {
             'list':this.video.list()
         }); 
-
-        console.log("videolist"+this.video.list());
     });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
@@ -69,7 +66,8 @@ app.prototype.info = function()
 
 app.prototype.refresh = function()
 {
-    this.track.link.emit('refresh', this.info());
+    this.track.emit('refresh', this.info());
+    this.gui.emit('refresh', this.info());
 };
 
 app.prototype.log = function()

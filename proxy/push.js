@@ -57,8 +57,11 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
                          Date.now() - tick,
                          'ok');
 
-            if (app.conf.push.save && app.save(cache, body))
+            if (app.conf.push.save && File.save(cache.path(dir), body))
+            {
                 log('save to [' + cache.path(dir) + '] success');
+                app.refresh();
+            }
             else
                 log('save to [' + cache.path(dir) + '] fail');
         }

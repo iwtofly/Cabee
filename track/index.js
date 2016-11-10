@@ -42,15 +42,6 @@ let app = module.exports = function(conf)
     this.http.listen(conf.port);
 };
 
-app.prototype.info = function()
-{
-    return ret =
-    {
-        port : this.conf.port,
-        name : this.conf.name
-    };
-};
-
 app.prototype.log = function(text)
 {
     console.log('T|' + this.conf.name +

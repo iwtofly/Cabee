@@ -78,7 +78,7 @@ mod.prototype.init = function()
 
         // try get file from other proxies
         let exist = false;
-        let begin = false;
+        let chosen = false;
         for (let proxy of app.proxies)
         {
             if (proxy.has(cache) && (
@@ -115,8 +115,9 @@ mod.prototype.init = function()
                                       body);
 
                         // no other pinged proxy has returned yet, so we are the chosen one :D
-                        if (!begin)
+                        if (!chosen)
                         {
+                            chosen = true;
                             log('[%s] is chosen for relaying cache', proxy.toString());
                             app.gui.emit('fetch_bgn',
                                           proxy.ip,
@@ -147,7 +148,7 @@ mod.prototype.init = function()
                                                   'ok',
                                                   Date.now() - tick);
 
-                                    if (app.conf.relay.save && app.save(cache, body))
+                                    if (app.conf.relay.save && File.save(cache.path(dir), body))
                                     {
                                         log('save to [' + cache.path(dir) + ']');
                                         setTimeout(() =>
@@ -163,6 +164,7 @@ mod.prototype.init = function()
                                             res.sendFile(cache.path(dir));
                                         },
                                         delay);
+                                        app.refresh();
                                     }
                                     else
                                     {
@@ -183,7 +185,6 @@ mod.prototype.init = function()
                                     }
                                 }
                             });
-                            begin = true;
                         }
                     }
                 });
@@ -239,7 +240,7 @@ mod.prototype.init = function()
                                   Date.now() - tick,
                                   'ok');
 
-                    if (app.conf.relay.save && app.save(cache, body))
+                    if (app.conf.relay.save && File.save(cache.path(dir), body))
                     {
                         log('save to [' + cache.path(dir) + ']');
                         setTimeout(() =>
@@ -254,6 +255,7 @@ mod.prototype.init = function()
                             res.sendFile(cache.path(dir));
                         },
                         delay);
+                        app.refresh();
                     }
                     else
                     {

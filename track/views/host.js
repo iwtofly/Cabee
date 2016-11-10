@@ -240,7 +240,15 @@ class Server extends RemoteHost
         super(ip, port, name);
         this.videos = videos;
 
+        this.io.on('refresh', this.on_refresh.bind(this));
         this.io.on('push', this.on_push.bind(this));
+    }
+
+    on_refresh(info)
+    {
+        this.videos = videos;
+        this.log('refreshed');
+        // window.painter.refresh(this);
     }
 
     on_push(video, piece)
@@ -267,7 +275,16 @@ class Proxy extends RemoteHost
         super(ip, port, name);
         this.pos = pos;
         this.caches = caches;
+
+        this.io.on('refresh', this.on_refresh.bind(this));
     };
+
+    on_refresh(info)
+    {
+        this.caches = info.caches;
+        this.log('refreshed');
+        // window.painter.refresh(this);
+    }
 
     to_string()
     {

@@ -30,6 +30,7 @@ mod.prototype.on_connect = function(socket)
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
     socket.on('refresh', this.on_refresh.bind(this, socket));
     socket.on('push', this.on_push.bind(this, socket));
+    // notify both proxies & users(gui)
     this.app.proxy.refresh();
     this.app.gui.refresh();
 };
@@ -38,6 +39,7 @@ mod.prototype.on_connect = function(socket)
 mod.prototype.on_disconnect = function(socket)
 {
     this.app.log('server [' + Ip.format(socket.request.connection.remoteAddress) + '] disconnected');
+    // notify both proxies & users(gui)
     this.app.proxy.refresh();
     this.app.gui.refresh();
 };
@@ -48,8 +50,8 @@ mod.prototype.on_refresh = function(socket, data)
     data.ip = Ip.format(socket.request.connection.remoteAddress);
     this.list.push(data);
     this.app.log('server [' + data.ip + '] notified');
+    // notify proxies
     this.app.proxy.refresh();
-    this.app.gui.refresh();
 };
 
 // 

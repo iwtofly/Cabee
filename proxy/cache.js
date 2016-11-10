@@ -151,7 +151,7 @@ mod.prototype.init = function()
                               Date.now() - tick,
                               'ok');
 
-                if (app.conf.cache.save && app.save(cache, body))
+                if (app.conf.cache.save && File.save(cache.path(dir), body))
                 {
                     log('save to [' + cache.path(dir) + ']');
                     setTimeout(() =>
@@ -167,6 +167,7 @@ mod.prototype.init = function()
                         res.sendFile(cache.path(dir));
                     },
                     delay);
+                    app.refresh();
                 }
                 else
                 {

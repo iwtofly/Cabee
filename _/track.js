@@ -32,3 +32,8 @@ mod.prototype.init = function()
         res.json(link.connected);
     });
 };
+
+mod.prototype.emit = function()
+{
+    this.link.emit(...arguments);
+};

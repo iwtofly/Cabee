@@ -11,7 +11,7 @@ let mod = module.exports = function(app)
         });
     });
 
-    this.io  = app.io.of('/gui');
+    this.io = app.io.of('/gui');
     this.io.on('connection', this.on_connect.bind(this));
 };
 
@@ -21,18 +21,13 @@ mod.prototype.on_connect = function(socket)
     this.app.log('user [' + ip + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
 
-    this.refresh();
+    socket.emit('refresh', this.app.server.list, this.app.proxy.list);
 };
 
 mod.prototype.on_disconnect = function(socket)
 {
     let ip = socket.request.connection.remoteAddress;
     this.app.log('user [' + ip + '] disconnected');
-};
-
-mod.prototype.emit = function()
-{
-    this.io.emit(...arguments);
 };
 
 mod.prototype.refresh = function()

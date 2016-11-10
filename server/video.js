@@ -24,7 +24,6 @@ mod.prototype.init = function()
     router.get('/', (req, res) =>
     {
         res.json(this.list());
-        // res.render('delete.j2', {'list' : this.list()});
     });
 
     router.get(
@@ -42,6 +41,7 @@ mod.prototype.init = function()
             req.params.piece || ''
         );
         res.json(File.rm(folder) ? 'ok' : 'error');
+        app.refresh();
     });
 
     router.get('/upload', (req, res) =>
@@ -71,10 +71,11 @@ mod.prototype.init = function()
         {
             for (f of req.files)
             {
-                this.app.log('file uploaded [' + f.path + ']');
+                app.log('file uploaded [' + f.path + ']');
             }
         }
         res.json('ok');
+        app.refresh();
     });
 
     router.get('/time/:video/:chip', (req, res) =>
@@ -86,13 +87,13 @@ mod.prototype.init = function()
         {
             if (err)
             {
-                this.app.log('time-query [%s] error: [%s]', relative, err);
+                app.log('time-query [%s] error: [%s]', relative, err);
                 res.status(404).end();
             }
             else
             {
                 let time = data.format.duration;
-                this.app.log('time-query [%s] return: [%s]', relative, time);
+                app.log('time-query [%s] return: [%s]', relative, time);
                 res.json(time);
             }
         });
