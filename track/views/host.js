@@ -117,28 +117,6 @@ class Track extends Host
         console.log(Host.proxies);
         console.log(Host.stations)
 
-        var tbody = $('tbody');
-        tbody.empty();
-        
-
-        for (let server of Host.servers)
-        {
-            let serverVideos = JSON.stringify(server.videos);
-            tbody.append("<tr><td>" +  server.name +" : "+server.ip+"</td>" 
-                + "<td>" + serverVideos +"</td>"
-                + "</tr>"); 
-            
-        }
-        for (let proxy of Host.proxies)
-        {
-            let videos = isOwnEmpty(proxy.caches)? "无": JSON.stringify(proxy.caches);
-            tbody.append("<tr><td>" +  proxy.name +" : "+proxy.ip+"</td>" 
-                + "<td>" + videos +"</td>"
-                + "</tr>"); 
-            
-        }
-
-
         window.painter.tree(this, Host.servers, Host.proxies, Host.stations);
     }
 
@@ -147,7 +125,7 @@ class Track extends Host
         let src = Host.get(server_ip, server_port);
         this.log('server [{0}] push [{1}|{2}] to proxies'
             .format(src.to_string(), video, piece));
-        // window.broadcast(this, Host.proxies, 'push');
+        window.painter.broadcast(this, Host.proxies, 'push');
     }
 };
 
@@ -248,7 +226,7 @@ class Server extends RemoteHost
     {
         this.videos = videos;
         this.log('refreshed');
-        // window.painter.refresh(this);
+        window.painter.refresh(Host.servers,Host.proxies);
     }
 
     on_push(video, piece)
@@ -283,7 +261,7 @@ class Proxy extends RemoteHost
     {
         this.caches = info.caches;
         this.log('refreshed');
-        // window.painter.refresh(this);
+        window.painter.refresh(Host.servers,Host.proxies);
     }
 
     to_string()

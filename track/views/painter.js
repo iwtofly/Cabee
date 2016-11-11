@@ -210,6 +210,8 @@ class Painter
     function dragstart(d) {
         d3.select(this).classed("fixed", d.fixed = true);
     }
+
+    this.refresh(servers,proxies);
   }
 
   // src & dst are object-reference to a User/Server/Proxy
@@ -323,7 +325,7 @@ class Painter
 
   // src is Track or server.
   // dstArr is an Array(contains some proxies). 
-  push(src,dstArr){
+  broadcast(src,dstArr){
 
     var node1=this.findDOMNode(src);
 
@@ -336,6 +338,31 @@ class Painter
       },2000)
 
     });
+  }
+
+  //refresh
+  refresh(servers, proxies ){
+
+    var tbody = $('tbody');
+    tbody.empty();
+    
+
+    for (let server of Host.servers)
+    {
+        let serverVideos = JSON.stringify(server.videos);
+        tbody.append("<tr><td>" +  server.name +" : "+server.ip+"</td>" 
+            + "<td>" + serverVideos +"</td>"
+            + "</tr>"); 
+        
+    }
+    for (let proxy of Host.proxies)
+    {
+        let videos = isOwnEmpty(proxy.caches)? "无": JSON.stringify(proxy.caches);
+        tbody.append("<tr><td>" +  proxy.name +" : "+proxy.ip+"</td>" 
+            + "<td>" + videos +"</td>"
+            + "</tr>"); 
+        
+    }
   }
 
 

@@ -28,7 +28,6 @@ mod.prototype.init = function()
     router.get('/', (req, res) =>
     {
         res.render('main.j2', {'list' : this.list()});
-        console.log(this.list());
     });
     
     router.get(
