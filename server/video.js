@@ -23,25 +23,12 @@ mod.prototype.init = function()
 
     router.get('/', (req, res) =>
     {
-        res.json(this.list());
+        res.render('video.j2', {'list' : app.video.list()});
     });
 
-    router.get(
-    [
-        '/delete/',
-        '/delete/:video',
-        '/delete/:video/:piece'
-    ],
-    (req, res) =>
+    router.get('/list', (req, res) =>
     {
-        let folder = path.join
-        ( 
-            dir,
-            req.params.video || '',
-            req.params.piece || ''
-        );
-        res.json(File.rm(folder) ? 'ok' : 'error');
-        app.refresh();
+        res.json(this.list());
     });
 
     router.get('/upload', (req, res) =>
@@ -152,6 +139,24 @@ mod.prototype.init = function()
             res.sendFile(f);
         },
         delay);
+    });
+    
+    router.delete(
+    [
+        '/',
+        '/:video',
+        '/:video/:piece'
+    ],
+    (req, res) =>
+    {
+        let folder = path.join
+        ( 
+            dir,
+            req.params.video || '',
+            req.params.piece || ''
+        );
+        res.json(File.rm(folder) ? 'ok' : 'error');
+        app.refresh();
     });
 }
 

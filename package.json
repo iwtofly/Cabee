@@ -22,7 +22,6 @@
     "body-parser": "^1.15.1",
     "cors": "^2.8.1",
     "express": "^4.13.4",
-    "get-video-duration": "^0.1.0",
     "ipaddr.js": "^1.2.0",
     "js-yaml": "^3.6.1",
     "multer": "^1.1.0",

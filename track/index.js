@@ -29,14 +29,14 @@ let app = module.exports = function(conf)
     this.expr.use(express.static('_static'));
     this.expr.use(express.static('track/views'));
 
+    this.gui    = new Gui(this);
     this.server = new Server(this);
     this.proxy  = new Proxy(this);
-    this.gui    = new Gui(this);
 
     this.expr.use('/server', this.server.router);
     this.expr.use('/proxy', this.proxy.router);
-    this.expr.use('/gui', this.gui.router);
-
+    
+    this.expr.get('/', (req, res) => { res.render('main.j2'); });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);

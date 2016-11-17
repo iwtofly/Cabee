@@ -16,12 +16,7 @@ mod.prototype.init = function()
     let app    = this.app;
     let router = this.router;
 
-    router.get('/', (req, res) =>
-    {
-        res.render('push.j2', {'list' : app.video.list()});
-    });
-
-    router.get(
+    router.put(
     [
         '/:video',
         '/:video/:piece'

@@ -29,27 +29,6 @@ mod.prototype.init = function()
     {
         res.render('main.j2', {'list' : this.list()});
     });
-    
-    router.get(
-    [
-        '/delete/',
-        '/delete/:ip',
-        '/delete/:ip/:port',
-        '/delete/:ip/:port/:video',
-        '/delete/:ip/:port/:video/:piece'
-    ],
-    (req, res) =>
-    {
-        let folder = path.join
-        (
-            dir,
-            req.params.ip    || '',
-            req.params.port  || '',
-            req.params.video || '',
-            req.params.piece || ''
-        );
-        res.json(File.rm(folder) ? 'ok' : 'error');
-    });
 
     // original url of target is [http://$ip:$port/video/$video/$piece]
     router.get(
@@ -189,6 +168,28 @@ mod.prototype.init = function()
                 }
             }
         });
+    });
+
+    router.delete(
+    [
+        '/',
+        '/:ip',
+        '/:ip/:port',
+        '/:ip/:port/:video',
+        '/:ip/:port/:video/:piece'
+    ],
+    (req, res) =>
+    {
+        let folder = path.join
+        (
+            dir,
+            req.params.ip    || '',
+            req.params.port  || '',
+            req.params.video || '',
+            req.params.piece || ''
+        );
+        res.json(File.rm(folder) ? 'ok' : 'error');
+        app.refresh();
     });
 };
 

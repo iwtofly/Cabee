@@ -1,14 +1,6 @@
-let express = require('express');
-
 let mod = module.exports = function(app)
 {
     this.app = app;
-    this.router = express.Router();
-    this.router.get('/', (req, res) =>
-    {
-        res.render('main.j2');
-    });
-
     this.io = app.io.of('/gui');
     this.io.on('connection', this.on_connect.bind(this));
 };
