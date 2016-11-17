@@ -16,11 +16,14 @@ var NavBar=React.createClass({
 					<Link to="/videos" activeStyle={{color:'red'}}>videoList</Link>
 				</li>
 				<li>
-					<Link to="/cached" activeStyle={{color:'red'}}>video-detail</Link>
+					<Link to="/ourlab" activeStyle={{color:'red'}}>ourlab</Link>
 				</li>
+			{/*
 				<li>
-					<Link to="/users" activeStyle={{color:'red'}}>pictureList</Link>
+					<Link to="/pics" activeStyle={{color:'red'}}>pictureList</Link>
 				</li>
+			*/}
+				
 			</ul>
 			</div>
 		)

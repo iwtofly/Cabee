@@ -52,13 +52,13 @@ var MainApp = React.createClass({
 ReactDOM.render(
 	<Router history={hashHistory} >
 		<Route path="/" component={MainApp}>
-			<IndexRoute component={App}/>
-	    	<Route path="/users" component={Users}/>
+			<IndexRoute component={VideoList}/>
 	    	<Route path="/videos" component={video_ListPage}>
 	    		<IndexRoute component={VideoList}/>
 	    		<Route path="detail/:videoId" component={Video_Cached} />
 	    	</Route>
-	    	<Route path="/cached" component={Video_Cached} />
+	    	<Route path="/ourlab" component={App} />
+	    	<Route path="/pics" component={Users}/>
 	    	<Route path="*" component={NoMatch}/>
 	    </Route>
     </Router>

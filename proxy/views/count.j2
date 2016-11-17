@@ -86,9 +86,14 @@ $(document).ready(function()
         var url = $(this).data('url');
 
         console.log("delete "+url);
-        $.get( url, function(){
-            location.reload(true) ;
-        } )
+
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            success: function(response) {
+                location.reload(true) ;
+           }
+        })
 
     });
 

@@ -21,7 +21,7 @@ class videoList extends React.Component{
 		//TODO:通过Ajax请求获取要播放的视频内容信息
 	    $.ajax({
 	    	type: "get",
-			url: "/video",
+			url: "/video/list",
 			dataType: 'json',
 			cache: false,
 			success: function(data) {

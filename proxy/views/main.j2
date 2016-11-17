@@ -39,20 +39,20 @@
                                 <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
                             </td>
                             <td rowspan="{{pieces.length}}">
-                                <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}" >Del</button>
+                                <button id="delete" class="btn btn-danger" data-url="/cache/{{ip}}/{{port}}/{{video}}" >Del</button>
                             </td>
                             <td>
                                 <span >{{ pieces[i] }}</span>
                             </td>
                             <td>
-                                <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
+                                <button id="delete" class="btn btn-danger" data-url="/cache/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
                             </td>
                             {% else %}
                             <td>
                                 <span>{{ pieces[i] }}</span>
                             </td>
                             <td>
-                                <button id="delete" class="btn btn-danger" data-url="/cache/delete/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
+                                <button id="delete" class="btn btn-danger" data-url="/cache/{{ip}}/{{port}}/{{video}}/{{pieces[i]}}" >Del</button>
                             </td>
                             {% endif %}
                         </tr>
@@ -88,9 +88,15 @@ $(document).ready(function()
         var url = $(this).data('url');
 
         console.log("delete "+url);
-        $.get( url, function(){
-            location.reload(true) ;
-        } )
+        
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            success: function(response) {
+                location.reload(true) ;
+           }
+        })
+
 
     });
 

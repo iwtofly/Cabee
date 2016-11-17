@@ -27,7 +27,7 @@
                 <span href="/push/{{ video }}/" target="_blank">{{ video }} </span>
             </td>
             <td rowspan="{{pieces.length}}">
-                <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}" >Del</button>
+                <button id="delete" class="btn btn-danger" data-url="/video/{{video}}" >Del</button>
             </td>
             <td>
                 <span >{{ pieces[i] }}</span>
@@ -36,7 +36,7 @@
                 <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
             </td>
             <td>
-                <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
+                <button id="delete" class="btn btn-danger" data-url="/video/{{video}}/{{pieces[i]}}" >Del</button>
             </td>
             {% else %}
             <td>
@@ -46,7 +46,7 @@
                 <button id="push" class="btn btn-primary" data-url="/push/{{video}}/{{pieces[i]}}" >Push</button>
             </td>
             <td>
-                <button id="delete" class="btn btn-danger" data-url="/video/delete/{{video}}/{{pieces[i]}}" >Del</button>
+                <button id="delete" class="btn btn-danger" data-url="/video/{{video}}/{{pieces[i]}}" >Del</button>
             </td>
             {% endif %}
         </tr>
@@ -68,18 +68,26 @@ $(document).ready(function()
 
             $(this).html("Pushing");
 
-            $.get( url, function(){
+            $.ajax({
+               url: url,
+               type: 'PUT',
+               success: function(response) {
                 $(that).removeClass("btn-primary")
                        .addClass("btn-success")
                        .html("pushed");
+               }
             });
 
         }else{
             console.log("delete "+url);
-            $.get( url, function(){
-                // $(that).parent().parent().remove();
-                location.reload(true) ;
-            } )
+
+            $.ajax({
+                url:url,
+                type:'DELETE',
+                success:function(res){
+                    location.reload(true) ;
+                }
+            })
         }
 
     });
