@@ -1,0 +1,192 @@
+%configuration file for Cabee
+---
+
+- type: track
+  name: Tracker
+  port: 30000
+
+
+- type : server
+  name : Sir1
+  port : 40001
+  track: http://localhost:30000/server
+  delay:
+    - ['12', 1000]
+    - ['1' , 2000]
+    - ['*' , 3000]
+
+
+- type : proxy
+  name : GATEWAY_1
+  pos  : "1"
+  port : 50001
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['1', 5000]
+    - ['*', 3000]    
+
+
+- type : proxy
+  name : MEC1
+  pos  : "11"
+  port : 50002
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['12', 1000]
+    - ['*' , 100]
+
+
+- type : proxy
+  name : MEC2
+  pos  : "12"
+  port : 50003
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['11', 1000]
+    - ['*' , 1000]
+
+
+- type : proxy
+  name : GATEWAY_2
+  pos  : "2"
+  port : 60001
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['1', 5000]
+    - ['*', 3000]    
+
+
+- type : proxy
+  name : MEC1
+  pos  : "21"
+  port : 60002
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['12', 1000]
+    - ['*' , 100]
+
+
+- type : proxy
+  name : MEC2
+  pos  : "22"
+  port : 60003
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['11', 1000]
+    - ['*' , 1000]
+
+- type : proxy
+  name : MEC2
+  pos  : "23"
+  port : 60004
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['11', 1000]
+    - ['*' , 1000]
+
+
+
+- type : proxy
+  name : GATEWAY_3
+  pos  : "3"
+  port : 20001
+  track: http://localhost:30000/proxy
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : true
+      super: true
+  push:
+    save: true
+  delay:
+    - ['1', 5000]
+    - ['*', 3000]    

@@ -5,13 +5,15 @@
  * msg()：当某个节点的内容发生改变时动画冒泡提示； *
  * line():画线，type还未确定；                     *
  * unline():删除某条线；                           *
+ * 全部按照pos以及instance来判断                   *
  **************************************************/
 class Painter
 {
   log(text) { console.log(text); }
 
-  tree(track, servers, proxies, stations)
+  tree(track, servers, proxies, stations, networkinfo)
   {
+    console.log(networkinfo);
     console.log('draw a fucking tree');
     var tooltip = d3.select("body")
                     .append("div")
@@ -28,89 +30,124 @@ class Painter
                         "height":height,
                    });
     var myNode =[];
+    var target = {},
+        peer = {};
+
     myNode.push(track);
     myNode.push(servers[0]);
+    var DGWnum=0,
+        MECnum=0;
     for (let proxy of proxies){
+      if(proxy.pos.length==1){
+        DGWnum++;
+        
+        
+      }else{
+        MECnum++;
+        if( peer[proxy.pos.substr(0,1)] == undefined ){
+          peer[proxy.pos.substr(0,1)] = 1;
+        }else{
+          peer[proxy.pos.substr(0,1)]= peer[proxy.pos.substr(0,1)] + 1 ;
+        }
+        // peer[proxy.pos.substr(0,1)]= (peer[proxy.pos.substr(0,1)] == undefined ? 1 : peer[proxy.pos.substr(0,1)]++ ) ;  //用来记录每个DGW下有几个MEC，控制节点纵坐标
+        // console.log("这里有peer更新"+ peer[proxy.pos.substr(0,1)] )
+      }
       myNode.push(proxy);
     }
+
+
+    // console.log(JSON.stringify(peer));
+
     for(let station of stations){
       myNode.push(station)
     }
+    myNode.push(networkinfo);
+    let proxyLength = proxies.length;
+    // console.log(myNode);
 
-    console.log(myNode);
-
-
-    var target = {};
 
     var nodeLength=myNode.length;
-    console.log(myNode.length);
+    // console.log(myNode.length);
     var nodes=d3.range(0,nodeLength).map(function(i){
       // console.log(myNode[i]);
       if(myNode[i] instanceof Track){
           target.T=i;
-          return{name:"Tracker",img:"./img/cloud-server.tm.png",data:"Tracker",x:700,y:100}
+          return{name:"Tracker",img:"./img/cloud-server.tm.png",data:"Tracker",x:750,y:80}
       }
       if(myNode[i] instanceof Server){
           target.S=i;
-          return{name:"Server",img:"./img/cloud-server.tm.png",data:myNode[i]["videos"],x:700,y:246}
+          return{name:"Server",img:"./img/cloud-server.tm.png",data:myNode[i]["videos"],x:760,y:266}
       }
-      if(myNode[i].name.substr(0,7)=="GATEWAY"){
-          if(myNode[i].pos=="1"){
-              target.A=i;
-              return{name:"DGW_A",img:"./img/switch.tm.png" ,data:myNode[i].caches, x:510,y:248}
-          }else{
-              target.B=i;
-              return {name:"DGW_B",img:"./img/switch.tm.png", data:myNode[i].caches,x:510,y:450}
-          }
+      if(myNode[i].name == "NetworkInfo"){
+        return{name:"NetworkInfo",img:"./img/cloud-server.tm.png",data:myNode[i]["videos"],x:500,y:5}
+      }
+      if(myNode[i].pos.length == 1){
+          let posIndex = myNode[i].pos;
+          target[posIndex]=i;
+          return {name:"DGW_"+posIndex ,img:"./img/switch.tm.png", pos: posIndex, data:myNode[i].caches,x:560, y: posIndex*height/(DGWnum+1) }
        }
        if(myNode[i].pos.length==2){
-          if(myNode[i].name.substr(0,3) == "MEC" ){
-              target[myNode[i].pos] = i;
 
-              if(myNode[i].pos.substr(0,1)=="1"){
-                  return {name:"MEC_A_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:myNode[i].caches,x:330 , y : myNode[i].pos.substr(1,2)==1 ? 145:295}
-              }else{
-                  return {name:"MEC_B_sub"+myNode[i].pos.substr(1,2),img:"./img/MEC.tm.png",data:myNode[i].caches,x:330 , y : myNode[i].pos.substr(1,2)==1 ? 415:580}
-              }
+          let selfPos = myNode[i].pos.substr(1,2);
+          let fatherPos = myNode[i].pos.substr(0,1);
+          let posY = fatherPos=="1" ? ( parseInt(fatherPos-1) * parseInt( peer[fatherPos] ) +parseInt(selfPos) ) * height/(MECnum+1)
+                                     : ( parseInt(fatherPos-1) * parseInt( peer[fatherPos] ) +parseInt(selfPos-1) ) * height/(MECnum+1)
+
+          if(myNode[i].name.substr(0,3) == "MEC" ){
+              target[myNode[i].pos] = i;   //为了与station的连接
+
+              // console.log((fatherPos-1) * peer[fatherPos] + parseInt(selfPos) )
+
+              return {
+                      name:"MEC_"+fatherPos+"_sub"+selfPos, 
+                      img:"./img/MEC.tm.png",
+                      data:myNode[i].caches,
+                      pos:myNode[i].pos,
+                      x:330,
+                      y:posY
+                    }
           }else if( myNode[i].name == "station" ){
-              if( myNode[i].pos.substr(0,1)=="1" ){
-                  return {
-                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:myNode[i].caches,x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 145:295
-                  }
-              }else{
-                  return {
-                    name:"station" , pos:myNode[i].pos, img:'./img/station.png',data:myNode[i].caches,x:230 ,y : myNode[i].pos.substr(1,2)==1 ? 415:580
-                  }
-              }
+
+              return {
+                      name:"station",
+                      pos: myNode[i].pos,
+                      img: './img/station.png',
+                      data:myNode[i].caches,
+                      x:230 ,
+                      y:posY
+                    }
           }
 
        }
+       
     });
 
-    // console.log(JSON.stringify(nodes)+nodes.length);
+    console.log(JSON.stringify(nodes)+nodes.length);
 
     var edges = d3.range(1,nodeLength).map(function(i){
         // console.log("nodes["+i+"]"+JSON.stringify(nodes[i]))
         if(nodes[i].name == "Server"){
             return {source: i, target: target.T };
         }
-        if(nodes[i].name == "DGW_A"){
-            return {source: i, target: target.S };
-        }if(nodes[i].name == "DGW_B"){
+        if(nodes[i].name.substr(0,3) == "DGW"){
             return {source: i, target: target.S };
         }if(nodes[i].name == "station"){
             return {source: i, target: target[nodes[i].pos]};
+        }if(nodes[i].name == "NetworkInfo"){
+            target.sourceN = i;
+            return {source: i, target:  target.T };
         }
-        else if(nodes[i].name.substr(0,9)=="MEC_A_sub"){
-          var temTar1= target.A==undefined ? target.S:target.A;
-          return {source:i,target:temTar1}
-        }else if(nodes[i].name.substr(0,9)=="MEC_B_sub"){
-          var temTar2= target.B==undefined ? target.S:target.B;
-          return {source:i,target:temTar2}
+        else if(nodes[i].name.substr(0,3)=="MEC"){
+          let selfPos = nodes[i].pos.substr(1,2);
+          let fatherPos = nodes[i].pos.substr(0,1);
+          return { source:i, target: target[fatherPos] };
         }
     })
-
-    // console.log("edges: "+JSON.stringify(edges))
+    edges.push({source: target.sourceN ,target:target["1"] ? target["1"]:target.T })
+    edges.push({source: target.sourceN ,target:target["11"] ? target["11"]:target.T})
+    edges.push({source: target.T ,target:target["1"] ? target["1"]:target.T })
+    edges.push({source: target.T ,target:target["11"] ? target["11"]:target.T})
+    console.log("edges: "+JSON.stringify(edges))
 
     var force = d3.layout.force()
                   .nodes(nodes) //指定节点数组
@@ -212,12 +249,13 @@ class Painter
     }
 
     this.refresh(servers,proxies);
+
   }
 
   // src & dst are object-reference to a User/Server/Proxy
   line(src, dst, type, text)
   { 
-    console.log(dst);
+    // console.log(dst);
     var linkTooltip = d3.select("body")
                      .append("div")
                      .attr("class","linkTooltip")
@@ -310,6 +348,9 @@ class Painter
                  // .delay(1000)
                  // .duration(1500)
                  // .remove();
+      // setTimeout(()=>{
+      //     this.unline(src, dst);
+      // },3000)
   }
 
   unline(src, dst)
@@ -327,7 +368,8 @@ class Painter
   // dstArr is an Array(contains some proxies). 
   broadcast(src,dstArr){
 
-    var node1=this.findDOMNode(src);
+    // var node1=this.findDOMNode(src);
+    var node1=src;
 
     dstArr.map((item,index) => {
 
@@ -350,7 +392,11 @@ class Painter
     for (let server of Host.servers)
     {
         let serverVideos = JSON.stringify(server.videos);
-        tbody.append("<tr><td>" +  server.name +" : "+server.ip+"</td>" 
+        let tempnode = this.findDOMNode(server,"name");
+        tbody.append("<tr><td>" +  tempnode + "</td>" 
+            
+            + "<td>" + server.ip +"</td>"
+            + "<td>" +server.port +"</td>"
             + "<td>" + serverVideos +"</td>"
             + "</tr>"); 
         
@@ -358,7 +404,10 @@ class Painter
     for (let proxy of Host.proxies)
     {
         let videos = isOwnEmpty(proxy.caches)? "无": JSON.stringify(proxy.caches);
-        tbody.append("<tr><td>" +  proxy.name +" : "+proxy.ip+"</td>" 
+        let tempnode = this.findDOMNode(proxy,"name");
+        tbody.append("<tr><td>" +  tempnode +"</td>" 
+            + "<td>" + proxy.ip +"</td>"
+            + "<td>" + proxy.port +"</td>"
             + "<td>" + videos +"</td>"
             + "</tr>"); 
         
@@ -395,63 +444,66 @@ class Painter
 
   //找出相应的host对应的DOM节点
   findDOMNode(host,type){
-      var node,nameIndex;
+      var node,nameIndex,tempName;
       // console.log(host+" : "+host.name);
-      switch (host.name){
-          case "Sir1":
-              node=$("svg image[did='Server']");
-              break;
-          case "GATEWAY_1":
-              // console.log("DGW_A");
-              node=$("svg image[did='DGW_A']");
-              nameIndex="DGW_A";
-              break;
-          case "GATEWAY_2":
-              node=$("svg image[did='DGW_B']");
-              // console.log("DGW_B");
-              break;
-          case "MEC1":
-              if(host.pos=="11"){
-                node=$("svg image[did='MEC_A_sub1']");
-                // console.log("MEC_A_sub1");
-              }else{
-                node=$("svg image[did='MEC_B_sub1']");
-                // console.log("MEC_B_sub1");
-              } 
-              break;
-          case "MEC2":
-              if(host.pos=="12"){
-                node=$("svg image[did='MEC_A_sub2']");
-                // console.log("MEC_A_sub2");
-              }else{
-                node=$("svg image[did='MEC_B_sub2']");
-                // console.log("MEC_B_sub2");
-              } 
-              break;
-          default:
-              if(host instanceof User){
-                if(type=="delete"){
-                  node=$("svg image[did='User']").fadeOut(3000);
+      if(host instanceof User){ 
+        //先判断是不是用户
 
-                }else{
-                  var svg=d3.select('svg');
-                  var userNode=svg.append('image')
-                                  .attr("width",50)
-                                  .attr("height",50)
-                                  .attr("xlink:href","./img/phone.png")
-                                  .attr("x",50)
-                                  .attr("y",150)
-                                  .attr("did","User");
-                  node=$("svg image[did='User']");
-                  console.log("User in FE");
-                }
-              }else{
-                node=$("svg image[did='Tracker']");
-                // console.log("Tracker");
-              }
+        if(type=="delete"){
+          tempName="user";
+          console.log("delete")
+          node=$("svg image[did='User']").fadeOut(3000);
 
+        }else{
+          var svg=d3.select('svg');
+          var userNode=svg.append('image')
+                          .attr("width",50)
+                          .attr("height",50)
+                          .attr("xlink:href","./img/phone.png")
+                          .attr("x",50)
+                          .attr("y",150)
+                          .attr("did","User");
+          node=$("svg image[did='User']");
+          console.log("User in FE");
+        }
+        return node;
+      } 
+
+
+      else{
+       //如果不是用户
+        if(host instanceof Track){
+            tempName = "Tracker";
+        }
+        else if(host instanceof Server){
+            tempName = "Server";
+        }
+        else if( host.pos!= undefined && host.pos.length == 1){
+            let posIndex = host.pos;
+            tempName = "DGW_"+posIndex;
+         }
+        else if( host.pos!= undefined && host.pos.length==2){
+
+            let selfPos = host.pos.substr(1,2);
+            let fatherPos = host.pos.substr(0,1);
+
+            if(host.name.substr(0,3) == "MEC" ){
+                tempName = "MEC_"+fatherPos+"_sub"+selfPos ;
+
+            }else if( host.name == "station" ){
+                tempName = "station" ;
+            }
+
+         }
+         // console.log(tempName);
+         node=$("svg image[did="+tempName+"]");
+         if(type=="name"){
+          return tempName;
+         }else{
+          return node;
+         }
+         
       }
-      return node;
   }
 
 };

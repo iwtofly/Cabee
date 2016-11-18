@@ -116,8 +116,9 @@ class Track extends Host
         console.log(Host.servers);
         console.log(Host.proxies);
         console.log(Host.stations)
+        Host.networkinfo = new NetworkInfo("NetworkInfo");
 
-        window.painter.tree(this, Host.servers, Host.proxies, Host.stations);
+        window.painter.tree(this, Host.servers, Host.proxies, Host.stations ,Host.networkinfo);
     }
 
     on_push(server_ip, server_port, video, piece)
@@ -290,6 +291,15 @@ class Station extends Unit
         super();
         this.name = name;
         this.pos = pos;
+    };
+};
+
+class NetworkInfo extends Unit
+{
+    constructor( name, pos)
+    {
+        super();
+        this.name = name;
     };
 };
 
