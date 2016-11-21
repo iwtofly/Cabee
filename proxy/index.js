@@ -3,6 +3,7 @@ let nunjucks   = require('nunjucks');
 let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
+let request    = require('request');
 let io         = require('socket.io');
 let util       = require('util');
 let ipaddr     = require('ipaddr.js');
@@ -52,11 +53,39 @@ let app = module.exports = function(conf)
     this.expr.get('/server', (req, res) => { res.json(this.servers); });
     this.expr.get('/proxy',  (req, res) => { res.json(this.proxies); });
 
+    this.expr.use('/',      this.relay.router);
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/track', this.track.router);
     this.expr.use('/cache', this.cache.router);
     this.expr.use('/count', this.count.router);
-    this.expr.use('/',      this.relay.router);
+
+    this.expr.all('*', (req, res) =>
+    {
+        //console.log('============');
+        //console.log('protocal: ' + req.protocol);
+        //console.log('host: ' + req.get('host'));
+        //console.log('ip: ' + req.ip);
+        //console.log('url: ' + req.url);
+        //console.log('original url: ' + req.originalUrl);
+        //console.log('path: ' + req.path);
+        //console.log('base url: ' + req.baseUrl);
+        
+        let url = req.protocol + '://'
+                + req.get('host')
+                + req.path
+                + (req.url.indexOf('?') != -1 ? req.url.substr(req.url.indexOf('?')) : '');
+        this.log('pipe: [%s] => [%s]', req.ip, url);
+        //res.json('you shall not pass!!!');
+        req.pipe(request[req.method.toLowerCase()](url)).on('error', (err) =>
+        {
+            this.log('pipe: [%s] => [%s] begin failed with [%s]', req.ip, url, err);
+        })
+        .pipe(res).on('error', (err) =>
+        {
+            this.log('pipe: [%s] => [%s] end failed with [%s]', req.ip, url, err);
+        });
+        //res.status(404).end('fuck you');
+    });
 
     this.http.listen(conf.port);
 };

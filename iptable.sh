@@ -5,7 +5,6 @@
 if [ "$#" -lt 2 ] || [ "$2" != "on" ] && [ "$2" != "off" ]
 then
     echo "usage: <interface> <on|off>"
-    echo "example: ./iptable.sh eth0 on"
     exit 0
 fi
 

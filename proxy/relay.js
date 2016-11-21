@@ -28,20 +28,42 @@ mod.prototype.init = function()
         '/video/:video/:piece',
         '/video/:video/:piece/:pos'
     ],
-    (req, res) =>
+    (req, res, next) =>
     {
+        if (req.params.video == 'time')
+        {
+            next();
+            return;
+        }
+
         // collect info
         let src_ip  = Ip.format(req.ip);
         let src_pos = req.params.pos;
         // let host = req.get('shit');
         let host = req.get('host');
-        let cache = new Cache
-        (
-            host.substr(0, host.indexOf(':')),
-            host.substr(host.indexOf(':') + 1),
-            req.params.video,
-            req.params.piece
-        );
+        let split = host.indexOf(':');
+        let cache = null;
+        if (split != -1)
+        {
+            cache = new Cache
+            (
+                host.substr(0, split),
+                host.substr(host.indexOf(':') + 1),
+                req.params.video,
+                req.params.piece
+            );
+        }
+        else
+        {
+            cache = new Cache
+            (
+                host,
+                80,
+                req.params.video,
+                req.params.piece
+            );
+        }
+
         let log = (...args) =>
         {
             app.log('[relay] [%s|%s]=>[%s] %s', src_ip, src_pos, cache.url(), util.format(...args));
@@ -221,7 +243,7 @@ mod.prototype.init = function()
             {
                 if (err || response.statusCode != 200)
                 {
-                    log('fetch failed');
+                    log('fetch failed with [%s]', err);
                     app.gui.emit('fetch_end',
                                   cache.ip,
                                   cache.port,
@@ -277,13 +299,5 @@ mod.prototype.init = function()
                 }
             });
         }
-    });
-
-    router.get('*', (req, res) =>
-    {
-        let url = req.protocol + ':\/\/' + req.get('host') + req.originalUrl;
-        app.log('intercept a normal request from [%s] for [%s]', req.ip, url);
-        res.json('you shall not pass!!!');
-        // request(req.protocol + ':\/\/' + req.get('host') + req.originalUrl).pipe(res);
     });
 };

@@ -83,7 +83,7 @@ class Track extends Host
     constructor()
     {
         super(window.location.hostname, window.location.port);
-        this.io.on('refresh', this.on_refresh.bind(this));
+        //this.io.on('refresh', this.on_refresh.bind(this));
         this.io.on('push', this.on_push.bind(this));
     }
 
