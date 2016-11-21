@@ -83,7 +83,7 @@ class Track extends Host
     constructor()
     {
         super(window.location.hostname, window.location.port);
-        //this.io.on('refresh', this.on_refresh.bind(this));
+        this.io.on('refresh', this.on_refresh.bind(this));
         this.io.on('push', this.on_push.bind(this));
     }
 
@@ -102,11 +102,13 @@ class Track extends Host
 
         for (let server of servers)
         {
-            Host.servers.push(new Server(server.ip, server.port, server.name, server.videos));
+            let ip = server.ip == '127.0.0.1' ? location.hostname : server.ip;
+            Host.servers.push(new Server(ip, server.port, server.name, server.videos));
         }
         for (let proxy of proxies)
         {
-            Host.proxies.push(new Proxy(proxy.ip, proxy.port, proxy.name, proxy.pos, proxy.caches));
+            let ip = proxy.ip == '127.0.0.1' ? location.hostname : proxy.ip;
+            Host.proxies.push(new Proxy(ip, proxy.port, proxy.name, proxy.pos, proxy.caches));
             if (proxy.pos.length == 2)
             {
                 Host.stations.push(new Station("station", proxy.pos));
@@ -296,7 +298,7 @@ class Station extends Unit
 
 class NetworkInfo extends Unit
 {
-    constructor( name, pos)
+    constructor(name, pos)
     {
         super();
         this.name = name;
