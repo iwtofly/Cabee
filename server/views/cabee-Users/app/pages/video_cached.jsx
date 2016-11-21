@@ -32,7 +32,7 @@ class Video_Cached extends React.Component {
     var videoId=this.state.videoId;
     $.ajax({
         type: "get",
-        url: "/video",
+        url: "/video/list",
         dataType: 'json',
         cache: false,
         success: function(data) {
