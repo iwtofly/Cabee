@@ -109,7 +109,7 @@ app.prototype.on_refresh = function(servers, proxies)
     this.proxies = [];
     for (proxy of proxies)
     {
-        proxy.ip = proxy.ip == '127.0.0.1' ? this.track.link.ip() : proxy.ip;
+        proxy.ip = proxy.ip == '127.0.0.1' ? this.track.ip : proxy.ip;
         this.proxies.push(new Proxy(proxy));
     }
 };

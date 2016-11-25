@@ -1,11 +1,17 @@
 let express = require('express');
+let url     = require('url');
 let Link    = require('_/link');
 
 let mod = module.exports = function(app)
 {
     this.app    = app;
+    this.url    = app.conf.track;
     this.link   = new Link(app.conf.track);
     this.router = express.Router(app);
+
+    let parsed_url = url.parse(this.url);
+    this.ip   = parsed_url.hostname;
+    this.port = parsed_url.port;
 
     this.init();
 };

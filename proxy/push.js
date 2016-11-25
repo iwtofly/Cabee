@@ -14,7 +14,7 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
     let app = this.app;
     let dir = app.dir;
     
-    server_ip = server_ip == '127.0.0.1' ? app.track.link.ip() : server_ip;
+    server_ip = server_ip == '127.0.0.1' ? app.track.ip : server_ip;
 	let cache = new Cache(server_ip, server_port, video, piece);
 
     let log = (...args) =>
