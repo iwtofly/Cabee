@@ -32,3 +32,8 @@ Link.prototype.emit = function()
 {
     this.socket.emit(...arguments);
 };
+
+Link.prototype.ip = function()
+{
+    return this.socket.request.connection.remoteAddress;
+};
