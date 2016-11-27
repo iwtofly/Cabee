@@ -46,14 +46,13 @@ class Video_Cached extends React.Component {
                 urlList[i].url=tempUrlList[i];
                 urlList[i].text=tempText.substr(0,tempText.length-4);
                 var a= this.getVideoTime(this.state.videoId , tempText);
-                console.log("this is time : "+a);
                 urlList[i].duration=this.state.duration;
             }
             this.setState({
                 videos:data,
                 currentUrlList:urlList,
             });
-            console.log("success")
+            console.log("get video list success")
 
             this.setState({
                 loading:false
@@ -61,7 +60,7 @@ class Video_Cached extends React.Component {
         }.bind(this),
         error: function(xhr, status, err) {
             // console.error("/video", status, err.toString());
-            console.log("err");
+            console.log("get video list err");
         }.bind(this)
     });
 
@@ -74,7 +73,6 @@ class Video_Cached extends React.Component {
 
   getVideoTime(videoId,videoPiece){
     var that = this;
-    console.log("videoId:"+videoId);
     $.ajax({
       url: '/video/time/'+videoId+"/"+videoPiece,
       type: 'GET',
@@ -84,7 +82,7 @@ class Video_Cached extends React.Component {
         that.setState({
           duration:data
         })
-        console.log("success");
+        console.log("get duration success");
         return data;
       }.bind(this),
       error: function(xhr, status, err) {
@@ -100,7 +98,9 @@ class Video_Cached extends React.Component {
       textAlign:'center',
     }
     const { currentUrlList, loading ,duration } = this.state ;
-    console.log(JSON.stringify(currentUrlList));
+    if (currentUrlList.length !== 0) {
+      console.log(JSON.stringify(currentUrlList));
+    }
     return (
     <div>
     {

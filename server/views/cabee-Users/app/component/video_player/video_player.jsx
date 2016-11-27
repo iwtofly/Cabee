@@ -120,7 +120,7 @@ var Video = React.createClass({
     this.props.bufferChanged(buffered);
   },
   componentDidMount: function(){
-    console.log("video didmount")
+    // console.log("video didmount")
     var video=ReactDOM.findDOMNode(this);
     // console.log(video);
 
@@ -194,7 +194,7 @@ var VideoPlayer = React.createClass({
     };
   },
   componentDidMount:function(){
-    console.log("videoplay didmount")
+    // console.log("videoplay didmount")
     for(var k=0;k<this.props.urlList.length;k++){
       Object.defineProperty(this.state.pubInfo[k], "buf", {
         enumerable: true,

@@ -22,7 +22,7 @@ var StatusTable=React.createClass({
 	}.bind(this));
 
 
-	console.log("videoIndex:  "+this.state.videoIndex)
+	// console.log("videoIndex:  "+this.state.videoIndex)
 	
 	},
 	componentWillUnmount: function() {
@@ -36,12 +36,19 @@ var StatusTable=React.createClass({
 		
 	},
 	render: function() {
-		var index=this.getIndex()
+		var index=this.getIndex();
+		var bufProgress;
+
 		var List=this.state.info.map((info,n)=>{
+			if (this.state.info[n].buf < 0 ) {
+				bufProgress = 0;
+			} else {
+				bufProgress = Math.abs(Math.floor(this.state.info[n].buf*10)/10) ;
+			};
 			return(
 				<tr key={n}>
 					<td>{n+1}</td>
-					<td>{Math.floor(this.state.info[n].buf*10)/10}%</td>
+					<td>{bufProgress}%</td>
 				</tr>
 			)
 		})
@@ -67,9 +74,3 @@ var StatusTable=React.createClass({
 })
 
 export default StatusTable;
-
-// <h5>url:{this.state.info[0].url}</h5>
-// 
-// 
-// {List}
-				// <p>There are {this.state.info.length} Videos intotal </p>
