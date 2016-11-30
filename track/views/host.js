@@ -43,6 +43,8 @@ class Host extends Unit
 
     static get(ip, port, pos)
     {
+        console.log('get {0} {1} {2}'.format(ip, port, pos));
+
         for (let proxy of this.proxies)
         {
             if (pos == proxy.pos || (ip == proxy.ip && port == proxy.port))
@@ -102,12 +104,16 @@ class Track extends Host
 
         for (let server of servers)
         {
-            let ip = server.ip == '127.0.0.1' ? location.hostname : server.ip;
+            let ip = server.ip != '127.0.0.1' ? server.ip :
+                     location.hostname != 'localhost' ? location.hostname : '127.0.0.1';
+
             Host.servers.push(new Server(ip, server.port, server.name, server.videos));
         }
         for (let proxy of proxies)
         {
-            let ip = proxy.ip == '127.0.0.1' ? location.hostname : proxy.ip;
+            let ip = proxy.ip != '127.0.0.1' ? proxy.ip :
+                     location.hostname != 'localhost' ? location.hostname : '127.0.0.1';
+
             Host.proxies.push(new Proxy(ip, proxy.port, proxy.name, proxy.pos, proxy.caches));
             if (proxy.pos.length == 2)
             {
@@ -157,21 +163,20 @@ class RemoteHost extends Host
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[PING] [{0}] begin'.format(dst.to_string()));
-        window.painter.line(this, dst ,"ping");
+        window.painter.line(this, dst ,"ping","ping");
     }
     on_ping_end(dst_ip, dst_port, status, time)
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[PING] [{0}] end [{1}] after [{2}]ms'.format(dst.to_string(), status, time));
-        window.painter.unline(this, dst);
+        window.painter.unline(this, dst,"ping","ping");
     }
     on_pong_bgn(src_ip, src_pos)
     {
         let src = Host.get(src_ip, null, src_pos);
         this.log('[PONG] [{0}] begin'.format(src.to_string()));
         // window.painter.line(src, this ,"pong");
-        window.painter.line(this, src ,"pong");
-        // window.painter.msg(this,"Pong","return");
+        // window.painter.line(this, src ,"pong");
 
     }
     on_pong_end(src_ip, src_pos, time)
@@ -179,7 +184,7 @@ class RemoteHost extends Host
         let src = Host.get(src_ip, null, src_pos);
         this.log('[PONG] [{0}] end after [{1}]ms'.format(src.to_string(), time));
         // window.painter.unline(src,this);
-        window.painter.unline(this,src);
+        // window.painter.unline(this,src);
 
     }
 
@@ -188,25 +193,25 @@ class RemoteHost extends Host
     {
         let src = Host.get(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] begin'.format(target, src.to_string()));
-        window.painter.line(src, this ,"offer");
+        window.painter.line(src, this ,"offer",'offer');
     }
     on_offer_end(src_ip, src_pos, target, time, status)
     {
         let src = Host.get(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] end [{2}] after [{3}]ms'.format(target, src.to_string(), status, time));
-        window.painter.unline(src, this);
+        window.painter.unline(src, this,'offer','offer');
     }
     on_fetch_bgn(dst_ip, dst_port, target)
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[FETCH] [{0}] from [{1}] begin'.format(target, dst.to_string(), dst.to_string()));
-        window.painter.line(this, dst ,"fetch");
+        // window.painter.line(this, dst ,"fetch",'fetch');
     }
     on_fetch_end(dst_ip, dst_port, target, time, status)
     {
         let dst = Host.get(dst_ip, dst_port);
         this.log('[FETCH] [{0}] from [{1}] end [{2}] after [{3}]ms'.format(target, dst.to_string(), status, time));
-        window.painter.unline(this, dst);
+        // window.painter.unline(this, dst,"fetch",'fetch');
     }
 };
 
@@ -303,16 +308,4 @@ class NetworkInfo extends Unit
         super();
         this.name = name;
     };
-};
-
-function isOwnEmpty(obj)
-{
-    for(var name in obj)
-    {
-        if(obj.hasOwnProperty(name))
-        {
-            return false;
-        }
-    }
-    return true;
 };

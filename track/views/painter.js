@@ -13,7 +13,7 @@ class Painter
 
   tree(track, servers, proxies, stations, networkinfo)
   {
-    console.log(networkinfo);
+    // console.log(networkinfo);
     console.log('draw a fucking tree');
     var tooltip = d3.select("body")
                     .append("div")
@@ -122,7 +122,7 @@ class Painter
        
     });
 
-    console.log(JSON.stringify(nodes)+nodes.length);
+    // console.log(JSON.stringify(nodes)+nodes.length);
 
     var edges = d3.range(1,nodeLength).map(function(i){
         // console.log("nodes["+i+"]"+JSON.stringify(nodes[i]))
@@ -147,7 +147,7 @@ class Painter
     edges.push({source: target.sourceN ,target:target["11"] ? target["11"]:target.T})
     edges.push({source: target.T ,target:target["1"] ? target["1"]:target.T })
     edges.push({source: target.T ,target:target["11"] ? target["11"]:target.T})
-    console.log("edges: "+JSON.stringify(edges))
+    // console.log("edges: "+JSON.stringify(edges))
 
     var force = d3.layout.force()
                   .nodes(nodes) //指定节点数组
@@ -298,10 +298,12 @@ class Painter
 
     var defs = svg.append("defs");
 
+    var offsetX = text == 'offer' ? -50 : 10;
+    var offsetY = text == 'offer' ? 0 : 20;
     var textTip=svg.append("text")
                     .attr({
-                        "x":(x1+x2)/2+10,
-                        "y":(y1+y2)/2+20,
+                        "x":(x1+x2)/2+offsetX,
+                        "y":(y1+y2)/2+offsetY,
                         "stroke":"blue"
                     })
                     .text(text)
@@ -353,15 +355,113 @@ class Painter
       // },3000)
   }
 
-  unline(src, dst)
+  unline(src, dst ,type,text)
   {
     var node1=this.findDOMNode(src,"delete");
     var node2=this.findDOMNode(dst);
 
-    var lidTemp = (src.name==undefined? "Tracker": src.name )+ (dst.name==undefined? "Tracker": dst.name );
+    var lidTemp = (src.name==undefined? "Tracker": src.name ) + (dst.name==undefined? "Tracker": dst.name );
 
     var line = $("svg line[lid='"+lidTemp+"']").remove();
 
+    var lineColor,dx,dy;
+
+    switch(type){
+      case "ping":
+        lineColor="pink"; dx=0;dy=0;break;
+      case "pong":
+        lineColor="yellow"; dx=0;dy=0;break;
+      case "fetch":
+        lineColor="red"; dx=0;dy=0;break;
+      case "offer":
+        lineColor="blue"; dx=0;dy=0;break;
+      default:
+        lineColor="green"; dx=0;dy=0;
+    }
+
+    if (type == 'push') {
+      var x1=parseInt(node2.attr("x"))+25,
+          y1=parseInt(node2.attr("y"))+25,
+          x2=parseInt(node1.attr("x"))+25,
+          y2=parseInt(node1.attr("y"))+25;
+      var backTime = 800;
+    }else{
+      var x1=parseInt(node1.attr("x"))+25,
+          y1=parseInt(node1.attr("y"))+25,
+          x2=parseInt(node2.attr("x"))+25,
+          y2=parseInt(node2.attr("y"))+25;
+      var backTime = 1000;
+    }
+    
+
+    if(x1-x2>30){ x1-=20+dx; x2+=23+dx; }
+    if(y2-y1>60){ y2-=20+dy; y1+=18+dy; }
+    if(y1-y2>60){ y1-=20+dy; y2+=18+dy; }
+    if(x2-x1>30){ x2-=20+dx; x1+=23+dx; }
+
+    var lineData=[
+               {x:x1,y:y1},
+               {x:x2,y:y2},
+            ];
+
+    var svg = d3.select('svg');
+
+    var defs = svg.append("defs");
+
+    var offsetX = text == 'offer' ? -50 : 10;
+    var offsetY = text == 'offer' ? 0 : 20;
+    var textTip=svg.append("text")
+                    .attr({
+                        "x":(x1+x2)/2+offsetX,
+                        "y":(y1+y2)/2+offsetY,
+                        "stroke":"blue"
+                    })
+                    .text(text)
+                    .transition()
+                    .duration(1000)
+                    .delay(1500)
+                    .remove();
+
+
+    var arrowMarker = defs.append("marker")
+                            .attr("id","arrow")
+                            .attr("markerUnits","strokeWidth")
+                            .attr("markerWidth","12")
+                            .attr("markerHeight","12")
+                            .attr("viewBox","0 0 12 12")
+                            .attr("refX","6")
+                            .attr("refY","6")
+                            .attr("orient","auto");
+
+    var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+    arrowMarker.append("path")
+                .attr("d",arrow_path)
+                .attr("fill","#000");
+    var lidTemp = (src.name==undefined? "Tracker": src.name )+ (dst.name==undefined? "Tracker": dst.name );
+    //绘制直线
+
+    
+    var line = svg.append("line")
+               .attr('lid',function(){
+                  return lidTemp;
+                })
+               .attr("x1",x1)
+               .attr("y1",y1)
+               .attr("x2",x2)
+               .attr("y2",y2)
+               .attr("stroke",lineColor)
+               .attr("stroke-width",2)
+               .attr("marker-end","url(#arrow)")
+               .transition()
+               .duration(1000)
+               .attr("x2",x1)
+               .attr("y2",y1)
+    
+    setTimeout( () => {
+      line.remove();
+    })
+    
   }
 
   // src is Track or server.
@@ -376,7 +476,7 @@ class Painter
       this.line(node1, item, "push", "push");
 
       setTimeout(()=>{
-        this.unline(node1, item);
+        this.unline(node1, item , "push", "push");
       },2000)
 
     });
@@ -403,7 +503,7 @@ class Painter
     }
     for (let proxy of Host.proxies)
     {
-        let videos = isOwnEmpty(proxy.caches)? "无": JSON.stringify(proxy.caches);
+        let videos = this.isOwnEmpty(proxy.caches)? "无": JSON.stringify(proxy.caches);
         let tempnode = this.findDOMNode(proxy,"name");
         tbody.append("<tr><td>" +  tempnode +"</td>" 
             + "<td>" + proxy.ip +"</td>"
@@ -451,7 +551,7 @@ class Painter
 
         if(type=="delete"){
           tempName="user";
-          console.log("delete")
+          console.log("delete User")
           node=$("svg image[did='User']").fadeOut(3000);
 
         }else{
@@ -465,6 +565,12 @@ class Painter
                           .attr("did","User");
           node=$("svg image[did='User']");
           console.log("User in FE");
+
+          setTimeout( () => {
+            $("svg image[did='User']").fadeOut(3000);
+          },
+          10000
+          )
         }
         return node;
       } 
@@ -505,5 +611,19 @@ class Painter
          
       }
   }
+
+
+  isOwnEmpty(obj)
+  {
+      for(var name in obj)
+      {
+          if(obj.hasOwnProperty(name))
+          {
+              return false;
+          }
+      }
+      return true;
+  };
+
 
 };

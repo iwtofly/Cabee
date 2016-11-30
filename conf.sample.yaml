@@ -9,7 +9,7 @@
 - type : server
   name : Sir1
   port : 40001
-  track: http://localhost:30000/server
+  track: http://127.0.0.1:30000/server
   delay:
     - ['12', 1000]
     - ['1' , 2000]
@@ -20,7 +20,7 @@
   name : GATEWAY_1
   pos  : "1"
   port : 50001
-  track: http://localhost:30000/proxy
+  track: http://127.0.0.1:30000/proxy
   cache:
     fetch: true    # if cache not found, fetch from server
     save : true    # after fetch from server, save to local
@@ -35,14 +35,14 @@
     save: true
   delay:
     - ['1', 5000]
-    - ['*', 3000]    
+    - ['*', 4000]    
 
 
 - type : proxy
   name : MEC1
   pos  : "11"
   port : 50002
-  track: http://localhost:30000/proxy
+  track: http://127.0.0.1:30000/proxy
   cache:
     fetch: true    # if cache not found, fetch from server
     save : true    # after fetch from server, save to local
@@ -56,15 +56,15 @@
   push:
     save: true
   delay:
-    - ['12', 1000]
-    - ['*' , 100]
+    - ['12', 2500]
+    - ['*' , 2500]
 
 
 - type : proxy
   name : MEC2
   pos  : "12"
   port : 50003
-  track: http://localhost:30000/proxy
+  track: http://127.0.0.1:30000/proxy
   cache:
     fetch: true    # if cache not found, fetch from server
     save : true    # after fetch from server, save to local
@@ -78,5 +78,5 @@
   push:
     save: true
   delay:
-    - ['11', 1000]
-    - ['*' , 1000]
+    - ['11', 2500]
+    - ['*' , 2500]
