@@ -6,12 +6,12 @@ let path       = require('path');
 let util       = require('util');
 let io         = require('socket.io');
 
-let Ip    = require('_/ip');
 let Track = require('_/track');
 let Delay = require('_/delay');
 let Gui   = require('_/gui');
 let Video = require('./video');
 let Push  = require('./push');
+let User  = require('./user');
 
 let app = module.exports = function(conf)
 {
@@ -29,19 +29,21 @@ let app = module.exports = function(conf)
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
+    // what the fuck is this???
     this.expr.use(express.static('server/views'));
     
+    // HTTP
     this.delay = new Delay(this);
-    this.track = new Track(this);
-    this.gui   = new Gui(this);
     this.video = new Video(this);
     this.push  = new Push(this);
 
-    this.track.link.on('connect', () => { this.refresh(); });
+    // socket-io
+    this.track = new Track(this);
+    this.gui   = new Gui(this);
+    this.user  = new User(this);
 
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/video', this.video.router);
-    this.expr.use('/track', this.track.router);
     this.expr.use('/push', this.push.router);
 
     this.expr.get('/', (req,res) => { 
@@ -58,6 +60,7 @@ app.prototype.info = function()
 {
     return ret =
     {
+        group  : this.conf.group,
         port   : this.conf.port,
         name   : this.conf.name,
         videos : this.video.list()
@@ -72,7 +75,8 @@ app.prototype.refresh = function()
 
 app.prototype.log = function()
 {
-    console.log('S|' + this.conf.name +
+    console.log('S|' + this.conf.group +
+                 '|' + this.conf.name +
                  '|' + this.conf.port +
                  '|  ' + util.format(...arguments));
 };

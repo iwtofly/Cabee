@@ -2,12 +2,11 @@ let express    = require('express');
 let nunjucks   = require('nunjucks');
 let bodyParser = require('body-parser');
 let http       = require('http');
-let path       = require('path');
+let util       = require('util');
 let io         = require('socket.io');
-let ipaddr     = require('ipaddr.js');
 
-let Server  = require('./server');
-let Proxy   = require('./proxy');
+let Host = require('./host');
+let User = require('./user');
 
 let app = module.exports = function(conf)
 {
@@ -25,31 +24,23 @@ let app = module.exports = function(conf)
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
-    // and what the fuck is this ???
-    this.expr.use(express.static('track/views'));
 
-    this.server = new Server(this);
-    this.proxy  = new Proxy(this);
+    // socket-io
+    this.host = new Host(this);
+    this.user = new User(this);
 
-    this.expr.use('/server', this.server.router);
-    this.expr.use('/proxy', this.proxy.router);
+    // HTTP
+    this.expr.get('/hosts', (req, res) => { res.json(this.host.list); });
+
+    this.expr.get('/', (req, res) => { res.render('main.j2')});
     
-    this.expr.get('/', (req, res) =>
-    {
-        res.json(
-        {
-            'proxy' : this.proxy.list,
-            'server': this.server.list
-        });
-    });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
 
     this.http.listen(conf.port);
 };
 
-app.prototype.log = function(text)
+app.prototype.log = function()
 {
-    console.log('T|' + this.conf.name +
-                 '|' + this.conf.port +
-                 '|  ' + text);
+    console.log('G|' + this.conf.port +
+                 '|  ' + util.format(...arguments));
 };

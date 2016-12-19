@@ -30,18 +30,16 @@ mod.prototype.on_connect = function(socket)
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
     socket.on('refresh', this.on_refresh.bind(this, socket));
     socket.on('push', this.on_push.bind(this, socket));
-    // notify both proxies & users(gui)
+    // notify both proxies
     this.app.proxy.refresh();
-    this.app.gui.refresh();
 };
 
 // a server disconnect from this track
 mod.prototype.on_disconnect = function(socket)
 {
     this.app.log('server [' + Ip.format(socket.request.connection.remoteAddress) + '] disconnected');
-    // notify both proxies & users(gui)
+    // notify both proxies
     this.app.proxy.refresh();
-    this.app.gui.refresh();
 };
 
 // a server emit a refresh event [video upload/delete]

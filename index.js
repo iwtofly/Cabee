@@ -1,6 +1,7 @@
 var yaml  = require('js-yaml');
 var fs    = require('fs');
 
+var Gui    = require('./gui');
 var Track  = require('./track');
 var Server = require('./server');
 var Proxy  = require('./proxy');
@@ -15,16 +16,20 @@ try
     {
         switch (host.type)
         {
+            case 'gui':
+                new Gui(host);
+                break;
+
             case 'track':
-                host = new Track(host);
+                new Track(host);
                 break;
 
             case 'server':
-                host = new Server(host);
+                new Server(host);
                 break;
 
             case 'proxy':
-                host = new Proxy(host);
+                new Proxy(host);
                 break;
         }
     }

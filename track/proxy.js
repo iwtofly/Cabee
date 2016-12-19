@@ -29,8 +29,7 @@ mod.prototype.on_connect = function(socket)
     this.app.log('proxy [' + Ip.format(socket.request.connection.remoteAddress) + '] connected');
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
     socket.on('refresh', this.on_refresh.bind(this, socket));
-    // notify other proxies & users(gui)
-    this.app.gui.refresh();
+    // notify other proxies
     this.refresh();
 };
 
@@ -38,8 +37,7 @@ mod.prototype.on_connect = function(socket)
 mod.prototype.on_disconnect = function(socket)
 {
     this.app.log('proxy [' + Ip.format(socket.request.connection.remoteAddress) + '] disconnected');
-    // notify other proxies & users(gui)
-    this.app.gui.refresh();
+    // notify other proxies
     this.refresh();
 };
 
