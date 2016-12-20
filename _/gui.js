@@ -6,10 +6,12 @@
 //
 
 let io = require('socket.io-client');
+let Ip = require('_/ip');
 
 let mod = module.exports = function(app)
 {
     this.app = app;
+    this.url = app.conf.gui;
 
     // server
     this.server = app.io.of('/gui');
@@ -22,7 +24,7 @@ let mod = module.exports = function(app)
 };
 
 //
-// send events to gui-users
+// send events to gui-users by client
 //
 mod.prototype.emit = function()
 {
@@ -34,15 +36,14 @@ mod.prototype.emit = function()
 //
 mod.prototype.on_user_connect = function(socket)
 {
-    let ip = socket.request.connection.remoteAddress;
+    let ip = Ip.format(socket.request.connection.remoteAddress);
     this.app.log('Gui-user [%s] connected', ip);
 
     socket.on('disconnect', this.on_.bind(this, socket));
 };
-
 mod.prototype.on_user_disconnect = function(socket)
 {
-    let ip = socket.request.connection.remoteAddress;
+    let ip = Ip.format(socket.request.connection.remoteAddress);
     this.app.log('Gui-user [%s] disconnected', ip);
 };
 
@@ -52,8 +53,11 @@ mod.prototype.on_user_disconnect = function(socket)
 mod.prototype.on_gui_connect = function(socket)
 {
     this.app.log('connect to Gui [%s]', this.url);
+
+    // send self-info to gui
+    this.client.emit('refresh', this.app.info());
 };
 mod.prototype.on_gui_disconnect = function(socket)
 {
-    this.app.log('disconnect to Gui [%s]', this.app.url);
+    this.app.log('disconnect to Gui [%s]', this.url);
 };

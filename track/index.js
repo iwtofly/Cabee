@@ -3,9 +3,11 @@ let nunjucks   = require('nunjucks');
 let bodyParser = require('body-parser');
 let http       = require('http');
 let path       = require('path');
+let util       = require('util');
 let io         = require('socket.io');
 let ipaddr     = require('ipaddr.js');
 
+let Gui     = require('_/gui');
 let Server  = require('./server');
 let Proxy   = require('./proxy');
 
@@ -28,18 +30,18 @@ let app = module.exports = function(conf)
     // and what the fuck is this ???
     this.expr.use(express.static('track/views'));
 
+    // socket-io
+    this.gui    = new Gui(this);
     this.server = new Server(this);
     this.proxy  = new Proxy(this);
-
-    this.expr.use('/server', this.server.router);
-    this.expr.use('/proxy', this.proxy.router);
     
+    // 
     this.expr.get('/', (req, res) =>
     {
         res.json(
         {
-            'proxy' : this.proxy.list,
-            'server': this.server.list
+            'proxy' : this.proxy.list(),
+            'server': this.server.list()
         });
     });
     this.expr.get('*', (req, res) => { res.status(404).end('404 not found'); });
@@ -47,9 +49,18 @@ let app = module.exports = function(conf)
     this.http.listen(conf.port);
 };
 
-app.prototype.log = function(text)
+app.prototype.info = function()
 {
-    console.log('T|' + this.conf.name +
+    return ret =
+    {
+        conf : this.conf
+    };
+};
+
+app.prototype.log = function()
+{
+    console.log('T|' + this.conf.group +
+                 '|' + this.conf.name +
                  '|' + this.conf.port +
-                 '|  ' + text);
+                 '|  ' + util.format(...arguments));
 };

@@ -1,60 +1,55 @@
-let express = require('express');
 let Ip      = require('_/ip');
 
 let mod = module.exports = function(app)
 {
     this.app    = app;
-    this.list   = [];
-    this.router = express.Router();
+    this.array  = {};
     this.io     = app.io.of('/proxy');
 
     this.io.on('connection', this.on_connect.bind(this));
-
-    this.init();
 };
 
-mod.prototype.init = function()
+mod.prototype.list = function()
 {
-    let router = this.router;
-
-    router.get('/', (req, res) =>
-    {
-        res.json(this.list);
-    });
+    let res = [];
+    for (idx in this.array)
+        res.push(this.array[idx]);
+    return res;
 };
 
 // a new proxy connect to this track
 mod.prototype.on_connect = function(socket)
 {
-    this.app.log('proxy [' + Ip.format(socket.request.connection.remoteAddress) + '] connected');
+    this.app.log('proxy [%s] connected', Ip.format(socket.request.connection.remoteAddress));
+
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
     socket.on('refresh', this.on_refresh.bind(this, socket));
-    // notify other proxies
-    this.refresh();
 };
 
 // a proxy disconnect from this track
 mod.prototype.on_disconnect = function(socket)
 {
     this.app.log('proxy [' + Ip.format(socket.request.connection.remoteAddress) + '] disconnected');
+    
+    delete this.array[socket.id];
+
     // notify other proxies
     this.refresh();
 };
 
 // a proxy emit a refresh event [cache pull/delete]
-mod.prototype.on_refresh = function(socket, data)
+mod.prototype.on_refresh = function(socket, info)
 {
-    data.ip = Ip.format(socket.request.connection.remoteAddress);
-    this.app.log('proxy [' + data.ip + '] refreshed');
-    for (let i = 0; i < this.list.length; ++i)
-    {
-        if (this.list[i].pos == data.pos)
-        {
-            this.list.splice(i, 1);
-            break;
-        }
-    }
-    this.list.push(data);
+    info.ip = Ip.format(socket.request.connection.remoteAddress);
+  
+    this.app.log('proxy [%s|%s|%s|%s] refreshed',
+        info.conf.group,
+        info.ip,
+        info.conf.port,
+        info.conf.pos);
+
+    this.array[socket.id] = info;
+
     // notify other proxies
     this.refresh();
 };
@@ -62,11 +57,11 @@ mod.prototype.on_refresh = function(socket, data)
 // refresh all connected proxies
 mod.prototype.refresh = function()
 {
-    this.io.emit('refresh', this.app.server.list, this.app.proxy.list);
+    this.io.emit('refresh', this.app.server.list(), this.app.proxy.list());
 };
 
 // push to all proxies
-mod.prototype.push = function(server_ip, server_port, video, piece)
+mod.prototype.push = function(server_info, video, piece)
 {
-    this.io.emit('push', server_ip, server_port, video, piece);
+    this.io.emit('push', server_info, video, piece);
 };

@@ -29,5 +29,8 @@ mod.prototype.emit = function()
 mod.prototype.on_progress = function(socket, video, piece, progress)
 {
 	let ip = socket.request.connection.remoteAddress;
-	this.app.log('user [%ip] download [%s|%s] for [%s]', video, piece, progress);
+	this.app.log('user [%s] download [%s|%s] for [%s]', ip, video, piece, progress);
+    
+    // notify gui-page about this users' downloading progress
+    this.app.gui.emit('progress', ip, video, piece, progress);
 };

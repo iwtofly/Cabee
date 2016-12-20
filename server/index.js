@@ -31,16 +31,16 @@ let app = module.exports = function(conf)
     this.expr.use(express.static('_static'));
     // what the fuck is this???
     this.expr.use(express.static('server/views'));
-    
-    // HTTP
-    this.delay = new Delay(this);
-    this.video = new Video(this);
-    this.push  = new Push(this);
 
     // socket-io
     this.track = new Track(this);
     this.gui   = new Gui(this);
     this.user  = new User(this);
+    
+    // HTTP
+    this.delay = new Delay(this);
+    this.video = new Video(this);
+    this.push  = new Push(this);
 
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/video', this.video.router);
@@ -60,9 +60,7 @@ app.prototype.info = function()
 {
     return ret =
     {
-        group  : this.conf.group,
-        port   : this.conf.port,
-        name   : this.conf.name,
+        conf   : this.conf,
         videos : this.video.list()
     };
 };

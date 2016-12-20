@@ -32,7 +32,7 @@ mod.prototype.on_refresh = function(socket, info)
 {
     info.ip = socket.request.connection.remoteAddress;
 
-    this.app.log('host [%s|%s|%s|] refreshed', info.conf.type, info.conf.group, info.ip);
+    this.app.log('host [%s|%s|%s|%s] refreshed', info.conf.type, info.conf.group, info.ip, info.conf.port);
 
     for (idx in this.list)
     {
@@ -41,7 +41,8 @@ mod.prototype.on_refresh = function(socket, info)
             this.list[idx].conf.ip    == info.conf.ip)
         {
             this.list[idx] = info;
-            break;
+            return;
         }
     }
+    this.list.push(info);
 };
