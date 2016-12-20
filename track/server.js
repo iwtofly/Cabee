@@ -20,7 +20,8 @@ mod.prototype.list = function()
 // a new server connect to this track
 mod.prototype.on_connect = function(socket)
 {
-    this.app.log('server [' + Ip.format(socket.request.connection.remoteAddress) + '] connected');
+    let ip = Ip.format(socket.request.connection.remoteAddress);
+    this.app.log('server [%s] connected', ip);
     
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
     socket.on('refresh', this.on_refresh.bind(this, socket));
@@ -30,8 +31,8 @@ mod.prototype.on_connect = function(socket)
 // a server disconnect from this track
 mod.prototype.on_disconnect = function(socket)
 {
-    this.app.log('server [' + Ip.format(socket.request.connection.remoteAddress) + '] disconnected');
-    
+    let info = this.array[socket.id];
+    this.app.log('server [%s|%s|%s] disconnected', info.conf.group, info.ip, info.conf.port);
     delete this.array[socket.id];
 
     // notify all proxies
@@ -42,11 +43,9 @@ mod.prototype.on_disconnect = function(socket)
 mod.prototype.on_refresh = function(socket, info)
 {
     info.ip = Ip.format(socket.request.connection.remoteAddress);
-
-    this.array[socket.id] = info;
-
     this.app.log('server [%s|%s|%s] refreshed', info.conf.group, info.ip, info.conf.port);
-
+    this.array[socket.id] = info;
+    
     // notify proxies
     this.app.proxy.refresh();
 };

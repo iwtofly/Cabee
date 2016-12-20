@@ -27,8 +27,7 @@ let app = module.exports = function(conf)
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
-    // and what the fuck is this ???
-    this.expr.use(express.static('track/views'));
+    this.expr.use(express.static(__dirname + '/views'));
 
     // socket-io
     this.gui    = new Gui(this);

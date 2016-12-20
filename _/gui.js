@@ -39,7 +39,7 @@ mod.prototype.on_user_connect = function(socket)
     let ip = Ip.format(socket.request.connection.remoteAddress);
     this.app.log('Gui-user [%s] connected', ip);
 
-    socket.on('disconnect', this.on_.bind(this, socket));
+    socket.on('disconnect', this.on_user_disconnect.bind(this, socket));
 };
 mod.prototype.on_user_disconnect = function(socket)
 {

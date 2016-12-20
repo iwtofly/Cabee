@@ -13,7 +13,7 @@ mod.prototype.on_connect = function(socket)
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
 
     // when user connect to socket-io, send host list so that user can connect to them
-    socket.emit('refresh', this.app.host.list);
+    socket.emit('refresh', this.app.host.list());
 };
 
 mod.prototype.on_disconnect = function(socket)

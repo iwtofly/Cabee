@@ -1,14 +1,29 @@
+let Ip = require('_/ip');
+
 let mod = module.exports = function(app)
 {
     this.app = app;
     this.io = app.io.of('/host');
-    this.list = [];
+    this.array = {};
     this.io.on('connection', this.on_connect.bind(this));
+};
+
+mod.prototype.emit = function()
+{
+    this.io.emit(...arguments);
+};
+
+mod.prototype.list = function()
+{
+    let res = [];
+    for (idx in this.array)
+        res.push(this.array[idx]);
+    return res;
 };
 
 mod.prototype.on_connect = function(socket)
 {
-    let ip = socket.request.connection.remoteAddress;
+    let ip = Ip.format(socket.request.connection.remoteAddress);
     this.app.log('host [%s] connected', ip);
 
     socket.on('disconnect', this.on_disconnect.bind(this, socket));
@@ -19,30 +34,14 @@ mod.prototype.on_connect = function(socket)
 
 mod.prototype.on_disconnect = function(socket)
 {
-    let ip = socket.request.connection.remoteAddress;
-    this.app.log('host [%s] disconnected', ip);
-};
-
-mod.prototype.emit = function()
-{
-    this.io.emit(...arguments);
+    let info = this.array[socket.id];
+    this.app.log('host [%s|%s|%s|%s] disconnected', info.conf.type, info.conf.group, info.ip, info.conf.port);
+    delete this.array[socket.id];
 };
 
 mod.prototype.on_refresh = function(socket, info)
 {
-    info.ip = socket.request.connection.remoteAddress;
-
+    info.ip = Ip.format(socket.request.connection.remoteAddress);
     this.app.log('host [%s|%s|%s|%s] refreshed', info.conf.type, info.conf.group, info.ip, info.conf.port);
-
-    for (idx in this.list)
-    {
-        if (this.list[idx].conf.type  == info.conf.type &&
-            this.list[idx].conf.group == info.conf.group &&
-            this.list[idx].conf.ip    == info.conf.ip)
-        {
-            this.list[idx] = info;
-            return;
-        }
-    }
-    this.list.push(info);
+    this.array[socket.id] = info;
 };

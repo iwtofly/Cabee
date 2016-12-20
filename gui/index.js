@@ -24,8 +24,9 @@ let app = module.exports = function(conf)
     this.expr.use(bodyParser.urlencoded({extended: true}));
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
+    this.expr.use(express.static(__dirname + '/views'));
 
-    // socket-io
+    // socket-io server for 
     this.host = new Host(this);
     this.user = new User(this);
 
