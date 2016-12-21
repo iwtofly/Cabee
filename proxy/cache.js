@@ -4,7 +4,7 @@ let request = require('request');
 let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
-let Cache   = require('_/cache');
+let Slice   = require('./model/slice');
 
 let mod = module.exports = function(app)
 {
@@ -41,7 +41,7 @@ mod.prototype.init = function()
         // collect info
         let src_ip  = Ip.format(req.ip);
         let src_pos = req.params.pos;
-        let cache = new Cache
+        let slice = new Slice
         (
             req.params.ip,
             req.params.port,
@@ -50,20 +50,20 @@ mod.prototype.init = function()
         );
         let log = (...args) =>
         {
-            app.log('[cache] [%s|%s]=>[%s] %s', src_ip, src_pos, cache.url(), util.format(...args));
+            app.log('[cache] [%s|%s]=>[%s] %s', src_ip, src_pos, slice.url(), util.format(...args));
         };
 
         let delay = app.delay.match(req.params.pos);
-        app.count.req(cache);
+        app.count.req(slice);
 
         // try get file from local cache
         log('begin');
         app.gui.emit('offer_bgn',
                       src_ip,
                       src_pos,
-                      cache.toString());
+                      slice.toString());
 
-        if (File.exist(cache.path(dir)))
+        if (File.exist(slice.path(dir)))
         {
             log('cache found');
             setTimeout(() =>
@@ -72,13 +72,13 @@ mod.prototype.init = function()
                 app.gui.emit('offer_end',
                               src_ip,
                               src_pos,
-                              cache.toString(),
+                              slice.toString(),
                               delay,
                               'ok');
-                res.sendFile(cache.path(dir));
+                res.sendFile(slice.path(dir));
             },
             delay);
-            app.count.hit(cache);
+            app.count.hit(slice);
             return;
         }
         log('cache not found');
@@ -90,7 +90,7 @@ mod.prototype.init = function()
             app.gui.emit('offer_end',
                           src_ip,
                           src_pos,
-                          cache.toString(),
+                          slice.toString(),
                           0,
                           'local cache not exist');
 
@@ -101,20 +101,20 @@ mod.prototype.init = function()
         // fetch file directly from source server
         log('try fetch from source');
         app.gui.emit('fetch_bgn',
-                      cache.ip,
-                      cache.port,
-                      cache.toString());
+                      slice.ip,
+                      slice.port,
+                      slice.toString());
 
         let tick = Date.now();
-        cache.fetch(app.conf.pos, (err, response, body) =>
+        slice.fetch(app.conf.pos, (err, response, body) =>
         {
             if (err || response.statusCode != 200)
             {
                 log('fetch failed');
                 app.gui.emit('fetch_end',
-                              cache.ip,
-                              cache.port,
-                              cache.toString(),
+                              slice.ip,
+                              slice.port,
+                              slice.toString(),
                               Date.now() - tick,
                               'HTTP failed');
                 res.status(404).end('cache fetch failed');
@@ -123,26 +123,26 @@ mod.prototype.init = function()
             {
                 log('fetch succeeded');
                 app.gui.emit('fetch_end',
-                              cache.ip,
-                              cache.port,
-                              cache.toString(),
+                              slice.ip,
+                              slice.port,
+                              slice.toString(),
                               Date.now() - tick,
                               'ok');
 
-                if (app.conf.cache.save && File.save(cache.path(dir), body))
+                if (app.conf.cache.save && File.save(slice.path(dir), body))
                 {
-                    log('save to [' + cache.path(dir) + ']');
+                    log('save to [' + slice.path(dir) + ']');
                     setTimeout(() =>
                     {
                         log('cache sent with delay [%s]ms', delay);
                         app.gui.emit('offer_end',
                                       src_ip,
                                       src_pos,
-                                      cache.toString(),
+                                      slice.toString(),
                                       delay,
                                       'ok');
 
-                        res.sendFile(cache.path(dir));
+                        res.sendFile(slice.path(dir));
                     },
                     delay);
                     app.refresh();
@@ -158,7 +158,7 @@ mod.prototype.init = function()
                         app.gui.emit('offer_end',
                                       src_ip,
                                       src_pos,
-                                      cache.toString(),
+                                      slice.toString(),
                                       delay,
                                       'ok');
 

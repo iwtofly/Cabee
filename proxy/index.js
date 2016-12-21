@@ -6,14 +6,16 @@ let path       = require('path');
 let request    = require('request');
 let io         = require('socket.io');
 let util       = require('util');
-let ipaddr     = require('ipaddr.js');
 let File       = require('_/file');
-let Proxy      = require('_/proxy');
+let Ip         = require('_/ip');
 
-let Ip    = require('_/ip');
 let Delay = require('_/delay');
 let Track = require('_/track');
 let Gui   = require('_/gui');
+
+let Proxy  = require('./model/proxy');
+let Server = require('./model/server');
+
 let Cache = require('./cache');
 let Relay = require('./relay');
 let Push  = require('./push');
@@ -38,24 +40,25 @@ let app = module.exports = function(conf)
     this.expr.use(bodyParser.json());
     this.expr.use(express.static('_static'));
 
-    this.delay = new Delay(this);
+    // socket-io
+    this.gui   = new Gui(this);
     this.track = new Track(this);
+    
+    // http
+    this.delay = new Delay(this);
     this.cache = new Cache(this);
     this.relay = new Relay(this);
-    this.gui   = new Gui(this);
     this.push  = new Push(this);
     this.count = new Count(this);
 
-    this.track.link.on('connect', () => this.refresh());
-    this.track.link.on('refresh', this.on_refresh.bind(this));
-    this.track.link.on('push', this.push.on_push.bind(this.push));
+    this.track.on('refresh', this.on_refresh.bind(this));
+    this.track.on('push', this.push.on_push.bind(this.push));
 
     this.expr.get('/server', (req, res) => { res.json(this.servers); });
     this.expr.get('/proxy',  (req, res) => { res.json(this.proxies); });
 
     this.expr.use('/',      this.relay.router);
     this.expr.use('/delay', this.delay.router);
-    this.expr.use('/track', this.track.router);
     this.expr.use('/cache', this.cache.router);
     this.expr.use('/count', this.count.router);
 
@@ -92,9 +95,11 @@ let app = module.exports = function(conf)
 
 app.prototype.info = function()
 {
-    let proxy = this.conf;
-    proxy.caches = this.cache.list();
-    return new Proxy(proxy);
+    return ret = 
+    {
+        conf   : this.conf,
+        caches : this.cache.list()
+    };
 };
 
 app.prototype.refresh = function()
@@ -105,7 +110,12 @@ app.prototype.refresh = function()
 
 app.prototype.on_refresh = function(servers, proxies)
 {
-    this.servers = servers;
+    this.servers = [];
+    for (server of servers)
+    {
+        server.ip = server.ip == '127.0.0.1' ? this.track.ip : server.ip;
+        this.servers.push(new Server(server));
+    }
     this.proxies = [];
     for (proxy of proxies)
     {
@@ -116,7 +126,8 @@ app.prototype.on_refresh = function(servers, proxies)
 
 app.prototype.log = function()
 {
-    console.log('P|' + this.conf.name +
+    console.log('P|' + this.conf.group +
+                 '|' + this.conf.name +
                  '|' + this.conf.port +
                  '|' + this.conf.pos +
                  '|  ' + util.format(...arguments));

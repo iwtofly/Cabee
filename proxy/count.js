@@ -2,7 +2,6 @@ let express = require('express');
 let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
-let Cache   = require('_/cache');
 
 let mod = module.exports = function(app)
 {
@@ -13,22 +12,22 @@ let mod = module.exports = function(app)
     this.init();
 };
 
-mod.prototype.hit = function(cache)
+mod.prototype.hit = function(slice)
 {
-    this.list[cache.ip] = this.list[cache.ip] || {};
-    this.list[cache.ip][cache.port] = this.list[cache.ip][cache.port] || {};
-    this.list[cache.ip][cache.port][cache.video] = this.list[cache.ip][cache.port][cache.video] || {};
-    this.list[cache.ip][cache.port][cache.video][cache.piece] = this.list[cache.ip][cache.port][cache.video][cache.piece] || {'hit':0,'req':0};
-    this.list[cache.ip][cache.port][cache.video][cache.piece].hit += 1;
+    this.list[slice.ip] = this.list[slice.ip] || {};
+    this.list[slice.ip][slice.port] = this.list[slice.ip][slice.port] || {};
+    this.list[slice.ip][slice.port][slice.video] = this.list[slice.ip][slice.port][slice.video] || {};
+    this.list[slice.ip][slice.port][slice.video][slice.piece] = this.list[slice.ip][slice.port][slice.video][slice.piece] || {'hit':0,'req':0};
+    this.list[slice.ip][slice.port][slice.video][slice.piece].hit += 1;
 };
 
-mod.prototype.req = function(cache)
+mod.prototype.req = function(slice)
 {
-    this.list[cache.ip] = this.list[cache.ip] || {};
-    this.list[cache.ip][cache.port] = this.list[cache.ip][cache.port] || {};
-    this.list[cache.ip][cache.port][cache.video] = this.list[cache.ip][cache.port][cache.video] || {};
-    this.list[cache.ip][cache.port][cache.video][cache.piece] = this.list[cache.ip][cache.port][cache.video][cache.piece] || {'hit':0,'req':0};
-    this.list[cache.ip][cache.port][cache.video][cache.piece].req += 1;
+    this.list[slice.ip] = this.list[slice.ip] || {};
+    this.list[slice.ip][slice.port] = this.list[slice.ip][slice.port] || {};
+    this.list[slice.ip][slice.port][slice.video] = this.list[slice.ip][slice.port][slice.video] || {};
+    this.list[slice.ip][slice.port][slice.video][slice.piece] = this.list[slice.ip][slice.port][slice.video][slice.piece] || {'hit':0,'req':0};
+    this.list[slice.ip][slice.port][slice.video][slice.piece].req += 1;
 };
 
 mod.prototype.init = function()

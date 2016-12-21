@@ -2,7 +2,7 @@ let express = require('express');
 let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
-let Cache   = require('_/cache');
+let Slice   = require('./model/slice');
 
 let mod = module.exports = function(app)
 {
@@ -15,14 +15,14 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
     let dir = app.dir;
     
     server_ip = server_ip == '127.0.0.1' ? app.track.ip : server_ip;
-	let cache = new Cache(server_ip, server_port, video, piece);
+	let slice = new Slice(server_ip, server_port, video, piece);
 
     let log = (...args) =>
     {
-        app.log('[push] [%s]', cache.url(), util.format(...args));
+        app.log('[push] [%s]', slice.url(), util.format(...args));
     };
 
-    if (File.exist(cache.path(dir)))
+    if (File.exist(slice.path(dir)))
     {
         log('file already exist');
         return;
@@ -30,21 +30,21 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
     log('fetch begin');
 
     app.gui.emit('fetch_bgn',
-                  cache.ip,
-                  cache.port,
-                  cache.toString());
+                  slice.ip,
+                  slice.port,
+                  slice.toString());
 
     let tick = Date.now();
 
-    cache.fetch(app.conf.pos, (err, response, body) =>
+    slice.fetch(app.conf.pos, (err, response, body) =>
     {
         if (err || response.statusCode != 200)
         {
             log('fetch failed');
             app.gui.emit('fetch_end',
-                         cache.ip,
-                         cache.toString(),
-                         cache.port,
+                         slice.ip,
+                         slice.toString(),
+                         slice.port,
                          Date.now() - tick,
                          'HTTP failed');
         }
@@ -52,19 +52,19 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
         {
             log('fetch succeeded');
             app.gui.emit('fetch_end',
-                         cache.ip,
-                         cache.port,
-                         cache.toString(),
+                         slice.ip,
+                         slice.port,
+                         slice.toString(),
                          Date.now() - tick,
                          'ok');
 
-            if (app.conf.push.save && File.save(cache.path(dir), body))
+            if (app.conf.push.save && File.save(slice.path(dir), body))
             {
-                log('save to [' + cache.path(dir) + '] success');
+                log('save to [' + slice.path(dir) + '] success');
                 app.refresh();
             }
             else
-                log('save to [' + cache.path(dir) + '] fail');
+                log('save to [' + slice.path(dir) + '] fail');
         }
     });
 };

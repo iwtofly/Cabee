@@ -3,28 +3,26 @@ let request = require('request');
 let mod = module.exports = function(json)
 {
     this.ip     = json.ip;
-    this.port   = json.port;
-    this.name   = json.name;
-    this.pos    = json.pos;
+    this.conf   = json.conf;
     this.caches = json.caches;
 };
 
 mod.prototype.toString = function()
 {
-    return this.ip + ':' + this.port + '|' + this.pos;
+    return this.ip + ':' + this.conf.port + '|' + this.conf.pos;
 };
 
-mod.prototype.has = function(cache)
+mod.prototype.has = function(piece)
 {
-    return this.caches[cache.ip] &&
-           this.caches[cache.ip][cache.port] &&
-           this.caches[cache.ip][cache.port][cache.video] &&
-           this.caches[cache.ip][cache.port][cache.video].indexOf(cache.piece) != -1;
+    return this.pieces[piece.ip] &&
+           this.pieces[piece.ip][piece.port] &&
+           this.pieces[piece.ip][piece.port][piece.video] &&
+           this.pieces[piece.ip][piece.port][piece.video].indexOf(piece.piece) != -1;
 };
 
 mod.prototype.ping = function(pos, callback)
 {
-    let url = 'http://' + this.ip + ':' + this.port + '/delay/ping/' + pos;
+    let url = 'http://' + this.ip + ':' + this.conf.port + '/delay/ping/' + pos;
 
     // fetch file directly from source server
     request(
@@ -38,17 +36,17 @@ mod.prototype.ping = function(pos, callback)
     });
 };
 
-mod.prototype.relay = function(cache, pos, callback)
+mod.prototype.relay = function(piece, pos, callback)
 {
     let url = 'http://' +
                this.ip + ':' + this.port +
                '/cache/' +
-               cache.ip + '/' +
-               cache.port + '/' +
-               cache.video + '/' +
-               cache.piece + '/' +
+               piece.ip + '/' +
+               piece.port + '/' +
+               piece.video + '/' +
+               piece.piece + '/' +
                pos;
-               
+
     // fetch file directly from source server
     request(
     {

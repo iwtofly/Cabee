@@ -21,6 +21,11 @@ mod.prototype.emit = function()
     this.client.emit(...arguments);
 };
 
+mod.prototype.on = function(event, callback)
+{
+    this.client.on(event, callback);
+};
+
 //
 mod.prototype.on_track_connect = function(socket)
 {
