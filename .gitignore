@@ -2,5 +2,3 @@ node_modules
 proxy/caches
 server/videos
 test.js
-*.yaml
-!conf.sample.yaml
