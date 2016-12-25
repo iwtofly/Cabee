@@ -31,7 +31,7 @@ let app = module.exports = function(conf)
     this.user = new User(this);
 
     // HTTP
-    this.expr.get('/hosts', (req, res) => { res.json(this.host.list); });
+    this.expr.get('/hosts', (req, res) => { res.json(this.host.list()); });
 
     this.expr.get('/', (req, res) => { res.render('main.j2')});
     

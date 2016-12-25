@@ -15,6 +15,17 @@ let mod = module.exports = function(app)
     this.init();
 };
 
+mod.prototype.list = function()
+{
+    list = {};
+    folders = File.folders(this.dir);
+    for (folder of folders)
+    {
+        list[folder] = File.files(path.join(this.dir, folder));
+    }
+    return list;
+};
+
 mod.prototype.init = function()
 {
     let app    = this.app;
@@ -65,9 +76,8 @@ mod.prototype.init = function()
         app.refresh();
     });
 
-    router.get('/time/:video/:chip', (req, res) =>
-    {
-        let relative = req.params.video + '/' + req.params.chip;
+    router.get('/time/:video/:piece', (req, res) => {
+        let relative = req.params.video + '/' + req.params.piece;
         let absolute = path.join(dir, relative);
 
         ffprobe(absolute, (err, data) =>
@@ -88,8 +98,8 @@ mod.prototype.init = function()
 
     router.get(
     [
-        '/:video/:chip',
-        '/:video/:chip/:pos'
+        '/:video/:piece',
+        '/:video/:piece/:pos'
     ],
     (req, res) =>
     {
@@ -99,7 +109,7 @@ mod.prototype.init = function()
             app.log('[%s|%s]=>[%s]  %s',
                     ip,
                     req.params.pos,
-                    req.params.video + '/' + req.params.chip,
+                    req.params.video + '/' + req.params.piece,
                     util.format(...args));
         };
 
@@ -107,9 +117,9 @@ mod.prototype.init = function()
         app.gui.emit('offer_bgn',
                       ip,
                       req.params.pos,
-                      req.params.video + '/' + req.params.chip);
+                      req.params.video + '/' + req.params.piece);
 
-        let f = path.join(dir, req.params.video, req.params.chip);
+        let f = path.join(dir, req.params.video, req.params.piece);
 
         if (!File.exist(f))
         {
@@ -117,7 +127,7 @@ mod.prototype.init = function()
             app.gui.emit('offer_end',
                           ip,
                           req.params.pos,
-                          req.params.video + '/' + req.params.chip,
+                          req.params.video + '/' + req.params.piece,
                           0,
                           'file not exist');
 
@@ -132,7 +142,7 @@ mod.prototype.init = function()
             app.gui.emit('offer_end',
                           ip,
                           req.params.pos,
-                          req.params.video + '/' + req.params.chip,
+                          req.params.video + '/' + req.params.piece,
                           delay,
                           'ok');
 
@@ -159,14 +169,3 @@ mod.prototype.init = function()
         app.refresh();
     });
 }
-
-mod.prototype.list = function()
-{
-    list = {};
-    folders = File.folders(this.dir);
-    for (folder of folders)
-    {
-        list[folder] = File.files(path.join(this.dir, folder));
-    }
-    return list;
-};

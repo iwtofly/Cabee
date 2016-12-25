@@ -63,13 +63,13 @@ class Host extends Unit
     {
         let dst = window.get_host(dst_ip, dst_port);
         this.log('[PING] [{0}] begin'.format(dst.to_string()));
-        window.painter.line(this, dst ,"ping","ping");
+        // window.painter.line(this, dst ,"ping","ping");
     }
     on_ping_end(dst_ip, dst_port, status, time)
     {
         let dst = window.get_host(dst_ip, dst_port);
         this.log('[PING] [{0}] end [{1}] after [{2}]ms'.format(dst.to_string(), status, time));
-        window.painter.unline(this, dst,"ping","ping");
+        // window.painter.unline(this, dst,"ping","ping");
     }
     on_pong_bgn(src_ip, src_pos)
     {
@@ -90,13 +90,13 @@ class Host extends Unit
     {
         let src = window.get_host(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] begin'.format(target, src.to_string()));
-        window.painter.line(src, this ,"offer",'offer');
+        // window.painter.line(src, this ,"offer",'offer');
     }
     on_offer_end(src_ip, src_pos, target, time, status)
     {
         let src = window.get_host(src_ip, null, src_pos);
         this.log('[OFFER] [{0}] to [{1}] end [{2}] after [{3}]ms'.format(target, src.to_string(), status, time));
-        window.painter.unline(src, this,'offer','offer');
+        // window.painter.unline(src, this,'offer','offer');
     }
     on_fetch_bgn(dst_ip, dst_port, target)
     {
@@ -131,15 +131,25 @@ class Track extends Host
 
     to_string()
     {
-        return 'T|{0}:{1}'.format(this.ip, this.conf.port);
+        return 'T|{0}|{1}:{2}'.format
+        (
+            this.conf.group,
+            this.ip,
+            this.conf.port
+        );
     }
 
-    on_push(server_info, video, piece, proxies)
+    on_push(server_info, video, piece, proxy_infos)
     {
-        let src = window.get_host(server_ip, server_port);
+        let src = window.get_host(server_info);
+        let proxies = [];
+        for (let proxy_info of proxy_infos)
+        {
+            proxies.push(window.get_host(proxy_info));
+        }
         this.log('server [{0}] push [{1}|{2}] to proxies'
             .format(src.to_string(), video, piece));
-        window.painter.broadcast(this, Host.proxies, 'push');
+        // window.painter.broadcast(this, proxies, 'push');
     }
 };
 
@@ -161,7 +171,13 @@ class Server extends Host
 
     to_string()
     {
-        return 'S|{0}:{1}|{2}'.format(this.ip, this.conf.port, this.conf.name);
+        return 'S|{0}|{1}:{2}|{3}'.format
+        (
+            this.conf.group,
+            this.ip,
+            this.conf.port,
+            this.conf.name
+        );
     }
 
     on_refresh(info)
@@ -195,7 +211,14 @@ class Proxy extends Host
 
     to_string()
     {
-        return 'P|{0}:{1}|{2}|{3}'.format(this.ip, this.conf.port, this.conf.name, this.conf.pos);
+        return 'S|{0}|{1}:{2}|{3}|{4}'.format
+        (
+            this.conf.group,
+            this.ip,
+            this.conf.port,
+            this.conf.name,
+            this.conf.pos
+        );
     }
 
     on_refresh(info)

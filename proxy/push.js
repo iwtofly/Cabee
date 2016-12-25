@@ -4,29 +4,41 @@ let Ip      = require('_/ip');
 let File    = require('_/file');
 let Slice   = require('./model/slice');
 
+//
+// this module handle the push-request, started by server and transfered by track
+//
 let mod = module.exports = function(app)
 {
     this.app = app;
 };
 
-mod.prototype.on_push = function(server_ip, server_port, video, piece)
+mod.prototype.on_push = function(server_info, video, piece)
 {
     let app = this.app;
     let dir = app.dir;
     
-    server_ip = server_ip == '127.0.0.1' ? app.track.ip : server_ip;
-	let slice = new Slice(server_ip, server_port, video, piece);
+    let ip = server_info.ip == '127.0.0.1' ? app.track.ip : server_info.ip;
+	  let slice = new Slice(server_info.ip, server_info.conf.port, video, piece);
 
     let log = (...args) =>
     {
         app.log('[push] [%s]', slice.url(), util.format(...args));
     };
 
+    // file exit
     if (File.exist(slice.path(dir)))
     {
         log('file already exist');
         return;
     }
+
+    // do not response to push
+    if (!app.conf.push)
+    {
+        log('ignored by config');
+        return;
+    }
+
     log('fetch begin');
 
     app.gui.emit('fetch_bgn',
@@ -58,7 +70,7 @@ mod.prototype.on_push = function(server_ip, server_port, video, piece)
                          Date.now() - tick,
                          'ok');
 
-            if (app.conf.push.save && File.save(slice.path(dir), body))
+            if (File.save(slice.path(dir), body))
             {
                 log('save to [' + slice.path(dir) + '] success');
                 app.refresh();

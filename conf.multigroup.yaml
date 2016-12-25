@@ -43,8 +43,8 @@
       sub  : false
       peer : true
       super: true
-  push:
-    save: true
+  push: true       # when recv a 'push' msg, fetch & save
+  pull: true       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
   delay:
     - ['1', 5000]
     - ['*', 4000]    
@@ -66,8 +66,8 @@
       sub  : false
       peer : true
       super: true
-  push:
-    save: true
+  push: true       # when recv a 'push' msg, fetch & save
+  pull: true       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
   delay:
     - ['12', 2500]
     - ['*' , 2500]
@@ -89,8 +89,8 @@
       sub  : false
       peer : true
       super: true
-  push:
-    save: true
+  push: true       # when recv a 'push' msg, fetch & save
+  pull: true       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
   delay:
     - ['11', 2500]
     - ['*' , 2500]

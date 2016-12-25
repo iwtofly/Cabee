@@ -9,6 +9,11 @@ let mod = module.exports = function(app)
     this.io.on('connection', this.on_connect.bind(this));
 };
 
+mod.prototype.emit = function()
+{
+    this.io.emit(...arguments);
+};
+
 mod.prototype.list = function()
 {
     let res = [];
@@ -62,10 +67,4 @@ mod.prototype.on_refresh = function(socket, info)
 mod.prototype.refresh = function()
 {
     this.io.emit('refresh', this.app.server.list(), this.app.proxy.list());
-};
-
-// push to all proxies
-mod.prototype.push = function(server_info, video, piece)
-{
-    this.io.emit('push', server_info, video, piece);
 };

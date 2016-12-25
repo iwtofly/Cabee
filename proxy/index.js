@@ -18,8 +18,8 @@ let Server = require('./model/server');
 
 let Cache = require('./cache');
 let Relay = require('./relay');
-let Push  = require('./push');
 let Count = require('./count');
+let Push  = require('./push');
 
 let app = module.exports = function(conf)
 {
@@ -54,14 +54,20 @@ let app = module.exports = function(conf)
     this.track.on('refresh', this.on_refresh.bind(this));
     this.track.on('push', this.push.on_push.bind(this.push));
 
-    this.expr.get('/server', (req, res) => { res.json(this.servers); });
-    this.expr.get('/proxy',  (req, res) => { res.json(this.proxies); });
+    // intercept users' req for video, imitate server's /video URL
+    this.expr.use('/video', this.relay.router);
 
-    this.expr.use('/',      this.relay.router);
+    // normal URL
     this.expr.use('/delay', this.delay.router);
     this.expr.use('/cache', this.cache.router);
     this.expr.use('/count', this.count.router);
+    this.expr.get('/', (req, res) => { res.json(
+    {
+            server: this.servers,
+            proxy : this.proxies
+    }); });
 
+    // pipe other URL
     this.expr.all('*', (req, res) =>
     {
         //console.log('============');

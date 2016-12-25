@@ -9,6 +9,11 @@ let mod = module.exports = function(app)
     this.io.on('connection', this.on_connect.bind(this));
 };
 
+mod.prototype.emit = function()
+{
+    this.io.emit(...arguments);
+};
+
 mod.prototype.list = function()
 {
     let res = [];
@@ -51,7 +56,7 @@ mod.prototype.on_refresh = function(socket, info)
 };
 
 // 
-mod.prototype.on_push = function(socket, server_port, video, piece)
+mod.prototype.on_push = function(socket, video, piece)
 {
     let info = this.array[socket.id];
 
@@ -62,8 +67,9 @@ mod.prototype.on_push = function(socket, server_port, video, piece)
         video,
         piece);
 
-    this.app.gui.emit('push', info, video, piece);
+    //
+    this.app.gui.emit('push', info, video, piece, this.app.proxy.list());
 
     // let proxy-module emit the 'push' event
-    this.app.proxy.push(server_info, video, piece);
+    this.app.proxy.emit('push', info, video, piece);
 };

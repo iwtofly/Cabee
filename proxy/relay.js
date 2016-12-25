@@ -26,11 +26,12 @@ mod.prototype.init = function()
     // original url of target is [http://$ip:$port/video/$video/$piece]
     router.get(
     [
-        '/video/:video/:piece',
-        '/video/:video/:piece/:pos'
+        '/:video/:piece',
+        '/:video/:piece/:pos'
     ],
     (req, res, next) =>
     {
+        // /video/time is a special URL of server
         if (req.params.video == 'time')
         {
             next();
