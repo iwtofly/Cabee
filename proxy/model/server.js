@@ -9,7 +9,7 @@ let mod = module.exports = function(json)
 
 mod.prototype.toString = function()
 {
-    return this.ip + ':' + this.conf.port;
+    return this.conf.group + '|' + this.ip + ':' + this.conf.port;
 };
 
 mod.prototype.has = function(piece)

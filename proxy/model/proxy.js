@@ -9,15 +9,17 @@ let mod = module.exports = function(json)
 
 mod.prototype.toString = function()
 {
-    return this.ip + ':' + this.conf.port + '|' + this.conf.pos;
+    return this.conf.group + '|' +
+           this.ip + ':' + this.conf.port + '|' +
+           this.conf.pos;
 };
 
 mod.prototype.has = function(piece)
 {
-    return this.pieces[piece.ip] &&
-           this.pieces[piece.ip][piece.port] &&
-           this.pieces[piece.ip][piece.port][piece.video] &&
-           this.pieces[piece.ip][piece.port][piece.video].indexOf(piece.piece) != -1;
+    return this.caches[piece.ip] &&
+           this.caches[piece.ip][piece.port] &&
+           this.caches[piece.ip][piece.port][piece.video] &&
+           this.caches[piece.ip][piece.port][piece.video].indexOf(piece.piece) != -1;
 };
 
 mod.prototype.ping = function(pos, callback)
@@ -39,7 +41,7 @@ mod.prototype.ping = function(pos, callback)
 mod.prototype.relay = function(piece, pos, callback)
 {
     let url = 'http://' +
-               this.ip + ':' + this.port +
+               this.ip + ':' + this.conf.port +
                '/cache/' +
                piece.ip + '/' +
                piece.port + '/' +

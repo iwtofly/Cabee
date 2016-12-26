@@ -5,12 +5,13 @@ let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
 let Slice   = require('./model/slice');
+let Fetch   = require('./model/fetch');
 
 let mod = module.exports = function(app)
 {
     this.app    = app;
+    this.dir    = app.dir;
     this.router = express.Router();
-    this.dir = app.dir;
 
     this.init();
 };
@@ -98,76 +99,14 @@ mod.prototype.init = function()
             return;
         }
 
-        // fetch file directly from source server
-        log('try fetch from source');
-        app.gui.emit('fetch_bgn',
-                      slice.ip,
-                      slice.port,
-                      slice.toString());
-
-        let tick = Date.now();
-        slice.fetch(app.conf.pos, (err, response, body) =>
-        {
-            if (err || response.statusCode != 200)
-            {
-                log('fetch failed');
-                app.gui.emit('fetch_end',
-                              slice.ip,
-                              slice.port,
-                              slice.toString(),
-                              Date.now() - tick,
-                              'HTTP failed');
-                res.status(404).end('cache fetch failed');
-            }
-            else
-            {
-                log('fetch succeeded');
-                app.gui.emit('fetch_end',
-                              slice.ip,
-                              slice.port,
-                              slice.toString(),
-                              Date.now() - tick,
-                              'ok');
-
-                if (app.conf.cache.save && File.save(slice.path(dir), body))
-                {
-                    log('save to [' + slice.path(dir) + ']');
-                    setTimeout(() =>
-                    {
-                        log('cache sent with delay [%s]ms', delay);
-                        app.gui.emit('offer_end',
-                                      src_ip,
-                                      src_pos,
-                                      slice.toString(),
-                                      delay,
-                                      'ok');
-
-                        res.sendFile(slice.path(dir));
-                    },
-                    delay);
-                    app.refresh();
-                }
-                else
-                {
-                    setTimeout(() =>
-                    {
-                        res.set('content-type', response.headers['content-type']);
-                        res.set('content-length', response.headers['content-length']);
-
-                        log('cache sent with delay [%s]ms', delay);
-                        app.gui.emit('offer_end',
-                                      src_ip,
-                                      src_pos,
-                                      slice.toString(),
-                                      delay,
-                                      'ok');
-
-                        res.send(body);
-                    },
-                    delay);
-                }
-            }
-        });
+        Fetch.from_server(app,
+                          src_ip,
+                          src_pos,
+                          log,
+                          slice,
+                          delay,
+                          app.conf.cache.save,
+                          res);
     });
 
     router.delete(
