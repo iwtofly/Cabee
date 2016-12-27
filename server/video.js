@@ -114,22 +114,22 @@ mod.prototype.init = function()
         };
 
         log('begin');
-        app.gui.emit('offer_bgn',
-                      ip,
-                      req.params.pos,
-                      req.params.video + '/' + req.params.piece);
+        app.gui.broadcast('offer_bgn',
+                          ip,
+                          req.params.pos,
+                          req.params.video + '/' + req.params.piece);
 
         let f = path.join(dir, req.params.video, req.params.piece);
 
         if (!File.exist(f))
         {
             log('file not exist');
-            app.gui.emit('offer_end',
-                          ip,
-                          req.params.pos,
-                          req.params.video + '/' + req.params.piece,
-                          0,
-                          'file not exist');
+            app.gui.broadcast('offer_end',
+                              ip,
+                              req.params.pos,
+                              req.params.video + '/' + req.params.piece,
+                              0,
+                              'file not exist');
 
             res.status(404).end();
             return;
@@ -139,12 +139,12 @@ mod.prototype.init = function()
         setTimeout(() =>
         {
             log('file sent with delay [%s]ms', delay);
-            app.gui.emit('offer_end',
-                          ip,
-                          req.params.pos,
-                          req.params.video + '/' + req.params.piece,
-                          delay,
-                          'ok');
+            app.gui.broadcast('offer_end',
+                              ip,
+                              req.params.pos,
+                              req.params.video + '/' + req.params.piece,
+                              delay,
+                              'ok');
 
             res.sendFile(f);
         },

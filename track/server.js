@@ -9,7 +9,7 @@ let mod = module.exports = function(app)
     this.io.on('connection', this.on_connect.bind(this));
 };
 
-mod.prototype.emit = function()
+mod.prototype.broadcast = function()
 {
     this.io.emit(...arguments);
 };
@@ -61,15 +61,15 @@ mod.prototype.on_push = function(socket, video, piece)
     let info = this.array[socket.id];
 
     this.app.log('server [%s|%s|%s] push [%s|%s]',
-        info.conf.group,
-        info.ip,
-        info.conf.port,
-        video,
-        piece);
+                 info.conf.group,
+                 info.ip,
+                 info.conf.port,
+                 video,
+                 piece);
 
-    //
-    this.app.gui.emit('push', info, video, piece, this.app.proxy.list());
+    // send push event to gui-user
+    this.app.gui.broadcast('push', info, video, piece, this.app.proxy.list());
 
-    // let proxy-module emit the 'push' event
-    this.app.proxy.emit('push', info, video, piece);
+    // let proxy-module broadcast the 'push' event to proxies
+    this.app.proxy.broadcast('push', info, video, piece);
 };

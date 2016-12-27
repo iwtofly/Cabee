@@ -211,7 +211,7 @@ class Proxy extends Host
 
     to_string()
     {
-        return 'S|{0}|{1}:{2}|{3}|{4}'.format
+        return 'P|{0}|{1}:{2}|{3}|{4}'.format
         (
             this.conf.group,
             this.ip,

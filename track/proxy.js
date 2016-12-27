@@ -9,7 +9,7 @@ let mod = module.exports = function(app)
     this.io.on('connection', this.on_connect.bind(this));
 };
 
-mod.prototype.emit = function()
+mod.prototype.broadcast = function()
 {
     this.io.emit(...arguments);
 };
@@ -66,5 +66,5 @@ mod.prototype.on_refresh = function(socket, info)
 // refresh all connected proxies
 mod.prototype.refresh = function()
 {
-    this.io.emit('refresh', this.app.server.list(), this.app.proxy.list());
+    this.broadcast('refresh', this.app.server.list(), this.app.proxy.list());
 };

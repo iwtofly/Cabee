@@ -12,7 +12,7 @@ mod.mkdir = (dir) =>
         if (!mod.exist(parent) && !mod.mkdir(parent))
             return undefined;
         fs.mkdirSync(dir);
-        console.log('folder create [' + dir + ']');
+        // console.log('folder create [' + dir + ']');
         return true;
     }
     catch (err) {}
@@ -100,7 +100,7 @@ mod.unlink = (f) =>
     try
     {
         fs.unlinkSync(f);
-        console.log('mod rm [' + f + ']');
+        // console.log('rm [' + f + ']');
         return true;
     }
     catch (err) {}
@@ -115,7 +115,7 @@ mod.clear = (dir) =>
     }
     if (ret)
     {
-        console.log('folder clear [' + dir + ']');
+        // console.log('folder clear [' + dir + ']');
         return true;
     }
 };
@@ -125,7 +125,7 @@ mod.rmdir = (dir) =>
     try
     {
         fs.rmdirSync(dir);
-        console.log('folder rm [' + dir + ']');
+        // console.log('folder rm [' + dir + ']');
         return true;
     }
     catch (err) {}

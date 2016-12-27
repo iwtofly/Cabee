@@ -1,9 +1,10 @@
 let path    = require('path');
 let request = require('request');
+let Ip      = require('_/ip');
 
 let mod = module.exports = function(ip, port, video, piece)
 {
-    this.ip    = ip;
+    this.ip    = Ip.format(ip);
     this.port  = port;
     this.video = video;
     this.piece = piece;

@@ -14,12 +14,12 @@ mod.prototype.toString = function()
            this.conf.pos;
 };
 
-mod.prototype.has = function(piece)
+mod.prototype.has = function(slice)
 {
-    return this.caches[piece.ip] &&
-           this.caches[piece.ip][piece.port] &&
-           this.caches[piece.ip][piece.port][piece.video] &&
-           this.caches[piece.ip][piece.port][piece.video].indexOf(piece.piece) != -1;
+    return this.caches[slice.ip] &&
+           this.caches[slice.ip][slice.port] &&
+           this.caches[slice.ip][slice.port][slice.video] &&
+           this.caches[slice.ip][slice.port][slice.video].indexOf(slice.piece) != -1;
 };
 
 mod.prototype.ping = function(pos, callback)

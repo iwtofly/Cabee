@@ -8,7 +8,7 @@ let mod = module.exports = function(app)
     this.io.on('connection', this.on_connect.bind(this));
 };
 
-mod.prototype.emit = function()
+mod.prototype.broadcast = function()
 {
     this.io.emit(...arguments);
 };

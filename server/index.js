@@ -68,6 +68,7 @@ app.prototype.refresh = function()
 {
     this.track.emit('refresh', this.info());
     this.gui.emit('refresh', this.info());
+    this.gui.broadcast('refresh', this.info());
 };
 
 app.prototype.log = function()

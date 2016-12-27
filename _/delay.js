@@ -34,14 +34,14 @@ mod.prototype.init = function()
         let src_pos = req.params.pos;
 
         app.log('[pong] [%s|%s] begin', src_ip, src_pos);
-        app.gui.emit('pong_bgn', src_ip, src_pos);
+        app.gui.broadcast('pong_bgn', src_ip, src_pos);
 
         let time = this.match(src_pos);
 
         setTimeout(() =>
         {
             app.log('[pong] [%s|%s] end after [%s]ms', src_ip, src_pos, time);
-            app.gui.emit('pong_end', src_ip, src_pos, time);
+            app.gui.broadcast('pong_end', src_ip, src_pos, time);
             
             res.json(time);
         },
@@ -54,7 +54,7 @@ mod.prototype.init = function()
         let dst_port = req.params.port;
 
         app.log('[ping] [%s|%s] begin', dst_ip, dst_port);
-        app.gui.emit('ping_bgn', dst_ip, dst_port);
+        app.gui.broadcast('ping_bgn', dst_ip, dst_port);
 
         let tick = Date.now();
 
@@ -68,7 +68,7 @@ mod.prototype.init = function()
             if (error || response.statusCode != 200)
             {            
                 app.log('ping [%s] failed', proxy.toString());
-                app.gui.emit('ping_end',
+                app.gui.broadcast('ping_end',
                               dst_ip,
                               dst_port,
                               'HTTP failed',
@@ -78,7 +78,7 @@ mod.prototype.init = function()
             else
             {
                 app.log('ping [%s|%s] succeeded in [%s]ms', dst_ip, dst_port, body);
-                app.gui.emit('ping_end',
+                app.gui.broadcast('ping_end',
                               dst_ip,
                               dst_port,
                               'ok',

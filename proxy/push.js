@@ -3,6 +3,7 @@ let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
 let Slice   = require('./model/slice');
+let Pull    = require('./pull');
 
 //
 // this module handle the push-request, started by server and transfered by track
@@ -41,10 +42,10 @@ mod.prototype.on_push = function(server_info, video, piece)
 
     log('fetch begin');
 
-    app.gui.emit('fetch_bgn',
-                  slice.ip,
-                  slice.port,
-                  slice.toString());
+    app.gui.broadcast('fetch_bgn',
+                      slice.ip,
+                      slice.port,
+                      slice.toString());
 
     let tick = Date.now();
 
@@ -53,22 +54,22 @@ mod.prototype.on_push = function(server_info, video, piece)
         if (err || response.statusCode != 200)
         {
             log('fetch failed');
-            app.gui.emit('fetch_end',
-                         slice.ip,
-                         slice.toString(),
-                         slice.port,
-                         Date.now() - tick,
-                         'HTTP failed');
+            app.gui.broadcast('fetch_end',
+                              slice.ip,
+                              slice.toString(),
+                              slice.port,
+                              Date.now() - tick,
+                              'HTTP failed');
         }
         else
         {
             log('fetch succeeded');
-            app.gui.emit('fetch_end',
-                         slice.ip,
-                         slice.port,
-                         slice.toString(),
-                         Date.now() - tick,
-                         'ok');
+            app.gui.broadcast('fetch_end',
+                              slice.ip,
+                              slice.port,
+                              slice.toString(),
+                              Date.now() - tick,
+                              'ok');
 
             if (File.save(slice.path(dir), body))
             {

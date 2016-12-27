@@ -23,7 +23,7 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        app.gui.emit('push', req.params.video, req.params.piece);
+        app.gui.broadcast('push', req.params.video, req.params.piece);
         app.track.emit('push', req.params.video, req.params.piece);
 
         res.json('ok');

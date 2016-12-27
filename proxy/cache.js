@@ -5,15 +5,32 @@ let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
 let Slice   = require('./model/slice');
-let Fetch   = require('./model/fetch');
 
 let mod = module.exports = function(app)
 {
     this.app    = app;
-    this.dir    = app.dir;
     this.router = express.Router();
+    this.dir    = app.dir;
 
     this.init();
+};
+
+mod.prototype.list = function()
+{
+    list = {};
+    for (let ip of File.folders(this.dir))
+    {
+        list[ip] = {};
+        for (let port of File.folders(path.join(this.dir, ip)))
+        {
+            list[ip][port] = {};
+            for (let video of File.folders(path.join(this.dir, ip, port)))
+            {
+                list[ip][port][video] = File.files(path.join(this.dir, ip, port, video));
+            }
+        }
+    }
+    return list;
 };
 
 // this function is called by a peer proxy who assume that this proxy has a cache
@@ -59,10 +76,10 @@ mod.prototype.init = function()
 
         // try get file from local cache
         log('begin');
-        app.gui.emit('offer_bgn',
-                      src_ip,
-                      src_pos,
-                      slice.toString());
+        app.gui.broadcast('offer_bgn',
+                          src_ip,
+                          src_pos,
+                          slice.toString());
 
         if (File.exist(slice.path(dir)))
         {
@@ -70,12 +87,12 @@ mod.prototype.init = function()
             setTimeout(() =>
             {
                 log('cache sent with delay [%s]ms', delay);
-                app.gui.emit('offer_end',
-                              src_ip,
-                              src_pos,
-                              slice.toString(),
-                              delay,
-                              'ok');
+                app.gui.broadcast('offer_end',
+                                  src_ip,
+                                  src_pos,
+                                  slice.toString(),
+                                  delay,
+                                  'ok');
                 res.sendFile(slice.path(dir));
             },
             delay);
@@ -88,25 +105,87 @@ mod.prototype.init = function()
         if (!app.conf.cache.fetch)
         {
             log('no local cache & fetch is forbidden');
-            app.gui.emit('offer_end',
-                          src_ip,
-                          src_pos,
-                          slice.toString(),
-                          0,
-                          'local cache not exist');
+            app.gui.broadcast('offer_end',
+                              src_ip,
+                              src_pos,
+                              slice.toString(),
+                              0,
+                              'local cache not exist');
 
             res.status(404).end('no cache & fetch is forbidden');
             return;
         }
 
-        Fetch.from_server(app,
-                          src_ip,
-                          src_pos,
-                          log,
-                          slice,
-                          delay,
-                          app.conf.cache.save,
-                          res);
+        // fetch file directly from source server
+        log('try fetch from source');
+        app.gui.broadcast('fetch_bgn',
+                          slice.ip,
+                          slice.port,
+                          slice.toString());
+
+        let tick = Date.now();
+        slice.fetch(app.conf.pos, (err, response, body) =>
+        {
+            if (err || response.statusCode != 200)
+            {
+                log('fetch failed');
+                app.gui.broadcast('fetch_end',
+                                  slice.ip,
+                                  slice.port,
+                                  slice.toString(),
+                                  Date.now() - tick,
+                                  'HTTP failed');
+                res.status(404).end('cache fetch failed');
+            }
+            else
+            {
+                log('fetch succeeded');
+                app.gui.broadcast('fetch_end',
+                                  slice.ip,
+                                  slice.port,
+                                  slice.toString(),
+                                  Date.now() - tick,
+                                  'ok');
+
+                if (app.conf.cache.save && File.save(slice.path(dir), body))
+                {
+                    log('save to [' + slice.path(dir) + ']');
+                    setTimeout(() =>
+                    {
+                        log('cache sent with delay [%s]ms', delay);
+                        app.gui.broadcast('offer_end',
+                                          src_ip,
+                                          src_pos,
+                                          slice.toString(),
+                                          delay,
+                                          'ok');
+
+                        res.sendFile(slice.path(dir));
+                    },
+                    delay);
+                    app.refresh();
+                }
+                else
+                {
+                    setTimeout(() =>
+                    {
+                        res.set('content-type', response.headers['content-type']);
+                        res.set('content-length', response.headers['content-length']);
+
+                        log('cache sent with delay [%s]ms', delay);
+                        app.gui.broadcast('offer_end',
+                                          src_ip,
+                                          src_pos,
+                                          slice.toString(),
+                                          delay,
+                                          'ok');
+
+                        res.send(body);
+                    },
+                    delay);
+                }
+            }
+        });
     });
 
     router.delete(
@@ -119,7 +198,7 @@ mod.prototype.init = function()
     ],
     (req, res) =>
     {
-        let folder = path.join
+        let target = path.join
         (
             dir,
             req.params.ip    || '',
@@ -127,25 +206,9 @@ mod.prototype.init = function()
             req.params.video || '',
             req.params.piece || ''
         );
-        res.json(File.rm(folder) ? 'ok' : 'error');
+        let status = File.rm(target) ? 'ok' : 'error';
+        app.log('delete [%s] %s', target, status);
+        res.json(status);
         app.refresh();
     });
-};
-
-mod.prototype.list = function()
-{
-    list = {};
-    for (ip of File.folders(this.dir))
-    {
-        list[ip] = {};
-        for (port of File.folders(path.join(this.dir, ip)))
-        {
-            list[ip][port] = {};
-            for (video of File.folders(path.join(this.dir, ip, port)))
-            {
-                list[ip][port][video] = File.files(path.join(this.dir, ip, port, video));
-            }
-        }
-    }
-    return list;
 };

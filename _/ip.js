@@ -8,10 +8,7 @@ mod.format = (ip) =>
 {
     if (ip == 'localhost') return '127.0.0.1';
 
-    let res = ipaddr.parse(ip);
-    if (res.isIPv4MappedAddress())
-    {
-        return res.toIPv4Address().toString();
-    }
+    let res = ipaddr.process(ip);
+
     return res.toString();
 };

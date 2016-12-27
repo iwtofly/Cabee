@@ -24,11 +24,19 @@ let mod = module.exports = function(app)
 };
 
 //
-// send events to gui-users by client
+// broadcast events to gui-users
+//
+mod.prototype.broadcast = function()
+{
+    this.server.emit(...arguments);
+};
+
+//
+// send events to gui-host
 //
 mod.prototype.emit = function()
 {
-    this.server.emit(...arguments);
+    this.client.emit(...arguments);
 };
 
 //
@@ -55,7 +63,7 @@ mod.prototype.on_gui_connect = function(socket)
     this.app.log('connect to Gui [%s]', this.url);
 
     // send self-info to gui
-    this.client.emit('refresh', this.app.info());
+    this.emit('refresh', this.app.info());
 };
 mod.prototype.on_gui_disconnect = function(socket)
 {

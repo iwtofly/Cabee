@@ -5,8 +5,9 @@ let multer  = require('multer');
 let util    = require('util');
 let Ip      = require('_/ip');
 let File    = require('_/file');
+let Pos     = require('_/pos');
 let Slice   = require('./model/slice');
-let Fetch   = require('./model/fetch');
+let Pull    = require('./pull');
 
 let mod = module.exports = function(app)
 {
@@ -75,10 +76,10 @@ mod.prototype.init = function()
 
         // try get file from local cache
         log('begin');
-        app.gui.emit('offer_bgn',
-                      src_ip,
-                      src_pos,
-                      slice.toString());
+        app.gui.broadcast('offer_bgn',
+                          src_ip,
+                          src_pos,
+                          slice.toString());
         
         if (File.exist(slice.path(dir)))
         {
@@ -86,12 +87,12 @@ mod.prototype.init = function()
             setTimeout(() =>
             {
                 log('cache sent with delay ' + delay);
-                app.gui.emit('offer_end',
-                              src_ip,
-                              src_pos,
-                              slice.toString(),
-                              delay,
-                              'ok');
+                app.gui.broadcast('offer_end',
+                                  src_ip,
+                                  src_pos,
+                                  slice.toString(),
+                                  delay,
+                                  'ok');
                 res.sendFile(slice.path(dir));
             },
             delay);
@@ -100,15 +101,126 @@ mod.prototype.init = function()
         }
         log('cache not found, try relay from other proxies');
 
-        Fetch.from_proxy(app,
-                         src_ip,
-                         src_pos,
-                         log,
-                         slice,
-                         delay,
-                         app.conf.cache.save,
-                         res,
-                         () =>
+        // try get file from other proxies
+        let exist = false;
+        let chosen = false;
+        for (let proxy of app.proxies)
+        {
+            if (proxy.has(slice) && (
+                app.conf.relay.source.sub && Pos.sub(proxy.conf.pos, app.conf.pos) ||
+                app.conf.relay.source.peer && Pos.peer(proxy.conf.pos, app.conf.pos) ||
+                app.conf.relay.source.super && Pos.super(proxy.conf.pos, app.conf.pos)))
+            {
+                exist = true;
+                log('ping [%s]', proxy.toString());
+                app.gui.broadcast('ping_bgn',
+                                  proxy.ip,
+                                  proxy.conf.port);
+                let tick = Date.now();
+
+                // begin ping
+                proxy.ping(app.conf.pos, (err, response, body) =>
+                {
+                    if (err || response.statusCode != 200)
+                    {
+                        log('ping [%s] failed', proxy.toString());
+                        app.gui.broadcast('ping_end',
+                                          proxy.ip,
+                                          proxy.conf.port,
+                                          'HTTP failed',
+                                          Date.now() - tick);
+                    }
+                    else
+                    {
+                        log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
+                        app.gui.broadcast('ping_end',
+                                          proxy.ip,
+                                          proxy.conf.port,
+                                          'ok',
+                                          body);
+
+                        // no other pinged proxy has returned yet, so we are the chosen one :D
+                        if (!chosen)
+                        {
+                            chosen = true;
+                            log('[%s] is chosen for relaying cache', proxy.toString());
+                            app.gui.broadcast('fetch_bgn',
+                                              proxy.ip,
+                                              proxy.conf.port,
+                                              slice.toString());
+
+                            // fetch from this proxy
+                            let tick = Date.now();
+                            proxy.relay(slice, app.conf.pos, (err, response, body) =>
+                            {
+                                if (err || response.statusCode != 200)
+                                {
+                                    log('relay failed');
+                                    app.gui.broadcast('fetch_end',
+                                                      proxy.ip,
+                                                      proxy.conf.port,
+                                                      slice.toString(),
+                                                      'HTTP failed',
+                                                      Date.now() - tick);
+                                }
+                                else
+                                {
+                                    log('relay succeeded');
+                                    app.gui.broadcast('fetch_end',
+                                                      proxy.ip,
+                                                      proxy.conf.port,
+                                                      slice.toString(),
+                                                      'ok',
+                                                      Date.now() - tick);
+
+                                    if (app.conf.relay.save && File.save(slice.path(dir), body))
+                                    {
+                                        log('save to [' + slice.path(dir) + ']');
+                                        setTimeout(() =>
+                                        {
+                                            log('cache sent with delay [%s]ms', delay);
+                                            app.gui.broadcast('offer_end',
+                                                              src_ip,
+                                                              src_pos,
+                                                              slice.toString(),
+                                                              delay,
+                                                              'ok');
+
+                                            res.sendFile(slice.path(dir));
+                                        },
+                                        delay);
+                                        app.refresh();
+                                    }
+                                    else
+                                    {
+                                        setTimeout(() =>
+                                        {
+                                            res.set('content-type', response.headers['content-type']);
+                                            res.set('content-length', response.headers['content-length']);
+                                            log('cache sent with delay [%s]ms', delay);
+                                            app.gui.broadcast('offer_end',
+                                                              src_ip,
+                                                              src_pos,
+                                                              slice.toString(),
+                                                              delay,
+                                                              'ok');
+                                            res.send(body);
+                                        },
+                                        delay);
+                                    }
+                                }
+
+                                // get other slices
+                                Pull(app, (...args) => app.log('[pull] ', util.format(...args)), slice);
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        // no proxy has cache, directly fetch from source
+        if (!exist)
         {
             log('no proxy has cache');
 
@@ -116,23 +228,82 @@ mod.prototype.init = function()
             if (!app.conf.relay.fetch)
             {
                 log('no cache & fetch is forbidden');
-                app.gui.emit('offer_end',
-                              src_ip,
-                              src_pos,
-                              slice.toString(),
-                              0,
-                              'no cache & fetch is forbidden');
+                app.gui.broadcast('offer_end',
+                                  src_ip,
+                                  src_pos,
+                                  slice.toString(),
+                                  0,
+                                  'no cache & fetch is forbidden');
                 res.status(404).end('no cache & fetch is forbidden');
             }
-            
-            Fetch.from_server(app,
-                              src_ip,
-                              src_pos,
-                              log,
-                              slice,
-                              delay,
-                              app.conf.relay.save,
-                              res);
-        });
+
+            log('try fetch from source');
+            app.gui.broadcast('fetch_bgn',
+                              slice.ip,
+                              slice.port,
+                              slice.toString());
+            let tick = Date.now();
+
+            // fetch file directly from source server
+            slice.fetch(app.conf.pos, (err, response, body) =>
+            {
+                if (err || response.statusCode != 200)
+                {
+                    log('fetch failed with [%s]', err);
+                    app.gui.broadcast('fetch_end',
+                                      slice.ip,
+                                      slice.port,
+                                      slice.toString(),
+                                      Date.now() - tick,
+                                      'HTTP failed');
+                    res.status(404).end('cache fetch failed');
+                }
+                else
+                {
+                    log('fetch succeeded');
+                    app.gui.broadcast('fetch_end',
+                                      slice.ip,
+                                      slice.port,
+                                      slice.toString(),
+                                      Date.now() - tick,
+                                      'ok');
+
+                    if (app.conf.relay.save && File.save(slice.path(dir), body))
+                    {
+                        log('save to [' + slice.path(dir) + ']');
+                        setTimeout(() =>
+                        {
+                            log('cache sent with delay ' + delay);
+                            app.gui.broadcast('offer_end',
+                                              src_ip,
+                                              src_pos,
+                                              slice.toString(),
+                                              delay,
+                                              'ok');
+                            res.sendFile(slice.path(dir));
+                        },
+                        delay);
+                        app.refresh();
+                    }
+                    else
+                    {
+                        setTimeout(() =>
+                        {
+                            res.set('content-type', response.headers['content-type']);
+                            res.set('content-length', response.headers['content-length']);
+                            log('cache sent with delay ' + delay);
+                            app.gui.broadcast('offer_end',
+                                              src_ip,
+                                              src_pos,
+                                              slice.toString(),
+                                              delay,
+                                              'ok');
+                            res.send(body);
+                        },
+                        delay); 
+                    }
+                }
+            });
+        }
     });
 };
