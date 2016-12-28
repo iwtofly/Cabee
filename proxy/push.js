@@ -70,6 +70,7 @@ mod.prototype.on_push = function(server_info, video, piece)
                               slice.toString(),
                               Date.now() - tick,
                               'ok');
+            app.netif.emit('msg');
 
             if (File.save(slice.path(dir), body))
             {

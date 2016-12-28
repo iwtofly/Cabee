@@ -35,9 +35,9 @@ let mod = module.exports = (app, logger, slice) =>
                         app.conf.relay.source.super && Pos.super(proxy.conf.pos, app.conf.pos)))
                     {
                         log('ping [%s]', proxy.toString());
-                        app.gui.emit('ping_bgn',
-                                      proxy.ip,
-                                      proxy.port);
+                        app.gui.broadcast('ping_bgn',
+                                          proxy.ip,
+                                          proxy.port);
                         let tick = Date.now();
 
                         // begin ping
@@ -46,30 +46,30 @@ let mod = module.exports = (app, logger, slice) =>
                             if (err || response.statusCode != 200)
                             {
                                 log('ping [%s] failed', proxy.toString());
-                                app.gui.emit('ping_end',
-                                              proxy.ip,
-                                              proxy.port,
-                                              'HTTP failed',
-                                              Date.now() - tick);
+                                app.gui.broadcast('ping_end',
+                                                  proxy.ip,
+                                                  proxy.port,
+                                                  'HTTP failed',
+                                                  Date.now() - tick);
                             }
                             else
                             {
                                 log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
-                                app.gui.emit('ping_end',
-                                              proxy.ip,
-                                              proxy.port,
-                                              'ok',
-                                              body);
+                                app.gui.broadcast('ping_end',
+                                                  proxy.ip,
+                                                  proxy.port,
+                                                  'ok',
+                                                  body);
 
                                 // no other pinged proxy has returned yet, so we are the chosen one :D
                                 if (!chosen)
                                 {
                                     chosen = true;
                                     log('[%s] is chosen for fetching cache', proxy.toString());
-                                    app.gui.emit('fetch_bgn',
-                                                  proxy.ip,
-                                                  proxy.port,
-                                                  slice.toString());
+                                    app.gui.broadcast('fetch_bgn',
+                                                      proxy.ip,
+                                                      proxy.port,
+                                                      slice.toString());
 
                                     // fetch from this proxy
                                     let tick = Date.now();
@@ -78,22 +78,23 @@ let mod = module.exports = (app, logger, slice) =>
                                         if (err || response.statusCode != 200)
                                         {
                                             log('fetch failed');
-                                            app.gui.emit('fetch_end',
-                                                          proxy.ip,
-                                                          proxy.port,
-                                                          slice.toString(),
-                                                          'HTTP failed',
-                                                          Date.now() - tick);
+                                            app.gui.broadcast('fetch_end',
+                                                              proxy.ip,
+                                                              proxy.port,
+                                                              slice.toString(),
+                                                              'HTTP failed',
+                                                              Date.now() - tick);
                                         }
                                         else
                                         {
                                             log('fetch succeeded');
-                                            app.gui.emit('fetch_end',
-                                                          proxy.ip,
-                                                          proxy.port,
-                                                          slice.toString(),
-                                                          'ok',
-                                                          Date.now() - tick);
+                                            app.gui.broadcast('fetch_end',
+                                                              proxy.ip,
+                                                              proxy.port,
+                                                              slice.toString(),
+                                                              'ok',
+                                                              Date.now() - tick);
+                                            app.netif.emit('msg');
 
                                             if (File.save(slice.path(app.dir), body))
                                             {

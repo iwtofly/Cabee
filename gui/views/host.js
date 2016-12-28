@@ -215,7 +215,7 @@ class Proxy extends Host
         super(info);
 
         this.io.on('refresh', this.on_refresh.bind(this));
-    };
+    }
 
     to_string()
     {
@@ -237,6 +237,32 @@ class Proxy extends Host
     }
 };
 
+//================================== Proxy ==================================//
+//
+//  ip
+//  conf(port...)
+//
+class NetworkInfo extends Host
+{
+    constructor(info)
+    {
+        super(info);
+
+        this.io.on('msg', this.on_msg.bind(this));
+    }
+
+    to_string()
+    {
+        return 'N|' + this.ip + ':' + this.conf.port;
+    }
+
+    on_msg()
+    {
+        console.log('(o_o)???');
+    }
+};
+
+
 class Station extends Unit
 {
     constructor( name, pos)
@@ -247,11 +273,3 @@ class Station extends Unit
     };
 };
 
-class NetworkInfo extends Unit
-{
-    constructor(name, pos)
-    {
-        super();
-        this.name = name;
-    };
-};
