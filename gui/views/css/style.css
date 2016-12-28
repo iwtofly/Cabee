@@ -39,11 +39,6 @@
     border-radius: 15px;
 }
 
-svg{
-
-    margin-left: 50px;
-    /*border:1px solid;*/
-}
 
 .linetext {
     font-size: 12px ;
@@ -287,8 +282,15 @@ img.team-img {
 /* Contact Section */
 #contact-section {
     padding: 100px 0;
-    /*background-color: #f6f6f6;*/
+    background: url(/img/background.PNG) no-repeat bottom center;
+    background-size: cover;
 }
+svg{
+    z-index: 3333;
+    /*margin-left: 50px;*/
+    /*border:1px solid;*/
+}
+
 label {
     font-size: 12px;
     font-weight: 400;
@@ -340,4 +342,59 @@ a:focus, .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:acti
     .hover-bg .hover-text {
         padding: 15% 10%;
     }
+}
+.showTable{
+    margin-left: 20px;
+}
+
+.progress{
+    height: 15px;
+    background: #262626;
+    padding: 2px;
+    overflow: visible;
+    border-radius: 20px;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #7992a8;
+    margin-top: 10px;
+}
+.progress .progress-bar{
+    border-radius: 20px;
+    position: relative;
+    animation: animate-positive 2s;
+}
+.progress .progress-value{
+    display: block;
+    padding: 3px 7px;
+    font-size: 13px;
+    color: #fff;
+    border-radius: 4px;
+    background: #191919;
+    border: 1px solid #000;
+    position: absolute;
+    top: -40px;
+    right: -10px;
+}
+.progress .progress-value:after{
+    content: "";
+    border-top: 10px solid #191919;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    position: absolute;
+    bottom: -6px;
+    left: 26%;
+}
+.logs{
+    background-color: rgba(255,255,255, 0.4) !important;
+    padding: 5px 8px;
+    border-radius: 8px;
+    color: black !important;
+    margin-bottom: 10px;
+}
+.logs > p, .logs > h4 {
+    color: black !important;
+}
+
+/*弹出框*/
+.modal-dialog {
+    width: 900px !important;
 }

@@ -97,7 +97,7 @@ class Video_Cached extends React.Component {
     var HStyle={
       textAlign:'center',
     }
-    const { currentUrlList, loading ,duration } = this.state ;
+    const { currentUrlList, loading ,duration, fileName } = this.state ;
     if (currentUrlList.length !== 0) {
       console.log(JSON.stringify(currentUrlList));
     }
@@ -110,7 +110,7 @@ class Video_Cached extends React.Component {
     { !loading && duration &&
         <div>
           <h2  style={HStyle}>{this.state.videoId}</h2>
-          <VideoPlayer urlList={currentUrlList}/>
+          <VideoPlayer urlList={currentUrlList} videoName = {fileName}/>
           <StatusTable/>
        </div>
     }

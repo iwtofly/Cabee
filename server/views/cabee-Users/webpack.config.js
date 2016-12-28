@@ -26,7 +26,20 @@
       { test: /\.less$/, loader: 'style!css!less' },
       { test: /\.(jpg|png)$/, loader: "url" }
       ]
-   }
+   },
+
+   // 上线的时候打开--主要功能是压缩代码
+   /*,
+   new webpack.optimize.UglifyJsPlugin({
+      compress: {
+          warnings: false
+      }
+   }),
+   new webpack.DefinePlugin({ //显示告警信息
+      'process.env': {
+          NODE_ENV: JSON.stringify('production')
+      }
+   })*/
 	
 }
 

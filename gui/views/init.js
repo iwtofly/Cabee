@@ -37,6 +37,7 @@ $(document).ready(() =>
 
     let user = new User(ip, port);
     window.hosts.push(user);
+    
     return user;
   };
 
@@ -72,7 +73,7 @@ $(document).ready(() =>
   self_io.on('refresh', (hosts) =>
   {
     console.log('hosts recv');
-    console.log(hosts);
+    // window.hosts = [];
 
     for (info of hosts)
     {
@@ -94,6 +95,8 @@ $(document).ready(() =>
           break;
       }
     }
+    
+    window.painter.tree1(window.hosts);
   });
 
 });

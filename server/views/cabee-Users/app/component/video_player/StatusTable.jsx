@@ -6,29 +6,36 @@ import pubsub from 'pubsub-js';
 var StatusTable=React.createClass({
 	getInitialState: function() {
 	return {
-		videoIndex:0,
-		info:[]
+			videoIndex:0,
+			info:[]
 		}
 	},
 	componentWillMount: function() {
-	this.pubsub_token1 = pubsub.subscribe('index', function(topic, videoIndex) {
-	  // update my selection when there is a message
-	  this.setState({ videoIndex: videoIndex });
-	}.bind(this));
+		this.pubsub_token1 = pubsub.subscribe('index', function(topic, videoIndex) {
+			// update my selection when there is a message
+			this.setState({ videoIndex: videoIndex });
+		}.bind(this));
 
-	this.pubsub_token2 = pubsub.subscribe('status', function(topic, pubInfo) {
-	  // update my selection when there is a message
-	  this.setState({ info:pubInfo });
-	}.bind(this));
-
-
-	// console.log("videoIndex:  "+this.state.videoIndex)
+		this.pubsub_token2 = pubsub.subscribe('status', function(topic, pubInfo) {
+			// update my selection when there is a message
+			this.setState({ info:pubInfo });
+		}.bind(this));
 	
 	},
+	componentDidMount: function() {
+		// let client = io('/user');
+
+	 //    client.on('connect', () =>
+	 //    {
+	 //        console.log('ok, connect to /user');
+	 //        client.emit('progress', 'shit', 'fuck', 1000);
+	 //    });
+	 //    client.on('disconnect', () => console.log('oh no, disconnect to /user'));
+	},
 	componentWillUnmount: function() {
-	// React removed me from the DOM, I have to unsubscribe from the pubsub using my token
-	pubsub.unsubscribe(this.pubsub_token1);
-	pubsub.unsubscribe(this.pubsub_token2);
+		// React removed me from the DOM, I have to unsubscribe from the pubsub using my token
+		pubsub.unsubscribe(this.pubsub_token1);
+		pubsub.unsubscribe(this.pubsub_token2);
 
 	},
 	getIndex:function(){

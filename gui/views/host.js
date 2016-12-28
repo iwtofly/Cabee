@@ -167,6 +167,7 @@ class Server extends Host
 
         this.io.on('refresh', this.on_refresh.bind(this));
         this.io.on('push', this.on_push.bind(this));
+        this.io.on('progress', this.on_progress.bind(this));
     }
 
     to_string()
@@ -191,6 +192,13 @@ class Server extends Host
     {
         this.log('push [{0}|{1}]'.format(video, piece || 'all'));
         // window.painter.line(this, Host.track, 'push');
+    }
+
+    on_progress(user_ip, video, piece, progress)
+    {
+        let src = window.get_host(user_ip, null, null);
+        this.log('[{0}] => [{1}|{2}] at [{3}%]'.format(src.to_string(), video, piece, progress));
+        // window.painter.
     }
 };
 

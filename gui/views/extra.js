@@ -1,4 +1,3 @@
-
   // string format util
   if (!String.prototype.format)
   {

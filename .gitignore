@@ -2,3 +2,10 @@ node_modules
 proxy/caches
 server/videos
 test.js
+
+_Store
+._.DS_Store
+.DS_Store
+
+*~
+._*
