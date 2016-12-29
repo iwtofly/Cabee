@@ -9,7 +9,6 @@ $(document).ready(() =>
   // all the host given by GUI-backend
   //
   window.hosts = [];
-
   //
   // try get the host by given info
   //
@@ -74,7 +73,10 @@ $(document).ready(() =>
   {
     console.log('hosts recv');
     // window.hosts = [];
-
+    window.logs = {
+      group1: [],
+      group2: []
+    };
     for (info of hosts)
     {
       switch (info.conf.type)
@@ -96,7 +98,7 @@ $(document).ready(() =>
       }
     }
     
-    window.painter.tree1(window.hosts);
+    window.painter.tree(window.hosts);
   });
 
 });

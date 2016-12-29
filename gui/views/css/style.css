@@ -398,3 +398,43 @@ a:focus, .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:acti
 .modal-dialog {
     width: 900px !important;
 }
+/***带宽，时延节省****/
+.improve{
+    float: right;
+    margin-right: 40px;
+    font-size: 25px;
+    color: #fff;
+    line-height: 25px;
+    font-weight: normal;
+    border: 1px solid grey;
+    padding: 3px 6px;
+    -moz-transition: all 0.7s ease;
+    -webkit-transition: all 0.7s ease;
+    -o-transition: all 0.7s ease;
+    transition: all 0.7s ease;
+}
+.improve-border {
+    box-shadow: 3px 3px 2px #fff, 3px 0 2px #fff, 0 0 3px #fff, 0 0 5px #84bfd3;
+    -webkit-box-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 5px #84bfd3;
+}
+.improve i{
+    font-size: 30px;
+    -moz-transition: all 0.7s ease;
+    -webkit-transition: all 0.7s ease;
+    -o-transition: all 0.7s ease;
+    transition: all 0.7s ease;
+}
+.flashing {
+    color: #fff;
+     /*text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 5px #ffa229, 0 0 8px #ffa229, 0 0 10px #ffa229, 0 0 12px #ffa229, 0 0 16px #ffa229; */
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 5px #84bfd3, 0 0 8px #84bfd3, 0 0 10px #84bfd3, 0 0 12px #84bfd3, 0 0 16px #84bfd3;
+    -webkit-text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 5px #84bfd3, 0 0 8px #84bfd3, 0 0 10px #84bfd3, 0 0 12px #84bfd3, 0 0 16px #84bfd3;
+}
+.project {
+    color: #f2f2f2;
+    text-shadow: 2px 3px 5px #ccc;
+    float: right;
+}
+/*.left {
+    border-right: 1px solid black;
+}*/

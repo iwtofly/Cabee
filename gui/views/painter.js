@@ -2,17 +2,35 @@
  * @auhor wangfang_1993@126.com                  *
  * Painter对象包含三个方法                         *
  * tree()用于接收JSON格式数据，画出相应的网络拓扑；   *
- * msg()：当某个节点的内容发生改变时动画冒泡提示；     *
- * line():画线，type还未确定；                      *
- * unline():删除某条线；                           *
- * 全部按照pos以及instance来判断                   *
+ * msg()：当某个节点的内容发生改变时动画冒泡提示       *
+ * line() 画线,type还未确定                        *
+ * unline() 删除某条线                             *
+ * 全部按照pos以及instance来判断                    *
  **************************************************/
 class Painter
 {
-    log(text) { console.log(text); }
+    log(text) { 
+        console.log(text);
+        if (text.substr(2,1) === '1') {
+            window.logs.group1.push(text);
+        } else {
+            window.logs.group2.push(text);
+        }
 
-    tree1(data) {
-        console.log(data)
+        for (let log of window.logs.group1) {
+            $('#logs1').append('<p>' + log + '</p>');
+            $('#logs1Copy').append('<p>' + log + '</p>');
+        }
+        for (let log of window.logs.group2) {
+            $('#logs2').append('<p>' + log + '</p>');
+            $('#logs2Copy').append('<p>' + log + '</p>')
+        }
+        
+    }
+
+    tree() {
+        let data = window.hosts;
+        // console.log(data)
         console.log('drawing the tree');
 
         let tooltip = d3.select("body")
@@ -280,14 +298,15 @@ class Painter
         }  
 
         /****************以上两方案可以复用****************/
-        // 以下为测试
+        /****** 以下为测试 *******/
         // 测试line unline
+        /*
         setTimeout(() => {
             this.line(group2[0], group2[1], 'offer', 'offer');
             setTimeout (() => {
                 this.unline(group2[0], group2[1], 'offer', 'offer');
             },2000)
-        },2000)
+        },2000)*/
 
         // 测试broadcast
         /*
@@ -322,6 +341,7 @@ class Painter
             },20)
 
         }, 2000) */
+        this.refresh();
 
     }
 
@@ -530,34 +550,42 @@ class Painter
     }
 
     // refresh the table, need the info of server and proxies
-    refresh(servers, proxies ) {
+    refresh() {
 
-        var tbody = $('tbody');
+        let tbody = $('tbody');
         tbody.empty();
         tbody.css('color','white');
 
-        for (let server of servers)
-        {
-            let serverVideos = JSON.stringify(server.videos);
-            let tempnode = this.findDOMNode(server, "name");
-            tbody.append("<tr><td>" + tempnode + "</td>" 
-                
-                + "<td>" + server.ip + "</td>"
-                + "<td>" + server.conf.port + "</td>"
-                + "<td>" + serverVideos + "</td>"
-                + "</tr>"); 
-            
+        let data = window.hosts;
+        let group1 = [],
+            group2 = [];
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].conf.group === 1 && (data[i] instanceof Server || data[i] instanceof Proxy)) {
+                group1.push(data[i]);
+            } else if (data[i].conf.group === 2 && (data[i] instanceof Server || data[i] instanceof Proxy)) {
+                group2.push(data[i]);
+            }
         }
-        for (let proxy of proxies)
-        {
-            let videos = this.isOwnEmpty(proxy.caches) ? "无" : JSON.stringify(proxy.caches);
-            let tempnode = this.findDOMNode(proxy, "name");
-            tbody.append("<tr><td>" +  tempnode + "</td>" 
-                + "<td>" + proxy.ip + "</td>"
-                + "<td>" + proxy.conf.port + "</td>"
+
+        for (let item of group1) {
+            // console.log(item);
+            let tbody1 = $('#table1 tbody');
+            let videos = item instanceof Server ? JSON.stringify(item.videos) : JSON.stringify(item.caches);
+            tbody1.append("<tr><td>" + item.conf.name + "</td>" 
+                + "<td>" + item.ip + "</td>"
+                + "<td>" + item.conf.port + "</td>"
                 + "<td>" + videos + "</td>"
-                + "</tr>"); 
-            
+                + "</tr>");
+        }
+        for (let item of group2) {
+            // console.log(item);
+            let tbody2 = $('#table2 tbody');
+            let videos = item instanceof Server ? JSON.stringify(item.videos) : JSON.stringify(item.caches);
+            tbody2.append("<tr><td>" + item.conf.name + "</td>" 
+                + "<td>" + item.ip + "</td>"
+                + "<td>" + item.conf.port + "</td>"
+                + "<td>" + videos + "</td>"
+                + "</tr>");
         }
     }
 
@@ -649,5 +677,4 @@ class Painter
         }
         return true;
     }
- 
 };

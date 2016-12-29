@@ -185,7 +185,7 @@ class Server extends Host
     {
         this.videos = info.videos;
         this.log('refreshed');
-        // window.painter.refresh(Host.servers,Host.proxies);
+        window.painter.refresh();
     }
 
     on_push(video, piece)
@@ -233,7 +233,7 @@ class Proxy extends Host
     {
         this.caches = info.caches;
         this.log('refreshed');
-        // window.painter.refresh(Host.servers,Host.proxies);
+        window.painter.refresh();
     }
 };
 

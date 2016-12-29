@@ -9,14 +9,14 @@
 #================ track ==============#
 - type : track
   group: 1
-  name : Tracker-1
+  name : Tracker
   port : 13000
   gui  : http://127.0.0.1:12345/host
 
 #================ server =============#
 - type : server
   group: 1
-  name : Sir-1-1
+  name : Server
   port : 14001
   gui  : http://127.0.0.1:12345/host
   track: http://127.0.0.1:13000/server
@@ -28,7 +28,7 @@
 #================ proxy =============#
 - type : proxy
   group: 1
-  name : GATEWAY_1
+  name : DGW_1
   pos  : "1"
   port : 15001
   gui  : http://127.0.0.1:12345/host
@@ -51,7 +51,7 @@
 
 - type : proxy
   group: 1
-  name : MEC1
+  name : MEC_1_sub1
   pos  : "11"
   port : 15002
   gui  : http://127.0.0.1:12345/host
@@ -74,7 +74,7 @@
 
 - type : proxy
   group: 1
-  name : MEC2
+  name : MEC_2_sub2
   pos  : "12"
   port : 15003
   gui  : http://127.0.0.1:12345/host
@@ -100,14 +100,14 @@
 # #================ track ==============#
 # - type : track
 #   group: 2
-#   name : Tracker-2
+#   name : Tracker
 #   port : 23000
 #   gui  : http://127.0.0.1:12345/host
 
 # #================ server =============#
 # - type : server
 #   group: 2
-#   name : Sir-2-1
+#   name : Server
 #   port : 24001
 #   gui  : http://127.0.0.1:12345/host
 #   track: http://127.0.0.1:23000/server

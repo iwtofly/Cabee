@@ -18,8 +18,6 @@
 
     <script type="text/javascript">
 
-//
-
     </script>
 
 </head>
@@ -29,7 +27,7 @@
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-                <a class="navbar-brand" href="#">Cabee-track</a> </div>
+                <a class="navbar-brand" style="float: left;" href="#">Cabee-track</a> </div>
             
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -94,6 +92,7 @@
                         data-target="#myModal">
                         展开log信息
                 </button>
+                <span class="improve">节省带宽 &nbsp;<i id="bandwidth">24M</i>&nbsp;&nbsp;&nbsp;节省时延 &nbsp;<i id="timeReduce">3s</i></span>
                 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -108,45 +107,13 @@
                             <div class="modal-body" style="height:465px;">
                                 <div id="logs1" class="logs col-md-6" data-spy="scroll" data-target="#navbar-example" data-offset="0" 
                                      style="height:450px;overflow:auto; position: relative;">
-                                    <h4 id="ios">iOS</h4>
-                                    <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
-                                        TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。
-                                    </p>
-                                    <h4 id="svn">SVN</h4>
-                                    <p>Apache Subversion，通常缩写为 SVN，是一款开源的版本控制系统软件。Subversion 由 CollabNet 公司在 2000 年创建。但是现在它已经发展为 Apache Software Foundation 的一个项目，因此拥有丰富的开发人员和用户社区。
-                                    </p>
-                                    <h4 id="jmeter">jMeter</h4>
-                                    <p>jMeter 是一款开源的测试软件。它是 100% 纯 Java 应用程序，用于负载和性能测试。
-                                    </p>
-                                    <h4 id="ejb">EJB</h4>
-                                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
-                                    </p>
-                                    <h4 id="spring">Spring</h4>
-                                    <p>Spring 框架是一个开源的 Java 平台，为快速开发功能强大的 Java 应用程序提供了完备的基础设施支持。
-                                    </p>
-                                    <p>Spring 框架最初是由 Rod Johnson 编写的，在 2003 年 6 月首次发布于 Apache 2.0 许可证下。
-                                    </p>
+                                    <h4>Ours</h4>
+                                    
                                 </div>
                                 <div id="logs2" class="logs col-md-6" data-spy="scroll" data-target="#navbar-example" data-offset="0" 
                                      style="height:450px;overflow:auto; position: relative;">
-                                    <h4 id="ios">iOS</h4>
-                                    <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
-                                        TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。
-                                    </p>
-                                    <h4 id="svn">SVN</h4>
-                                    <p>Apache Subversion，通常缩写为 SVN，是一款开源的版本控制系统软件。Subversion 由 CollabNet 公司在 2000 年创建。但是现在它已经发展为 Apache Software Foundation 的一个项目，因此拥有丰富的开发人员和用户社区。
-                                    </p>
-                                    <h4 id="jmeter">jMeter</h4>
-                                    <p>jMeter 是一款开源的测试软件。它是 100% 纯 Java 应用程序，用于负载和性能测试。
-                                    </p>
-                                    <h4 id="ejb">EJB</h4>
-                                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
-                                    </p>
-                                    <h4 id="spring">Spring</h4>
-                                    <p>Spring 框架是一个开源的 Java 平台，为快速开发功能强大的 Java 应用程序提供了完备的基础设施支持。
-                                    </p>
-                                    <p>Spring 框架最初是由 Rod Johnson 编写的，在 2003 年 6 月首次发布于 Apache 2.0 许可证下。
-                                    </p>
+                                    <h4 id="ios">Mcdn</h4>
+                                    
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -159,34 +126,16 @@
             </div>
             
             <div class="left col-md-6 col-sm-12">
-                <h2>-- Ours</h2>
+                <h2 class="project">-- Ours</h2>
                 
                 <div id="my-progress-bar-left">
                    
                 </div>
                 <svg id="group1"></svg>
-                <div><span>节省带宽<i class="bandwidth"></i></span><span>节省时延<i class="timeRedu"></i></span></div>
                 
-                <div id="logs1" class="logs" data-spy="scroll" data-target="#navbar-example" data-offset="0" 
+                <div id="logs1Copy" class="logs" data-spy="scroll" data-target="#navbar-example" data-offset="0" 
                      style="height:200px;overflow:auto; position: relative;">
-                    <h4 id="ios">iOS</h4>
-                    <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
-                        TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。
-                    </p>
-                    <h4 id="svn">SVN</h4>
-                    <p>Apache Subversion，通常缩写为 SVN，是一款开源的版本控制系统软件。Subversion 由 CollabNet 公司在 2000 年创建。但是现在它已经发展为 Apache Software Foundation 的一个项目，因此拥有丰富的开发人员和用户社区。
-                    </p>
-                    <h4 id="jmeter">jMeter</h4>
-                    <p>jMeter 是一款开源的测试软件。它是 100% 纯 Java 应用程序，用于负载和性能测试。
-                    </p>
-                    <h4 id="ejb">EJB</h4>
-                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
-                    </p>
-                    <h4 id="spring">Spring</h4>
-                    <p>Spring 框架是一个开源的 Java 平台，为快速开发功能强大的 Java 应用程序提供了完备的基础设施支持。
-                    </p>
-                    <p>Spring 框架最初是由 Rod Johnson 编写的，在 2003 年 6 月首次发布于 Apache 2.0 许可证下。
-                    </p>
+                    <h4 id="ios">Ours 日志</h4>
                 </div>
                 <table class="table table-bordered" id="table1">
                     <thead>
@@ -204,35 +153,18 @@
             </div>
 
             <div class="right col-md-6 col-sm-12">
-                <h2>-- MCdn</h2>
+                <h2 class="project">-- MCdn</h2>
                 
                 <div id="my-progress-bar-right">
                    
                 </div>
                 <svg id="group2"></svg>
-                <div><span>节省带宽<i class="bandwidth"></i></span><span>节省时延<i class="timeRedu"></i></span></div>
-                <div id="logs1" class="logs" data-spy="scroll" data-target="#navbar-example" data-offset="0" 
+                <div id="logs2Copy" class="logs" data-spy="scroll" data-target="#navbar-example" data-offset="0" 
                      style="height:200px;overflow:auto; position: relative;">
-                    <h4 id="ios">iOS</h4>
-                    <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
-                        TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。
-                    </p>
-                    <h4 id="svn">SVN</h4>
-                    <p>Apache Subversion，通常缩写为 SVN，是一款开源的版本控制系统软件。Subversion 由 CollabNet 公司在 2000 年创建。但是现在它已经发展为 Apache Software Foundation 的一个项目，因此拥有丰富的开发人员和用户社区。
-                    </p>
-                    <h4 id="jmeter">jMeter</h4>
-                    <p>jMeter 是一款开源的测试软件。它是 100% 纯 Java 应用程序，用于负载和性能测试。
-                    </p>
-                    <h4 id="ejb">EJB</h4>
-                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
-                    </p>
-                    <h4 id="spring">Spring</h4>
-                    <p>Spring 框架是一个开源的 Java 平台，为快速开发功能强大的 Java 应用程序提供了完备的基础设施支持。
-                    </p>
-                    <p>Spring 框架最初是由 Rod Johnson 编写的，在 2003 年 6 月首次发布于 Apache 2.0 许可证下。
-                    </p>
+                    <h4>Mcdn 日志</h4>
+                    
                 </div>
-                <table class="table table-bordered" id="table1">
+                <table class="table table-bordered" id="table2">
                     <thead>
                         <tr class="info">
                             <th>Node</th>
@@ -337,6 +269,18 @@
         });
         
         client.on('disconnect', () => console.log('oh no, disconnect to /user'));
+
+        setInterval(() => {
+            $('.improve i').addClass('flashing');
+            $('.improve').addClass('improve-border');
+            setTimeout( ()=> {
+                $('.improve i').removeClass('flashing');
+                $('.improve').removeClass('improve-border');
+            }, 1000)
+        },
+        2000)
+        
+
     });
 
     </script>
