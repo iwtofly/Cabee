@@ -16,6 +16,7 @@ let Gui   = require('_/gui');
 let Proxy  = require('./model/proxy');
 let Server = require('./model/server');
 
+let NetIf = require('./model/netif');
 let Cache = require('./cache');
 let Relay = require('./relay');
 let Count = require('./count');
@@ -43,7 +44,8 @@ let app = module.exports = function(conf)
     // socket-io
     this.gui   = new Gui(this);
     this.track = new Track(this);
-    
+    this.netif = new NetIf(this);
+
     // http
     this.delay = new Delay(this);
     this.cache = new Cache(this);

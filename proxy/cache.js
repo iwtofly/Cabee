@@ -146,6 +146,7 @@ mod.prototype.init = function()
                                   slice.toString(),
                                   Date.now() - tick,
                                   'ok');
+                app.netif.emit('msg');
 
                 if (app.conf.cache.save && File.save(slice.path(dir), body))
                 {

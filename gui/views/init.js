@@ -79,20 +79,23 @@ $(document).ready(() =>
     };
     for (info of hosts)
     {
+      info.ip = ip_format(info.ip);
+
       switch (info.conf.type)
       {
         case 'track':
-          info.ip = ip_format(info.ip);
           window.hosts.push(new Track(info));
           break;
 
+        case 'netif':
+          window.hosts.push(new NetworkInfo(info));
+          break;
+
         case 'server':
-          info.ip = ip_format(info.ip);
           window.hosts.push(new Server(info));
           break;
 
         case 'proxy':
-          info.ip = ip_format(info.ip);
           window.hosts.push(new Proxy(info));
           break;
       }

@@ -172,6 +172,7 @@ mod.prototype.init = function()
                                                       slice.toString(),
                                                       'ok',
                                                       Date.now() - tick);
+                                    app.netif.emit('msg');
 
                                     if (app.conf.relay.save && File.save(slice.path(dir), body))
                                     {
@@ -211,7 +212,8 @@ mod.prototype.init = function()
                                 }
 
                                 // get other slices
-                                Pull(app, (...args) => app.log('[pull] ', util.format(...args)), slice);
+                                if (app.conf.pull)
+                                  Pull(app, (...args) => app.log('[pull] ', util.format(...args)), slice);
                             });
                         }
                     }
@@ -267,6 +269,7 @@ mod.prototype.init = function()
                                       slice.toString(),
                                       Date.now() - tick,
                                       'ok');
+                    app.netif.emit('msg');
 
                     if (app.conf.relay.save && File.save(slice.path(dir), body))
                     {

@@ -2,6 +2,7 @@ var yaml  = require('js-yaml');
 var fs    = require('fs');
 
 var Gui    = require('./gui');
+var NetIf  = require('./netif');
 var Track  = require('./track');
 var Server = require('./server');
 var Proxy  = require('./proxy');
@@ -18,6 +19,10 @@ try
         {
             case 'gui':
                 new Gui(host);
+                break;
+
+            case 'netif':
+                new NetIf(host);
                 break;
 
             case 'track':
