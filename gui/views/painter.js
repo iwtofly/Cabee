@@ -30,7 +30,7 @@ class Painter
 
     tree() {
         let data = window.hosts;
-        // console.log(data)
+        console.log(data)
         console.log('drawing the tree');
 
         let tooltip = d3.select("body")
@@ -59,7 +59,7 @@ class Painter
             positionX = {
                 Tracker: 460,
                 Server: 460,
-                NetworkInfo: 280,
+                NetworkInfo: 300,
                 DGW: 300,
                 MEC: 200,
                 station: 130
@@ -105,21 +105,25 @@ class Painter
                 target = {};
 
             for (let item of nodesTemp) {
-                if (item.conf.pos) {
-                    if (item.conf.pos.length === 1) {
-                        DGWnum++;
-                    } else {
-                        MECnum++;
-                        if (peer[item.conf.pos.substr(0, 1)] == undefined) {
-                            peer[item.conf.pos.substr(0, 1)] = 1;
+                if (item instanceof Proxy) {
+                    if (item.conf.pos) {
+                        if (item.conf.pos.length === 1) {
+                            DGWnum++;
                         } else {
-                            peer[item.conf.pos.substr(0, 1)] = peer[item.conf.pos.substr(0, 1)] + 1;
+                            MECnum++;
+                            if (peer[item.conf.pos.substr(0, 1)] == undefined) {
+                                peer[item.conf.pos.substr(0, 1)] = 1;
+                            } else {
+                                peer[item.conf.pos.substr(0, 1)] = peer[item.conf.pos.substr(0, 1)] + 1;
+                            }
+                            // console.log("这里有peer更新"+ peer[item.conf.pos.substr(0,1)] ) 
                         }
-                        // console.log("这里有peer更新"+ peer[item.conf.pos.substr(0,1)] ) 
-                    }
-                }        
+                    }    
+                }          
             }
 
+            let netInfExist = false,
+                info;
             let nodes = d3.range(0, nodesTemp.length).map((i) => {
                 if (nodesTemp[i] instanceof Track) {
                     target['T' + nodesTemp[i].conf.group] = i;
@@ -139,6 +143,18 @@ class Painter
                         data: nodesTemp[i].videos,
                         x: positionX.Server,
                         y: 266,
+                        group: nodesTemp[i].conf.group
+                    }
+                }  else if (nodesTemp[i] instanceof NetworkInfo) {
+                    netInfExist = true;
+                    info = nodesTemp[i];
+                    target['Info' + nodesTemp[i].conf.group] = i;
+                    return {
+                        name: "NetworkInfo",
+                        img: "./img/server1.png",
+                        data: '',
+                        x: positionX.NetworkInfo,
+                        y: 20,
                         group: nodesTemp[i].conf.group
                     }
                 } else if(nodesTemp[i] instanceof Proxy) {
@@ -177,6 +193,25 @@ class Painter
                         default:
                            console.log(nodesTemp[i].conf.pos.length);
                     }
+                } else if (nodesTemp[i] instanceof Station) {
+                    let selfPos = nodesTemp[i].conf.pos.substr(1,2);
+                    let fatherPos = nodesTemp[i].conf.pos.substr(0,1);
+                    
+                    let posY = fatherPos==="1" 
+                                ? ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos))
+                                    * height / (MECnum + 1)
+                                : ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos - 1))
+                                    * height/(MECnum + 1);
+
+                    return {
+                                name: 'Station', 
+                                img: "./img/station1.png",
+                                data: 'Station',
+                                pos: nodesTemp[i].conf.pos,
+                                x: positionX.station,
+                                y: posY,
+                                group: nodesTemp[i].conf.group
+                            }
                 }
             });
             // console.log(nodes);
@@ -184,6 +219,11 @@ class Painter
             let edges = d3.range(1, nodesTemp.length).map((i) => {
                 if (nodes[i].name.substr(0, 6) === 'Server') {
                     return {source: i, target: target['T' + nodes[i].group]};
+                } else if (nodes[i].name === "NetworkInfo") {
+                    return {source: i, target: target['T' + nodes[i].group] };
+                } else if (nodes[i].name === "Station") {
+                    // console.log('station ' + i + ' target : ' + target[nodes[i].pos])
+                    return {source: i, target: target[nodes[i].pos] };
                 } else if (nodes[i].name.substr(0,3) === "DGW") {
                     return {source: i, target: target['S' + nodes[i].group] };
                 } else if (nodes[i].name.substr(0,3) === "MEC") {
@@ -192,6 +232,9 @@ class Painter
                     return { source: i, target: target[fatherPos] };
                 }
             });
+            if (netInfExist) {
+                edges.push({source: target['Info' + info.conf.group], target: target['S' + info.conf.group]})
+            }
             // console.log(edges);
 
             let force = d3.layout.force()
@@ -302,9 +345,9 @@ class Painter
         // 测试line unline
         /*
         setTimeout(() => {
-            this.line(group2[0], group2[1], 'offer', 'offer');
+            this.line(group1[2], group1[1], 'offer', 'offer');
             setTimeout (() => {
-                this.unline(group2[0], group2[1], 'offer', 'offer');
+                this.unline(group1[2], group1[1], 'offer', 'offer');
             },2000)
         },2000)*/
 
@@ -312,8 +355,8 @@ class Painter
         /*
         setTimeout(() => {
             let tempArr = [];
-            tempArr.push(data[2], data[3], data[4]);
-            this.broadcast(data[1], tempArr);
+            tempArr.push(data[5],data[2], data[3], data[4]);
+            this.broadcast(data[0], tempArr);
         })*/
         
         // 测试进度条
@@ -460,7 +503,7 @@ class Painter
             y1 = parseInt(node2.attr("y")) + 25,
             x2 = parseInt(node1.attr("x")) + 25,
             y2 = parseInt(node1.attr("y")) + 25;
-            backTime = 800;
+            backTime = 1000;
         } else {
             x1 = parseInt(node1.attr("x")) + 25,
             y1 = parseInt(node1.attr("y")) + 25,
@@ -636,6 +679,9 @@ class Painter
         } else {
             if (host instanceof Track) {
                 tempName = 'Tracker';
+            }
+            if (host instanceof NetworkInfo) {
+                tempName = 'NetworkInfo';
             }
             else if (host instanceof Server) {
                 tempName = 'Server';

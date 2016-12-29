@@ -97,6 +97,9 @@ $(document).ready(() =>
 
         case 'proxy':
           window.hosts.push(new Proxy(info));
+          if (info.conf.name.substr(0,3) === 'MEC') {
+            window.hosts.push(new Station(info));
+          }
           break;
       }
     }

@@ -149,7 +149,7 @@ class Track extends Host
         }
         this.log('server [{0}] push [{1}|{2}] to proxies'
             .format(src.to_string(), video, piece));
-        // window.painter.broadcast(this, proxies, 'push');
+        window.painter.broadcast(src, proxies, 'push');
     }
 };
 
@@ -264,12 +264,12 @@ class NetworkInfo extends Host
 
 
 class Station extends Unit
-{
-    constructor( name, pos)
+{   
+    constructor(info)
     {
-        super();
-        this.name = name;
-        this.pos = pos;
-    };
+        super(info);
+
+        this.conf = info.conf;
+    }
 };
 
