@@ -346,7 +346,27 @@ a:focus, .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:acti
 .showTable{
     margin-left: 20px;
 }
+/*****进度条******/
+.right-bar-wrap, .left-bar-wrap {
+    width: 80%;
+    position: relative;
+    /*border: 1px solid #f2f2f2;*/
+}
+#my-progress-bar-left, #my-progress-bar-right {
+    width: 100%;
+    margin-left: 10%;
+    padding: 0px 5px 10px;
 
+    /*border-radius: 5px;
+    border: 1px solid #ccc;*/
+}
+.video-name2, .video-name1 {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: #fff;
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #fff, 0 0 5px #84bfd3, 0 0 8px #84bfd3, 0 0 10px #84bfd3, 0 0 12px #84bfd3, 0 0 16px #84bfd3;
+}
 .progress{
     height: 15px;
     background: #262626;
@@ -373,6 +393,10 @@ a:focus, .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:acti
     position: absolute;
     top: -40px;
     right: -10px;
+    -moz-transition: all 0.7s ease;
+    -webkit-transition: all 0.7s ease;
+    -o-transition: all 0.7s ease;
+    transition: all 0.7s ease;
 }
 .progress .progress-value:after{
     content: "";

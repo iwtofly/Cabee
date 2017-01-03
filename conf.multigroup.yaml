@@ -83,7 +83,7 @@
 
 - type : proxy
   group: 1
-  name : MEC_2_sub2
+  name : MEC_1_sub2
   pos  : "12"
   port : 15003
   gui  : http://127.0.0.1:12345/host
