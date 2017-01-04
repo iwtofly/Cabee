@@ -121,6 +121,7 @@ class Painter
                     }    
                 }          
             }
+            // console.log(peer);
 
             let netInfExist = false,
                 info;
@@ -175,10 +176,10 @@ class Painter
                         case 2:
                             let selfPos = nodesTemp[i].conf.pos.substr(1,2);
                             let fatherPos = nodesTemp[i].conf.pos.substr(0,1);
-                            let posY = fatherPos==="1" 
+                            let posY = fatherPos == "1" 
                                         ? ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos))
                                             * height / (MECnum + 1)
-                                        : ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos - 1))
+                                        : ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos - 1]) + parseInt(selfPos))
                                             * height/(MECnum + 1);
 
                             return {
@@ -196,11 +197,11 @@ class Painter
                 } else if (nodesTemp[i] instanceof Station) {
                     let selfPos = nodesTemp[i].conf.pos.substr(1,2);
                     let fatherPos = nodesTemp[i].conf.pos.substr(0,1);
-                    
-                    let posY = fatherPos==="1" 
+                    console.log(fatherPos + '; ' + selfPos);
+                    let posY = fatherPos == "1" 
                                 ? ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos))
                                     * height / (MECnum + 1)
-                                : ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos - 1))
+                                : ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos - 1]) + parseInt(selfPos))
                                     * height/(MECnum + 1);
 
                     return {
@@ -360,30 +361,30 @@ class Painter
         })*/
         
         // 测试进度条
-        /*
-        let timer1 = 0;
-        setTimeout(() => {
-            this.myInterval = setInterval( () => {
-                this.showProgress(timer1, 1);
-                timer1++;
-                if (timer1 == 101) {
-                    clearInterval(this.myInterval);
-                }
-            },20)
+        /**/
+        // let timer1 = 0;
+        // setTimeout(() => {
+        //     this.myInterval = setInterval( () => {
+        //         this.showProgress(timer1, 1);
+        //         timer1++;
+        //         if (timer1 == 101) {
+        //             clearInterval(this.myInterval);
+        //         }
+        //     },20)
 
-        }, 3000) 
+        // }, 200) 
 
-        let timer2 = 0;
-        setTimeout(() => {
-            this.myInterval2 = setInterval( () => {
-                this.showProgress(timer2, 2);
-                timer2++;
-                if (timer2 == 101) {
-                    clearInterval(this.myInterval2);
-                }
-            },20)
+        // let timer2 = 0;
+        // setTimeout(() => {
+        //     this.myInterval2 = setInterval( () => {
+        //         this.showProgress(timer2, 2);
+        //         timer2++;
+        //         if (timer2 == 101) {
+        //             clearInterval(this.myInterval2);
+        //         }
+        //     },20)
 
-        }, 2000) */
+        // }, 3000) 
         this.refresh();
 
     }
@@ -409,8 +410,9 @@ class Painter
             default:
               lineColor = "green"; dx = 0; dy = 0;
         }
-        let node1 = this.findDOMNode(src);
-        let node2 = this.findDOMNode(dst);
+        let group = src.conf.group ? src.conf.group : dst.conf.group;
+        let node1 = this.findDOMNode(src, undefined, group);
+        let node2 = this.findDOMNode(dst, undefined, group);
 
         let x1 = parseInt(node1.attr("x"), 10) + 25,
             y1 = parseInt(node1.attr("y"), 10) + 25,
@@ -434,7 +436,7 @@ class Painter
                         .attr({
                             "x": (x1 + x2) / 2 + offsetX,
                             "y": (y1 + y2) / 2 + offsetY,
-                            "stroke": '#FFF'
+                            "stroke": 'pink'
                         })
                         .text(text)
                         .transition()
@@ -477,14 +479,15 @@ class Painter
     }
 
     unline(src, dst ,type,text) {
-       let node1 = this.findDOMNode(src,"delete");
-       let node2 = this.findDOMNode(dst);
-       let lidTemp = src.conf.name + dst.conf.name;
-       // console.log('unline -- lidTemp : ' + dst.conf.name);
+        let group = src.conf.group ? src.conf.group : dst.conf.group;
+        let node1 = this.findDOMNode(src, 'delete', group);
+        let node2 = this.findDOMNode(dst, undefined, group);
+        let lidTemp = src.conf.name + dst.conf.name;
+        // console.log('unline -- lidTemp : ' + dst.conf.name);
 
-       // remove the line
-       let lineMove = $("svg[id=group" + src.conf.group + "] line[lid='"+lidTemp+"']").remove();
-       let lineColor,dx,dy;
+        // remove the line
+        let lineMove = $("svg[id=group" + src.conf.group + "] line[lid='"+lidTemp+"']").remove();
+        let lineColor,dx,dy;
         switch (type) {
             case "ping":
               lineColor = "yellow"; dx = 0; dy = 0; break;
@@ -531,7 +534,7 @@ class Painter
                         .attr({
                             "x": (x1 + x2) / 2 + offsetX,
                             "y": (y1 + y2) / 2 + offsetY,
-                            "stroke": "white"
+                            "stroke": "pink"
                         })
                         .text(text)
                         .transition()
@@ -609,6 +612,7 @@ class Painter
                 group2.push(data[i]);
             }
         }
+        // console.log('reffffffffffffffffff')
 
         for (let item of group1) {
             // console.log(item);
@@ -632,11 +636,17 @@ class Painter
         }
     }
 
-    showProgress(progress, group)
+    showProgress(progress, group, video, piece)
     {
         // console.log("showProgress "+ progress);
         let region = group === 1 ? 'left' : 'right';
-
+        
+        if (group == 1) {
+            this.showProgress1(progress, video, piece);
+        } else {
+            this.showProgress2(progress, video, piece);
+        }
+        /*
         var progressBar = $('#my-progress-bar-' + region);
 
         progressBar.empty();
@@ -647,10 +657,41 @@ class Painter
                                 + progress 
                                 + '%</div></div></div>'
                 )
+        $("#progress-bar").css("width",progress +'%');*/
+    }
+
+    showProgress1(progress, video, piece) {
+
+        var progressBar1 = $('#my-progress-bar-' + 'left');
+
+        progressBar1.empty();
+
+        progressBar1.append('<div class="progress">'
+                                + '<div id="progress-bar" class="progress-bar progress-bar-success progress-bar-striped active">'
+                                + '<div class="progress-value">'
+                                + progress 
+                                + '%</div></div></div>'
+                )
+        $(".video-name1").html(video + '-' + piece);
         $("#progress-bar").css("width",progress +'%');
     }
 
-    findDOMNode(host, type) {
+    showProgress2(progress, video, piece) {
+        var progressBar = $('#my-progress-bar-' + 'right');
+        // console.log(progressBar);
+        progressBar.empty();
+
+        progressBar.append('<div class="progress">'
+                                + '<div id="progress-bar" class="progress-bar progress-bar-info progress-bar-striped active">'
+                                + '<div class="progress-value">'
+                                + progress 
+                                + '%</div></div></div>'
+                )
+        $(".video-name2").html(video + '-' + piece);
+        $("#progress-bar").css("width",progress +'%');
+    }
+
+    findDOMNode(host, type, group) {
         let node, tempName;
         if (host instanceof User) {
             if (type === 'delete') {
@@ -658,19 +699,20 @@ class Painter
                 console.log('delete user');
                 node = $("svg image[did='User']").fadeOut(3000);
             } else {
-                let svg = d3.select('#group' + host.conf.group);
+                let svg = d3.select('#group' + group);
+                // console.log(group);
                 let userNode=svg.append('image')
                           .attr("width",60)
                           .attr("height",80)
                           .attr("xlink:href","./img/phone1.png")
-                          .attr("x",50)
+                          .attr("x",30)
                           .attr("y",150)
                           .attr("did","User");
                 node=$("svg image[did='User']");
-                console.log("User in FE");
+                // console.log("User in FE");
                 setTimeout( () => {
                     $("svg image[did='User']").fadeOut(3000);
-                    console.log('User 连接超时自动删除');
+                    // console.log('User 连接超时自动删除');
                 },
                 10000
                 )
@@ -706,6 +748,9 @@ class Painter
                         console.log('未知类型节点');
                 }
             }
+            if(host.conf == undefined ){
+                console.log(host);
+            }
             node = $("svg[id=group" + host.conf.group + "] image[did=" + tempName + "]");
             if (type === 'name') {
                 return tempName;
@@ -722,5 +767,33 @@ class Painter
             }
         }
         return true;
+    }
+
+    //在指定节点跳出tooltip提示出相应的text
+    msg(host, type, text)
+    {
+        // console.log('draw msg');
+        var msgTooltip = d3.select("body")
+                         .append("div")
+                         .attr("class","msgTooltip")
+                         .style("opacity",0.0);
+
+
+        var nameIndex, node;
+        // console.log(host);
+        node = this.findDOMNode(host);
+        nameIndex = this.findDOMNode(host,'name');
+        var offsetTop = node.position().top;
+        var offsetLeft = node.position().left;
+
+        d3.select(".msgTooltip").html(nameIndex + " : " + type + "-----" + text)
+                                .style("left", offsetLeft + "px")
+                                .style("top", offsetTop - 60 + "px")
+                                .style("opacity", 1.0);
+
+        setTimeout(()=>{
+            d3.select(".msgTooltip").html(nameIndex + " : " + type + "-----" + text)
+                .style("opacity",0);
+        },3000);
     }
 };

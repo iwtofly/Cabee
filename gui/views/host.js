@@ -200,8 +200,10 @@ class Server extends Host
     on_progress(user_ip, video, piece, progress)
     {
         let src = window.get_host(user_ip, null, null);
-        this.log('[{0}] => [{1}|{2}] at [{3}%]'.format(src.to_string(), video, piece, progress));
-        // window.painter.
+        // this.log(src.to_string().substr(4,1));
+        // this.log('[{0}] => [{1}|{2}] at [{3}%]'.format(src.to_string(), video, piece, progress));
+
+        window.painter.showProgress(progress, src.to_string().substr(4,1) , video, piece)
     }
 };
 
@@ -301,6 +303,7 @@ class NetworkInfo extends Host
     on_msg()
     {
         console.log('(o_o)???');
+        window.painter.msg(this, 'received Messages', 'update record table');
     }
 };
 
