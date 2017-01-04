@@ -197,7 +197,6 @@ class Painter
                 } else if (nodesTemp[i] instanceof Station) {
                     let selfPos = nodesTemp[i].conf.pos.substr(1,2);
                     let fatherPos = nodesTemp[i].conf.pos.substr(0,1);
-                    console.log(fatherPos + '; ' + selfPos);
                     let posY = fatherPos == "1" 
                                 ? ( parseInt(fatherPos - 1) * parseInt(peer[fatherPos]) + parseInt(selfPos))
                                     * height / (MECnum + 1)
@@ -386,7 +385,6 @@ class Painter
 
         // }, 3000) 
         this.refresh();
-
     }
 
     // src & dst are object-reference to a User/Server/Proxy
@@ -612,28 +610,32 @@ class Painter
                 group2.push(data[i]);
             }
         }
-        // console.log('reffffffffffffffffff')
 
-        for (let item of group1) {
-            // console.log(item);
-            let tbody1 = $('#table1 tbody');
-            let videos = item instanceof Server ? JSON.stringify(item.videos) : JSON.stringify(item.caches);
-            tbody1.append("<tr><td>" + item.conf.name + "</td>" 
-                + "<td>" + item.ip + "</td>"
-                + "<td>" + item.conf.port + "</td>"
-                + "<td>" + videos + "</td>"
-                + "</tr>");
+        refreshTable(group1, 1);
+        refreshTable(group2, 2)
+
+        function refreshTable(arg, num) {
+            for (let item of arg) {
+                // console.log(item);
+                let tbody1 = $('#table' + num +' tbody');
+                let videosTemp = {};
+                if (item instanceof Server) {
+                    for (let video in item.videos) {
+                        videosTemp[video] = [];
+                        for(let piece in item.videos[video]) {
+                            videosTemp[video].push(piece);
+                        }
+                    }
+                }
+                let videos = item instanceof Server ? JSON.stringify(videosTemp) : JSON.stringify(item.caches);
+                tbody1.append("<tr><td>" + item.conf.name + "</td>" 
+                    + "<td>" + item.ip + "</td>"
+                    + "<td>" + item.conf.port + "</td>"
+                    + "<td>" + videos + "</td>"
+                    + "</tr>");
+            }
         }
-        for (let item of group2) {
-            // console.log(item);
-            let tbody2 = $('#table2 tbody');
-            let videos = item instanceof Server ? JSON.stringify(item.videos) : JSON.stringify(item.caches);
-            tbody2.append("<tr><td>" + item.conf.name + "</td>" 
-                + "<td>" + item.ip + "</td>"
-                + "<td>" + item.conf.port + "</td>"
-                + "<td>" + videos + "</td>"
-                + "</tr>");
-        }
+
     }
 
     showProgress(progress, group, video, piece)

@@ -462,3 +462,16 @@ a:focus, .btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:acti
 /*.left {
     border-right: 1px solid black;
 }*/
+td{
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+}
+.col1 {
+    min-width: 130px;
+}
+.col2 {
+    min-width: 115px;
+}
+.col3 {
+    min-width: 90px;
+}

@@ -107,6 +107,11 @@ var VideoProgressBar = React.createClass({
 });
 
 var Video = React.createClass({
+    getInitialState: function() {
+        return {
+            bufPercent: 0
+        }
+    },
     updateCurrentTime: function(times){
         this.props.currentTimeChanged(times);
     },
@@ -139,16 +144,18 @@ var Video = React.createClass({
                 percent = ((video.buffered.end(video.buffered.length-1)
                             + timebefore) / $this.props.totalDuration * 100);
                 // console.log(video.buffered.end(video.buffered.length-1) )
-                // console.log("try"+percent);
                 // console.log(video.buffered.length);
-                // console.log('try');
             } catch(ex){
-                // console.log(ex);
                 // console.log(video.buffered.end(0) );
                 percent = 0;
-                // console.log('catch');
             }
-            $this.updateBuffer(percent);
+            if (percent != this.state.bufPercent) {
+                $this.updateBuffer(percent);
+                this.setState({
+                    bufPercent: percent
+                })
+            }
+            
             if (percent == 100) { clearInterval(this.bufferCheck); }
         }.bind(this), 500);
 
