@@ -26,6 +26,22 @@ mod.prototype.list = function()
     return list;
 };
 
+mod.prototype.list_with_size = function()
+{
+    let list = this.list();
+    let res = {};
+    for (video in list)
+    {
+        res[video] = {};
+        for (piece of list[video])
+        {
+            let size = File.size(path.join(this.dir, video, piece));
+            res[video][piece] = size;
+        }
+    }
+    return res;
+};
+
 mod.prototype.init = function()
 {
     let app    = this.app;
@@ -96,6 +112,11 @@ mod.prototype.init = function()
         });
     });
 
+    router.get('/size/:video/:piece', (req, res) =>
+    {
+        res.json(File.size(path.join(dir, req.params.video, req.params.piece)));
+    });
+
     router.get(
     [
         '/:video/:piece',
@@ -146,7 +167,7 @@ mod.prototype.init = function()
                               delay,
                               'ok');
 
-            res.sendFile(f);
+            res.sendFile(f, {acceptRanges: false});
         },
         delay);
     });

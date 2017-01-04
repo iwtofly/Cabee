@@ -15,8 +15,8 @@ mod.prototype.toString = function()
 
 mod.prototype.has = function(slice)
 {
-    for (let video in this.videos)
-        if (video == slice.video && this.videos[video].indexOf(slice.piece) != -1)
+    for (video in this.videos)
+        if (video == slice.video && this.videos[video][slice.piece] != -1)
             return true;
     return false;
 };
@@ -26,7 +26,7 @@ mod.prototype.rest_of = function(slice)
 {
     if (!this.videos[slice.video]) return [];
     res = [];
-    for (let piece of this.videos[slice.video])
+    for (piece in this.videos[slice.video])
     {
         if (piece != slice.piece)
             res.push(new Slice(this.ip, this.conf.port, slice.video, piece));

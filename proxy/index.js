@@ -112,8 +112,12 @@ app.prototype.info = function()
 
 app.prototype.refresh = function()
 {
+    // tell track
     this.track.emit('refresh', this.info());
+    // tell gui-host
     this.gui.emit('refresh', this.info());
+    // tell gui-user
+    this.gui.broadcast('refresh', this.info());
 };
 
 app.prototype.on_refresh = function(servers, proxies)

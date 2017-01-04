@@ -168,6 +168,9 @@ class Server extends Host
         this.io.on('refresh', this.on_refresh.bind(this));
         this.io.on('push', this.on_push.bind(this));
         this.io.on('progress', this.on_progress.bind(this));
+
+        // [visits] records [video/piece]=>[time] for comparation between groups
+        this.visits = {};
     }
 
     to_string()
@@ -215,6 +218,7 @@ class Proxy extends Host
         super(info);
 
         this.io.on('refresh', this.on_refresh.bind(this));
+        this.io.on('time', this.on_time.bind(this));
     }
 
     to_string()
@@ -234,6 +238,44 @@ class Proxy extends Host
         this.caches = info.caches;
         this.log('refreshed');
         window.painter.refresh();
+    }
+
+    on_time(server_ip, server_port, video, piece, time)
+    {
+        let server = window.get_host(server_ip, server_port);
+
+        this.log('time on [{0}|{1}] with [{2}]ms'.format
+        (
+            video,
+            piece,
+            time
+        ));
+        
+        for (host of window.hosts)
+        {
+            if (host instanceof Server &&
+                host != server &&
+                host.videos[video] &&
+                host.videos[video][piece] &&
+                host.visits[video] &&
+                host.visits[video][piece])
+            {
+                let size = host.videos[video][piece];
+                let cmp_time = host.visits[video][piece];
+
+                if (time < cmp_time)
+                    this.log('save time[{0}] bandwith[{1}]'.format
+                    (
+                        cmp_time - time,
+                        size
+                    ));
+                else
+                    this.log('waste time');
+                break;
+            }
+        }
+        server.visits[video] = server.visits[video] || {};
+        server.visits[video][piece] = time;
     }
 };
 

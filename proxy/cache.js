@@ -93,7 +93,7 @@ mod.prototype.init = function()
                                   slice.toString(),
                                   delay,
                                   'ok');
-                res.sendFile(slice.path(dir));
+                res.sendFile(slice.path(dir), {acceptRanges: false});
             },
             delay);
             app.count.hit(slice);
@@ -161,7 +161,7 @@ mod.prototype.init = function()
                                           delay,
                                           'ok');
 
-                        res.sendFile(slice.path(dir));
+                        res.sendFile(slice.path(dir), {acceptRanges: false});
                     },
                     delay);
                     app.refresh();

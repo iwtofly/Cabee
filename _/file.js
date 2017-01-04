@@ -40,6 +40,13 @@ mod.exist = (f) =>
     catch (err) {}
 };
 
+mod.size = (f) =>
+{
+    var stat = fs.statSync(f);
+    if (stat)
+        return stat['size'];
+};
+
 mod.ls = (dir) =>
 {
     try

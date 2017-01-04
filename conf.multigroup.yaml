@@ -52,7 +52,7 @@
       peer : true
       super: true
   push: true       # when recv a 'push' msg, fetch & save
-  pull: true       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
+  pull: false       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
   delay:
     - ['1', 5000]
     - ['*', 4000]    
@@ -76,7 +76,7 @@
       peer : true
       super: true
   push: true       # when recv a 'push' msg, fetch & save
-  pull: true       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
+  pull: false       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
   delay:
     - ['12', 2500]
     - ['*' , 2500]
@@ -100,28 +100,108 @@
       peer : true
       super: true
   push: true       # when recv a 'push' msg, fetch & save
-  pull: true       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
+  pull: false       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
   delay:
     - ['11', 2500]
     - ['*' , 2500]
 
 #================================== group-2 ==================================#
 
-# #================ track ==============#
-# - type : track
-#   group: 2
-#   name : Tracker
-#   port : 23000
-#   gui  : http://127.0.0.1:12345/host
+#================ track ==============#
+- type : track
+  group: 2
+  name : Tracker
+  port : 23000
+  gui  : http://127.0.0.1:12345/host
 
-# #================ server =============#
-# - type : server
-#   group: 2
-#   name : Server
-#   port : 24001
-#   gui  : http://127.0.0.1:12345/host
-#   track: http://127.0.0.1:23000/server
-#   delay:
-#     - ['12', 1000]
-#     - ['1' , 2000]
-#     - ['*' , 3000]
+#================ network-info ==============#
+- type : netif
+  group: 2
+  name : Info-1
+  port : 23001
+  gui  : http://127.0.0.1:12345/host
+
+#================ server =============#
+- type : server
+  group: 2
+  name : Server
+  port : 24001
+  gui  : http://127.0.0.1:12345/host
+  track: http://127.0.0.1:23000/server
+  delay :
+    - ['12', 1000]
+    - ['1' , 2000]
+    - ['*' , 3000]
+
+#================ proxy =============#
+- type : proxy
+  group: 2
+  name : DGW_1
+  pos  : "1"
+  port : 25001
+  gui  : http://127.0.0.1:12345/host
+  track: http://127.0.0.1:23000/proxy
+  netif: http://127.0.0.1:23001/
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : false
+      super: true
+  push: true       # when recv a 'push' msg, fetch & save
+  pull: false       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
+  delay:
+    - ['1', 5000]
+    - ['*', 4000]    
+
+- type : proxy
+  group: 2
+  name : MEC_1_sub1
+  pos  : "11"
+  port : 25002
+  gui  : http://127.0.0.1:12345/host
+  track: http://127.0.0.1:23000/proxy
+  netif: http://127.0.0.1:23001/
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : false
+      super: true
+  push: true       # when recv a 'push' msg, fetch & save
+  pull: false       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
+  delay:
+    - ['12', 2500]
+    - ['*' , 2500]
+
+- type : proxy
+  group: 2
+  name : MEC_2_sub2
+  pos  : "12"
+  port : 25003
+  gui  : http://127.0.0.1:12345/host
+  track: http://127.0.0.1:23000/proxy
+  netif: http://127.0.0.1:23001/
+  cache:
+    fetch: true    # if cache not found, fetch from server
+    save : true    # after fetch from server, save to local
+  relay:
+    fetch : true   # if no proxy has cache, fetch from server
+    save  : false  # after relay from proxy/server, save to local
+    source:
+      sub  : false
+      peer : false
+      super: true
+  push: true       # when recv a 'push' msg, fetch & save
+  pull: false       # when someone req shit/1.mp4, pull shit/[2,3,4,5].mp4 from server
+  delay:
+    - ['11', 2500]
+    - ['*' , 2500]

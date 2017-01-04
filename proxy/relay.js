@@ -93,7 +93,13 @@ mod.prototype.init = function()
                                   slice.toString(),
                                   delay,
                                   'ok');
-                res.sendFile(slice.path(dir));
+                app.gui.broadcast('time',
+                                  slice.ip,
+                                  slice.port,
+                                  slice.video,
+                                  slice.piece,
+                                  delay);
+                res.sendFile(slice.path(dir), {acceptRanges: false});
             },
             delay);
             app.count.hit(slice);
@@ -132,6 +138,7 @@ mod.prototype.init = function()
                     }
                     else
                     {
+                        let proxy_delay = body;
                         log('ping [%s] succeeded in [%s]ms', proxy.toString(), body);
                         app.gui.broadcast('ping_end',
                                           proxy.ip,
@@ -172,6 +179,12 @@ mod.prototype.init = function()
                                                       slice.toString(),
                                                       'ok',
                                                       Date.now() - tick);
+                                    app.gui.broadcast('time',
+                                                      slice.ip,
+                                                      slice.port,
+                                                      slice.video,
+                                                      slice.piece,
+                                                      delay + proxy_delay);
                                     app.netif.emit('msg');
 
                                     if (app.conf.relay.save && File.save(slice.path(dir), body))
@@ -187,7 +200,7 @@ mod.prototype.init = function()
                                                               delay,
                                                               'ok');
 
-                                            res.sendFile(slice.path(dir));
+                                            res.sendFile(slice.path(dir), {acceptRanges: false});
                                         },
                                         delay);
                                         app.refresh();
@@ -283,7 +296,7 @@ mod.prototype.init = function()
                                               slice.toString(),
                                               delay,
                                               'ok');
-                            res.sendFile(slice.path(dir));
+                            res.sendFile(slice.path(dir), {acceptRanges: false});
                         },
                         delay);
                         app.refresh();

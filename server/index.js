@@ -60,7 +60,7 @@ app.prototype.info = function()
     return ret =
     {
         conf   : this.conf,
-        videos : this.video.list()
+        videos : this.video.list_with_size()
     };
 };
 

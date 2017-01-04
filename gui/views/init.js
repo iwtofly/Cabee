@@ -43,7 +43,7 @@ $(document).ready(() =>
   //
   // try to get real-ip-address of a host
   //
-  let ip_format = (ip) =>
+  let ip_format = window.ip_format = (ip) =>
   {
     if (ip != '127.0.0.1')
       return ip;
